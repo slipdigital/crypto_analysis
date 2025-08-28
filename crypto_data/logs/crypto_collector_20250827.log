@@ -1,0 +1,530 @@
+2025-08-27 06:00:38,376 - crypto_collector - INFO - CryptoDataCollector initialized successfully
+2025-08-27 06:00:38,376 - crypto_collector - INFO - Fetching top 5 cryptocurrencies by market cap
+2025-08-27 06:00:39,813 - crypto_collector - INFO - Successfully fetched 5 cryptocurrencies
+2025-08-27 06:00:39,818 - crypto_collector - INFO - Saved daily snapshot to crypto_data/daily_snapshots/2025-08-27_snapshot.csv
+2025-08-27 06:00:41,187 - crypto_collector - INFO - Saved historical data for Bitcoin to crypto_data/historical/bitcoin_historical.csv
+2025-08-27 06:00:41,257 - data_utils - INFO - Data backup created successfully at: crypto_data/demo_backup
+2025-08-27 06:00:41,258 - crypto_collector - INFO - CryptoDataCollector initialized successfully
+2025-08-27 06:00:41,259 - scheduler - INFO - Scheduled daily data collection at 10:00
+2025-08-27 06:00:41,259 - scheduler - INFO - Scheduled jobs:
+2025-08-27 06:00:41,259 - scheduler - INFO -   1. Job(interval=1, unit=days, do=collect_data_job, args=(), kwargs={})
+2025-08-27 06:01:27,569 - __main__ - INFO - CryptoDataCollector initialized successfully
+2025-08-27 06:01:27,569 - __main__ - INFO - Starting comprehensive data collection
+2025-08-27 06:01:27,569 - __main__ - INFO - Fetching top 30 cryptocurrencies by market cap
+2025-08-27 06:01:29,036 - __main__ - INFO - Successfully fetched 30 cryptocurrencies
+2025-08-27 06:01:29,042 - __main__ - INFO - Saved daily snapshot to crypto_data/daily_snapshots/2025-08-27_snapshot.csv
+2025-08-27 06:01:29,042 - __main__ - INFO - Starting historical data collection
+2025-08-27 06:01:29,042 - __main__ - INFO - Processing Bitcoin (1/30)
+2025-08-27 06:01:30,459 - __main__ - INFO - Saved historical data for Bitcoin to crypto_data/historical/bitcoin_historical.csv
+2025-08-27 06:01:30,459 - __main__ - INFO - Processing Ethereum (2/30)
+2025-08-27 06:01:31,877 - __main__ - INFO - Saved historical data for Ethereum to crypto_data/historical/ethereum_historical.csv
+2025-08-27 06:01:31,877 - __main__ - INFO - Processing XRP (3/30)
+2025-08-27 06:01:33,307 - __main__ - INFO - Saved historical data for XRP to crypto_data/historical/ripple_historical.csv
+2025-08-27 06:01:33,307 - __main__ - INFO - Processing Tether (4/30)
+2025-08-27 06:01:33,359 - __main__ - WARNING - API request failed (attempt 1): 429 Client Error: Too Many Requests for url: https://api.coingecko.com/api/v3/coins/tether/market_chart?vs_currency=usd&days=365&interval=daily
+2025-08-27 06:01:34,408 - __main__ - WARNING - API request failed (attempt 2): 429 Client Error: Too Many Requests for url: https://api.coingecko.com/api/v3/coins/tether/market_chart?vs_currency=usd&days=365&interval=daily
+2025-08-27 06:01:36,465 - __main__ - WARNING - API request failed (attempt 3): 429 Client Error: Too Many Requests for url: https://api.coingecko.com/api/v3/coins/tether/market_chart?vs_currency=usd&days=365&interval=daily
+2025-08-27 06:01:36,465 - __main__ - ERROR - All API request attempts failed for https://api.coingecko.com/api/v3/coins/tether/market_chart
+2025-08-27 06:01:36,465 - __main__ - WARNING - Failed to fetch historical data for tether
+2025-08-27 06:01:36,465 - __main__ - WARNING - Failed to get valid historical data for Tether
+2025-08-27 06:01:36,465 - __main__ - INFO - Processing BNB (5/30)
+2025-08-27 06:01:36,515 - __main__ - WARNING - API request failed (attempt 1): 429 Client Error: Too Many Requests for url: https://api.coingecko.com/api/v3/coins/binancecoin/market_chart?vs_currency=usd&days=365&interval=daily
+2025-08-27 06:01:37,570 - __main__ - WARNING - API request failed (attempt 2): 429 Client Error: Too Many Requests for url: https://api.coingecko.com/api/v3/coins/binancecoin/market_chart?vs_currency=usd&days=365&interval=daily
+2025-08-27 06:01:39,624 - __main__ - WARNING - API request failed (attempt 3): 429 Client Error: Too Many Requests for url: https://api.coingecko.com/api/v3/coins/binancecoin/market_chart?vs_currency=usd&days=365&interval=daily
+2025-08-27 06:01:39,624 - __main__ - ERROR - All API request attempts failed for https://api.coingecko.com/api/v3/coins/binancecoin/market_chart
+2025-08-27 06:01:39,625 - __main__ - WARNING - Failed to fetch historical data for binancecoin
+2025-08-27 06:01:39,625 - __main__ - WARNING - Failed to get valid historical data for BNB
+2025-08-27 06:01:39,625 - __main__ - INFO - Processing Solana (6/30)
+2025-08-27 06:01:39,674 - __main__ - WARNING - API request failed (attempt 1): 429 Client Error: Too Many Requests for url: https://api.coingecko.com/api/v3/coins/solana/market_chart?vs_currency=usd&days=365&interval=daily
+2025-08-27 06:01:40,741 - __main__ - WARNING - API request failed (attempt 2): 429 Client Error: Too Many Requests for url: https://api.coingecko.com/api/v3/coins/solana/market_chart?vs_currency=usd&days=365&interval=daily
+2025-08-27 06:01:42,818 - __main__ - WARNING - API request failed (attempt 3): 429 Client Error: Too Many Requests for url: https://api.coingecko.com/api/v3/coins/solana/market_chart?vs_currency=usd&days=365&interval=daily
+2025-08-27 06:01:42,818 - __main__ - ERROR - All API request attempts failed for https://api.coingecko.com/api/v3/coins/solana/market_chart
+2025-08-27 06:01:42,819 - __main__ - WARNING - Failed to fetch historical data for solana
+2025-08-27 06:01:42,819 - __main__ - WARNING - Failed to get valid historical data for Solana
+2025-08-27 06:01:42,819 - __main__ - INFO - Processing USDC (7/30)
+2025-08-27 06:01:42,875 - __main__ - WARNING - API request failed (attempt 1): 429 Client Error: Too Many Requests for url: https://api.coingecko.com/api/v3/coins/usd-coin/market_chart?vs_currency=usd&days=365&interval=daily
+2025-08-27 06:01:43,934 - __main__ - WARNING - API request failed (attempt 2): 429 Client Error: Too Many Requests for url: https://api.coingecko.com/api/v3/coins/usd-coin/market_chart?vs_currency=usd&days=365&interval=daily
+2025-08-27 06:01:45,994 - __main__ - WARNING - API request failed (attempt 3): 429 Client Error: Too Many Requests for url: https://api.coingecko.com/api/v3/coins/usd-coin/market_chart?vs_currency=usd&days=365&interval=daily
+2025-08-27 06:01:45,994 - __main__ - ERROR - All API request attempts failed for https://api.coingecko.com/api/v3/coins/usd-coin/market_chart
+2025-08-27 06:01:45,995 - __main__ - WARNING - Failed to fetch historical data for usd-coin
+2025-08-27 06:01:45,995 - __main__ - WARNING - Failed to get valid historical data for USDC
+2025-08-27 06:01:45,995 - __main__ - INFO - Processing Lido Staked Ether (8/30)
+2025-08-27 06:01:46,052 - __main__ - WARNING - API request failed (attempt 1): 429 Client Error: Too Many Requests for url: https://api.coingecko.com/api/v3/coins/staked-ether/market_chart?vs_currency=usd&days=365&interval=daily
+2025-08-27 06:01:47,117 - __main__ - WARNING - API request failed (attempt 2): 429 Client Error: Too Many Requests for url: https://api.coingecko.com/api/v3/coins/staked-ether/market_chart?vs_currency=usd&days=365&interval=daily
+2025-08-27 06:01:49,189 - __main__ - WARNING - API request failed (attempt 3): 429 Client Error: Too Many Requests for url: https://api.coingecko.com/api/v3/coins/staked-ether/market_chart?vs_currency=usd&days=365&interval=daily
+2025-08-27 06:01:49,190 - __main__ - ERROR - All API request attempts failed for https://api.coingecko.com/api/v3/coins/staked-ether/market_chart
+2025-08-27 06:01:49,190 - __main__ - WARNING - Failed to fetch historical data for staked-ether
+2025-08-27 06:01:49,190 - __main__ - WARNING - Failed to get valid historical data for Lido Staked Ether
+2025-08-27 06:01:49,191 - __main__ - INFO - Processing Dogecoin (9/30)
+2025-08-27 06:01:49,241 - __main__ - WARNING - API request failed (attempt 1): 429 Client Error: Too Many Requests for url: https://api.coingecko.com/api/v3/coins/dogecoin/market_chart?vs_currency=usd&days=365&interval=daily
+2025-08-27 06:01:50,306 - __main__ - WARNING - API request failed (attempt 2): 429 Client Error: Too Many Requests for url: https://api.coingecko.com/api/v3/coins/dogecoin/market_chart?vs_currency=usd&days=365&interval=daily
+2025-08-27 06:01:52,355 - __main__ - WARNING - API request failed (attempt 3): 429 Client Error: Too Many Requests for url: https://api.coingecko.com/api/v3/coins/dogecoin/market_chart?vs_currency=usd&days=365&interval=daily
+2025-08-27 06:01:52,355 - __main__ - ERROR - All API request attempts failed for https://api.coingecko.com/api/v3/coins/dogecoin/market_chart
+2025-08-27 06:01:52,355 - __main__ - WARNING - Failed to fetch historical data for dogecoin
+2025-08-27 06:01:52,355 - __main__ - WARNING - Failed to get valid historical data for Dogecoin
+2025-08-27 06:01:52,355 - __main__ - INFO - Processing TRON (10/30)
+2025-08-27 06:01:52,405 - __main__ - WARNING - API request failed (attempt 1): 429 Client Error: Too Many Requests for url: https://api.coingecko.com/api/v3/coins/tron/market_chart?vs_currency=usd&days=365&interval=daily
+2025-08-27 06:01:53,471 - __main__ - WARNING - API request failed (attempt 2): 429 Client Error: Too Many Requests for url: https://api.coingecko.com/api/v3/coins/tron/market_chart?vs_currency=usd&days=365&interval=daily
+2025-08-27 06:01:55,624 - __main__ - WARNING - API request failed (attempt 3): 429 Client Error: Too Many Requests for url: https://api.coingecko.com/api/v3/coins/tron/market_chart?vs_currency=usd&days=365&interval=daily
+2025-08-27 06:01:55,624 - __main__ - ERROR - All API request attempts failed for https://api.coingecko.com/api/v3/coins/tron/market_chart
+2025-08-27 06:01:55,625 - __main__ - WARNING - Failed to fetch historical data for tron
+2025-08-27 06:01:55,625 - __main__ - WARNING - Failed to get valid historical data for TRON
+2025-08-27 06:01:55,625 - __main__ - INFO - Processing Cardano (11/30)
+2025-08-27 06:01:55,670 - __main__ - WARNING - API request failed (attempt 1): 429 Client Error: Too Many Requests for url: https://api.coingecko.com/api/v3/coins/cardano/market_chart?vs_currency=usd&days=365&interval=daily
+2025-08-27 06:01:56,723 - __main__ - WARNING - API request failed (attempt 2): 429 Client Error: Too Many Requests for url: https://api.coingecko.com/api/v3/coins/cardano/market_chart?vs_currency=usd&days=365&interval=daily
+2025-08-27 06:01:58,768 - __main__ - WARNING - API request failed (attempt 3): 429 Client Error: Too Many Requests for url: https://api.coingecko.com/api/v3/coins/cardano/market_chart?vs_currency=usd&days=365&interval=daily
+2025-08-27 06:01:58,768 - __main__ - ERROR - All API request attempts failed for https://api.coingecko.com/api/v3/coins/cardano/market_chart
+2025-08-27 06:01:58,769 - __main__ - WARNING - Failed to fetch historical data for cardano
+2025-08-27 06:01:58,769 - __main__ - WARNING - Failed to get valid historical data for Cardano
+2025-08-27 06:01:58,769 - __main__ - INFO - Processing Wrapped stETH (12/30)
+2025-08-27 06:01:58,908 - __main__ - WARNING - API request failed (attempt 1): 429 Client Error: Too Many Requests for url: https://api.coingecko.com/api/v3/coins/wrapped-steth/market_chart?vs_currency=usd&days=365&interval=daily
+2025-08-27 06:01:59,970 - __main__ - WARNING - API request failed (attempt 2): 429 Client Error: Too Many Requests for url: https://api.coingecko.com/api/v3/coins/wrapped-steth/market_chart?vs_currency=usd&days=365&interval=daily
+2025-08-27 06:02:02,039 - __main__ - WARNING - API request failed (attempt 3): 429 Client Error: Too Many Requests for url: https://api.coingecko.com/api/v3/coins/wrapped-steth/market_chart?vs_currency=usd&days=365&interval=daily
+2025-08-27 06:02:02,039 - __main__ - ERROR - All API request attempts failed for https://api.coingecko.com/api/v3/coins/wrapped-steth/market_chart
+2025-08-27 06:02:02,039 - __main__ - WARNING - Failed to fetch historical data for wrapped-steth
+2025-08-27 06:02:02,039 - __main__ - WARNING - Failed to get valid historical data for Wrapped stETH
+2025-08-27 06:02:02,040 - __main__ - INFO - Processing Hyperliquid (13/30)
+2025-08-27 06:02:02,092 - __main__ - WARNING - API request failed (attempt 1): 429 Client Error: Too Many Requests for url: https://api.coingecko.com/api/v3/coins/hyperliquid/market_chart?vs_currency=usd&days=365&interval=daily
+2025-08-27 06:02:03,151 - __main__ - WARNING - API request failed (attempt 2): 429 Client Error: Too Many Requests for url: https://api.coingecko.com/api/v3/coins/hyperliquid/market_chart?vs_currency=usd&days=365&interval=daily
+2025-08-27 06:02:05,207 - __main__ - WARNING - API request failed (attempt 3): 429 Client Error: Too Many Requests for url: https://api.coingecko.com/api/v3/coins/hyperliquid/market_chart?vs_currency=usd&days=365&interval=daily
+2025-08-27 06:02:05,207 - __main__ - ERROR - All API request attempts failed for https://api.coingecko.com/api/v3/coins/hyperliquid/market_chart
+2025-08-27 06:02:05,208 - __main__ - WARNING - Failed to fetch historical data for hyperliquid
+2025-08-27 06:02:05,208 - __main__ - WARNING - Failed to get valid historical data for Hyperliquid
+2025-08-27 06:02:05,208 - __main__ - INFO - Processing Chainlink (14/30)
+2025-08-27 06:02:05,264 - __main__ - WARNING - API request failed (attempt 1): 429 Client Error: Too Many Requests for url: https://api.coingecko.com/api/v3/coins/chainlink/market_chart?vs_currency=usd&days=365&interval=daily
+2025-08-27 06:02:06,330 - __main__ - WARNING - API request failed (attempt 2): 429 Client Error: Too Many Requests for url: https://api.coingecko.com/api/v3/coins/chainlink/market_chart?vs_currency=usd&days=365&interval=daily
+2025-08-27 06:02:08,382 - __main__ - WARNING - API request failed (attempt 3): 429 Client Error: Too Many Requests for url: https://api.coingecko.com/api/v3/coins/chainlink/market_chart?vs_currency=usd&days=365&interval=daily
+2025-08-27 06:02:08,382 - __main__ - ERROR - All API request attempts failed for https://api.coingecko.com/api/v3/coins/chainlink/market_chart
+2025-08-27 06:02:08,382 - __main__ - WARNING - Failed to fetch historical data for chainlink
+2025-08-27 06:02:08,383 - __main__ - WARNING - Failed to get valid historical data for Chainlink
+2025-08-27 06:02:08,383 - __main__ - INFO - Processing Wrapped Beacon ETH (15/30)
+2025-08-27 06:02:08,430 - __main__ - WARNING - API request failed (attempt 1): 429 Client Error: Too Many Requests for url: https://api.coingecko.com/api/v3/coins/wrapped-beacon-eth/market_chart?vs_currency=usd&days=365&interval=daily
+2025-08-27 06:02:09,483 - __main__ - WARNING - API request failed (attempt 2): 429 Client Error: Too Many Requests for url: https://api.coingecko.com/api/v3/coins/wrapped-beacon-eth/market_chart?vs_currency=usd&days=365&interval=daily
+2025-08-27 06:02:11,532 - __main__ - WARNING - API request failed (attempt 3): 429 Client Error: Too Many Requests for url: https://api.coingecko.com/api/v3/coins/wrapped-beacon-eth/market_chart?vs_currency=usd&days=365&interval=daily
+2025-08-27 06:02:11,532 - __main__ - ERROR - All API request attempts failed for https://api.coingecko.com/api/v3/coins/wrapped-beacon-eth/market_chart
+2025-08-27 06:02:11,532 - __main__ - WARNING - Failed to fetch historical data for wrapped-beacon-eth
+2025-08-27 06:02:11,533 - __main__ - WARNING - Failed to get valid historical data for Wrapped Beacon ETH
+2025-08-27 06:02:11,533 - __main__ - INFO - Processing Wrapped Bitcoin (16/30)
+2025-08-27 06:02:11,591 - __main__ - WARNING - API request failed (attempt 1): 429 Client Error: Too Many Requests for url: https://api.coingecko.com/api/v3/coins/wrapped-bitcoin/market_chart?vs_currency=usd&days=365&interval=daily
+2025-08-27 06:02:12,668 - __main__ - WARNING - API request failed (attempt 2): 429 Client Error: Too Many Requests for url: https://api.coingecko.com/api/v3/coins/wrapped-bitcoin/market_chart?vs_currency=usd&days=365&interval=daily
+2025-08-27 06:02:14,720 - __main__ - WARNING - API request failed (attempt 3): 429 Client Error: Too Many Requests for url: https://api.coingecko.com/api/v3/coins/wrapped-bitcoin/market_chart?vs_currency=usd&days=365&interval=daily
+2025-08-27 06:02:14,721 - __main__ - ERROR - All API request attempts failed for https://api.coingecko.com/api/v3/coins/wrapped-bitcoin/market_chart
+2025-08-27 06:02:14,721 - __main__ - WARNING - Failed to fetch historical data for wrapped-bitcoin
+2025-08-27 06:02:14,721 - __main__ - WARNING - Failed to get valid historical data for Wrapped Bitcoin
+2025-08-27 06:02:14,721 - __main__ - INFO - Processing Wrapped eETH (17/30)
+2025-08-27 06:02:14,770 - __main__ - WARNING - API request failed (attempt 1): 429 Client Error: Too Many Requests for url: https://api.coingecko.com/api/v3/coins/wrapped-eeth/market_chart?vs_currency=usd&days=365&interval=daily
+2025-08-27 06:02:15,831 - __main__ - WARNING - API request failed (attempt 2): 429 Client Error: Too Many Requests for url: https://api.coingecko.com/api/v3/coins/wrapped-eeth/market_chart?vs_currency=usd&days=365&interval=daily
+2025-08-27 06:02:17,881 - __main__ - WARNING - API request failed (attempt 3): 429 Client Error: Too Many Requests for url: https://api.coingecko.com/api/v3/coins/wrapped-eeth/market_chart?vs_currency=usd&days=365&interval=daily
+2025-08-27 06:02:17,881 - __main__ - ERROR - All API request attempts failed for https://api.coingecko.com/api/v3/coins/wrapped-eeth/market_chart
+2025-08-27 06:02:17,882 - __main__ - WARNING - Failed to fetch historical data for wrapped-eeth
+2025-08-27 06:02:17,882 - __main__ - WARNING - Failed to get valid historical data for Wrapped eETH
+2025-08-27 06:02:17,882 - __main__ - INFO - Processing Stellar (18/30)
+2025-08-27 06:02:17,929 - __main__ - WARNING - API request failed (attempt 1): 429 Client Error: Too Many Requests for url: https://api.coingecko.com/api/v3/coins/stellar/market_chart?vs_currency=usd&days=365&interval=daily
+2025-08-27 06:02:18,998 - __main__ - WARNING - API request failed (attempt 2): 429 Client Error: Too Many Requests for url: https://api.coingecko.com/api/v3/coins/stellar/market_chart?vs_currency=usd&days=365&interval=daily
+2025-08-27 06:02:21,050 - __main__ - WARNING - API request failed (attempt 3): 429 Client Error: Too Many Requests for url: https://api.coingecko.com/api/v3/coins/stellar/market_chart?vs_currency=usd&days=365&interval=daily
+2025-08-27 06:02:21,051 - __main__ - ERROR - All API request attempts failed for https://api.coingecko.com/api/v3/coins/stellar/market_chart
+2025-08-27 06:02:21,051 - __main__ - WARNING - Failed to fetch historical data for stellar
+2025-08-27 06:02:21,051 - __main__ - WARNING - Failed to get valid historical data for Stellar
+2025-08-27 06:02:21,051 - __main__ - INFO - Processing Sui (19/30)
+2025-08-27 06:02:21,103 - __main__ - WARNING - API request failed (attempt 1): 429 Client Error: Too Many Requests for url: https://api.coingecko.com/api/v3/coins/sui/market_chart?vs_currency=usd&days=365&interval=daily
+2025-08-27 06:02:22,155 - __main__ - WARNING - API request failed (attempt 2): 429 Client Error: Too Many Requests for url: https://api.coingecko.com/api/v3/coins/sui/market_chart?vs_currency=usd&days=365&interval=daily
+2025-08-27 06:02:24,228 - __main__ - WARNING - API request failed (attempt 3): 429 Client Error: Too Many Requests for url: https://api.coingecko.com/api/v3/coins/sui/market_chart?vs_currency=usd&days=365&interval=daily
+2025-08-27 06:02:24,228 - __main__ - ERROR - All API request attempts failed for https://api.coingecko.com/api/v3/coins/sui/market_chart
+2025-08-27 06:02:24,228 - __main__ - WARNING - Failed to fetch historical data for sui
+2025-08-27 06:02:24,228 - __main__ - WARNING - Failed to get valid historical data for Sui
+2025-08-27 06:02:24,229 - __main__ - INFO - Processing Ethena USDe (20/30)
+2025-08-27 06:02:24,293 - __main__ - WARNING - API request failed (attempt 1): 429 Client Error: Too Many Requests for url: https://api.coingecko.com/api/v3/coins/ethena-usde/market_chart?vs_currency=usd&days=365&interval=daily
+2025-08-27 06:02:25,349 - __main__ - WARNING - API request failed (attempt 2): 429 Client Error: Too Many Requests for url: https://api.coingecko.com/api/v3/coins/ethena-usde/market_chart?vs_currency=usd&days=365&interval=daily
+2025-08-27 06:02:27,402 - __main__ - WARNING - API request failed (attempt 3): 429 Client Error: Too Many Requests for url: https://api.coingecko.com/api/v3/coins/ethena-usde/market_chart?vs_currency=usd&days=365&interval=daily
+2025-08-27 06:02:27,403 - __main__ - ERROR - All API request attempts failed for https://api.coingecko.com/api/v3/coins/ethena-usde/market_chart
+2025-08-27 06:02:27,403 - __main__ - WARNING - Failed to fetch historical data for ethena-usde
+2025-08-27 06:02:27,403 - __main__ - WARNING - Failed to get valid historical data for Ethena USDe
+2025-08-27 06:02:27,403 - __main__ - INFO - Processing Bitcoin Cash (21/30)
+2025-08-27 06:02:27,522 - __main__ - WARNING - API request failed (attempt 1): 429 Client Error: Too Many Requests for url: https://api.coingecko.com/api/v3/coins/bitcoin-cash/market_chart?vs_currency=usd&days=365&interval=daily
+2025-08-27 06:02:28,590 - __main__ - WARNING - API request failed (attempt 2): 429 Client Error: Too Many Requests for url: https://api.coingecko.com/api/v3/coins/bitcoin-cash/market_chart?vs_currency=usd&days=365&interval=daily
+2025-08-27 06:02:30,645 - __main__ - WARNING - API request failed (attempt 3): 429 Client Error: Too Many Requests for url: https://api.coingecko.com/api/v3/coins/bitcoin-cash/market_chart?vs_currency=usd&days=365&interval=daily
+2025-08-27 06:02:30,646 - __main__ - ERROR - All API request attempts failed for https://api.coingecko.com/api/v3/coins/bitcoin-cash/market_chart
+2025-08-27 06:02:30,646 - __main__ - WARNING - Failed to fetch historical data for bitcoin-cash
+2025-08-27 06:02:30,646 - __main__ - WARNING - Failed to get valid historical data for Bitcoin Cash
+2025-08-27 06:02:30,646 - __main__ - INFO - Processing Avalanche (22/30)
+2025-08-27 06:02:30,699 - __main__ - WARNING - API request failed (attempt 1): 429 Client Error: Too Many Requests for url: https://api.coingecko.com/api/v3/coins/avalanche-2/market_chart?vs_currency=usd&days=365&interval=daily
+2025-08-27 06:02:31,759 - __main__ - WARNING - API request failed (attempt 2): 429 Client Error: Too Many Requests for url: https://api.coingecko.com/api/v3/coins/avalanche-2/market_chart?vs_currency=usd&days=365&interval=daily
+2025-08-27 06:02:35,174 - __main__ - INFO - Saved historical data for Avalanche to crypto_data/historical/avalanche-2_historical.csv
+2025-08-27 06:02:35,175 - __main__ - INFO - Processing Hedera (23/30)
+2025-08-27 06:02:36,592 - __main__ - INFO - Saved historical data for Hedera to crypto_data/historical/hedera-hashgraph_historical.csv
+2025-08-27 06:02:36,592 - __main__ - INFO - Processing WETH (24/30)
+2025-08-27 06:02:37,996 - __main__ - INFO - Saved historical data for WETH to crypto_data/historical/weth_historical.csv
+2025-08-27 06:02:37,996 - __main__ - INFO - Processing LEO Token (25/30)
+2025-08-27 06:02:39,418 - __main__ - INFO - Saved historical data for LEO Token to crypto_data/historical/leo-token_historical.csv
+2025-08-27 06:02:39,418 - __main__ - INFO - Processing Litecoin (26/30)
+2025-08-27 06:02:39,474 - __main__ - WARNING - API request failed (attempt 1): 429 Client Error: Too Many Requests for url: https://api.coingecko.com/api/v3/coins/litecoin/market_chart?vs_currency=usd&days=365&interval=daily
+2025-08-27 06:02:40,548 - __main__ - WARNING - API request failed (attempt 2): 429 Client Error: Too Many Requests for url: https://api.coingecko.com/api/v3/coins/litecoin/market_chart?vs_currency=usd&days=365&interval=daily
+2025-08-27 06:02:42,617 - __main__ - WARNING - API request failed (attempt 3): 429 Client Error: Too Many Requests for url: https://api.coingecko.com/api/v3/coins/litecoin/market_chart?vs_currency=usd&days=365&interval=daily
+2025-08-27 06:02:42,618 - __main__ - ERROR - All API request attempts failed for https://api.coingecko.com/api/v3/coins/litecoin/market_chart
+2025-08-27 06:02:42,618 - __main__ - WARNING - Failed to fetch historical data for litecoin
+2025-08-27 06:02:42,618 - __main__ - WARNING - Failed to get valid historical data for Litecoin
+2025-08-27 06:02:42,618 - __main__ - INFO - Processing Toncoin (27/30)
+2025-08-27 06:02:42,695 - __main__ - WARNING - API request failed (attempt 1): 429 Client Error: Too Many Requests for url: https://api.coingecko.com/api/v3/coins/the-open-network/market_chart?vs_currency=usd&days=365&interval=daily
+2025-08-27 06:02:43,757 - __main__ - WARNING - API request failed (attempt 2): 429 Client Error: Too Many Requests for url: https://api.coingecko.com/api/v3/coins/the-open-network/market_chart?vs_currency=usd&days=365&interval=daily
+2025-08-27 06:02:45,822 - __main__ - WARNING - API request failed (attempt 3): 429 Client Error: Too Many Requests for url: https://api.coingecko.com/api/v3/coins/the-open-network/market_chart?vs_currency=usd&days=365&interval=daily
+2025-08-27 06:02:45,823 - __main__ - ERROR - All API request attempts failed for https://api.coingecko.com/api/v3/coins/the-open-network/market_chart
+2025-08-27 06:02:45,823 - __main__ - WARNING - Failed to fetch historical data for the-open-network
+2025-08-27 06:02:45,823 - __main__ - WARNING - Failed to get valid historical data for Toncoin
+2025-08-27 06:02:45,824 - __main__ - INFO - Processing USDS (28/30)
+2025-08-27 06:02:45,871 - __main__ - WARNING - API request failed (attempt 1): 429 Client Error: Too Many Requests for url: https://api.coingecko.com/api/v3/coins/usds/market_chart?vs_currency=usd&days=365&interval=daily
+2025-08-27 06:02:46,930 - __main__ - WARNING - API request failed (attempt 2): 429 Client Error: Too Many Requests for url: https://api.coingecko.com/api/v3/coins/usds/market_chart?vs_currency=usd&days=365&interval=daily
+2025-08-27 06:02:48,990 - __main__ - WARNING - API request failed (attempt 3): 429 Client Error: Too Many Requests for url: https://api.coingecko.com/api/v3/coins/usds/market_chart?vs_currency=usd&days=365&interval=daily
+2025-08-27 06:02:48,990 - __main__ - ERROR - All API request attempts failed for https://api.coingecko.com/api/v3/coins/usds/market_chart
+2025-08-27 06:02:48,990 - __main__ - WARNING - Failed to fetch historical data for usds
+2025-08-27 06:02:48,991 - __main__ - WARNING - Failed to get valid historical data for USDS
+2025-08-27 06:02:48,991 - __main__ - INFO - Processing Shiba Inu (29/30)
+2025-08-27 06:02:49,040 - __main__ - WARNING - API request failed (attempt 1): 429 Client Error: Too Many Requests for url: https://api.coingecko.com/api/v3/coins/shiba-inu/market_chart?vs_currency=usd&days=365&interval=daily
+2025-08-27 06:02:50,095 - __main__ - WARNING - API request failed (attempt 2): 429 Client Error: Too Many Requests for url: https://api.coingecko.com/api/v3/coins/shiba-inu/market_chart?vs_currency=usd&days=365&interval=daily
+2025-08-27 06:02:52,148 - __main__ - WARNING - API request failed (attempt 3): 429 Client Error: Too Many Requests for url: https://api.coingecko.com/api/v3/coins/shiba-inu/market_chart?vs_currency=usd&days=365&interval=daily
+2025-08-27 06:02:52,149 - __main__ - ERROR - All API request attempts failed for https://api.coingecko.com/api/v3/coins/shiba-inu/market_chart
+2025-08-27 06:02:52,149 - __main__ - WARNING - Failed to fetch historical data for shiba-inu
+2025-08-27 06:02:52,149 - __main__ - WARNING - Failed to get valid historical data for Shiba Inu
+2025-08-27 06:02:52,150 - __main__ - INFO - Processing Cronos (30/30)
+2025-08-27 06:02:52,208 - __main__ - WARNING - API request failed (attempt 1): 429 Client Error: Too Many Requests for url: https://api.coingecko.com/api/v3/coins/crypto-com-chain/market_chart?vs_currency=usd&days=365&interval=daily
+2025-08-27 06:02:53,270 - __main__ - WARNING - API request failed (attempt 2): 429 Client Error: Too Many Requests for url: https://api.coingecko.com/api/v3/coins/crypto-com-chain/market_chart?vs_currency=usd&days=365&interval=daily
+2025-08-27 06:02:55,333 - __main__ - WARNING - API request failed (attempt 3): 429 Client Error: Too Many Requests for url: https://api.coingecko.com/api/v3/coins/crypto-com-chain/market_chart?vs_currency=usd&days=365&interval=daily
+2025-08-27 06:02:55,333 - __main__ - ERROR - All API request attempts failed for https://api.coingecko.com/api/v3/coins/crypto-com-chain/market_chart
+2025-08-27 06:02:55,333 - __main__ - WARNING - Failed to fetch historical data for crypto-com-chain
+2025-08-27 06:02:55,333 - __main__ - WARNING - Failed to get valid historical data for Cronos
+2025-08-27 06:02:55,334 - __main__ - INFO - Data collection completed successfully
+2025-08-27 06:18:37,907 - __main__ - INFO - CryptoDataCollector initialized successfully
+2025-08-27 06:18:37,907 - __main__ - INFO - Starting comprehensive data collection
+2025-08-27 06:18:37,907 - __main__ - INFO - Fetching top 30 cryptocurrencies by market cap
+2025-08-27 06:18:39,472 - __main__ - INFO - Successfully fetched 30 cryptocurrencies
+2025-08-27 06:18:39,483 - __main__ - INFO - Saved daily snapshot to crypto_data/daily_snapshots/2025-08-27_snapshot.csv
+2025-08-27 06:18:39,483 - __main__ - INFO - Starting historical data collection
+2025-08-27 06:18:39,483 - __main__ - INFO - Processing Bitcoin (1/30)
+2025-08-27 06:18:40,900 - __main__ - INFO - Saved historical data for Bitcoin to crypto_data/historical/bitcoin_historical.csv
+2025-08-27 06:18:40,900 - __main__ - INFO - Processing Ethereum (2/30)
+2025-08-27 06:18:42,311 - __main__ - INFO - Saved historical data for Ethereum to crypto_data/historical/ethereum_historical.csv
+2025-08-27 06:18:42,311 - __main__ - INFO - Processing XRP (3/30)
+2025-08-27 06:18:43,719 - __main__ - INFO - Saved historical data for XRP to crypto_data/historical/ripple_historical.csv
+2025-08-27 06:18:43,719 - __main__ - INFO - Processing Tether (4/30)
+2025-08-27 06:18:45,142 - __main__ - INFO - Saved historical data for Tether to crypto_data/historical/tether_historical.csv
+2025-08-27 06:18:45,142 - __main__ - INFO - Processing BNB (5/30)
+2025-08-27 06:18:45,191 - __main__ - WARNING - API request failed (attempt 1): 429 Client Error: Too Many Requests for url: https://api.coingecko.com/api/v3/coins/binancecoin/market_chart?vs_currency=usd&days=365&interval=daily
+2025-08-27 06:18:46,253 - __main__ - WARNING - API request failed (attempt 2): 429 Client Error: Too Many Requests for url: https://api.coingecko.com/api/v3/coins/binancecoin/market_chart?vs_currency=usd&days=365&interval=daily
+2025-08-27 06:18:48,310 - __main__ - WARNING - API request failed (attempt 3): 429 Client Error: Too Many Requests for url: https://api.coingecko.com/api/v3/coins/binancecoin/market_chart?vs_currency=usd&days=365&interval=daily
+2025-08-27 06:18:48,310 - __main__ - ERROR - All API request attempts failed for https://api.coingecko.com/api/v3/coins/binancecoin/market_chart
+2025-08-27 06:18:48,310 - __main__ - WARNING - Failed to fetch historical data for binancecoin
+2025-08-27 06:18:48,310 - __main__ - WARNING - Failed to get valid historical data for BNB
+2025-08-27 06:18:48,311 - __main__ - INFO - Processing Solana (6/30)
+2025-08-27 06:18:48,361 - __main__ - WARNING - API request failed (attempt 1): 429 Client Error: Too Many Requests for url: https://api.coingecko.com/api/v3/coins/solana/market_chart?vs_currency=usd&days=365&interval=daily
+2025-08-27 06:18:49,422 - __main__ - WARNING - API request failed (attempt 2): 429 Client Error: Too Many Requests for url: https://api.coingecko.com/api/v3/coins/solana/market_chart?vs_currency=usd&days=365&interval=daily
+2025-08-27 06:18:51,479 - __main__ - WARNING - API request failed (attempt 3): 429 Client Error: Too Many Requests for url: https://api.coingecko.com/api/v3/coins/solana/market_chart?vs_currency=usd&days=365&interval=daily
+2025-08-27 06:18:51,479 - __main__ - ERROR - All API request attempts failed for https://api.coingecko.com/api/v3/coins/solana/market_chart
+2025-08-27 06:18:51,479 - __main__ - WARNING - Failed to fetch historical data for solana
+2025-08-27 06:18:51,480 - __main__ - WARNING - Failed to get valid historical data for Solana
+2025-08-27 06:18:51,480 - __main__ - INFO - Processing USDC (7/30)
+2025-08-27 06:18:51,540 - __main__ - WARNING - API request failed (attempt 1): 429 Client Error: Too Many Requests for url: https://api.coingecko.com/api/v3/coins/usd-coin/market_chart?vs_currency=usd&days=365&interval=daily
+2025-08-27 06:18:52,598 - __main__ - WARNING - API request failed (attempt 2): 429 Client Error: Too Many Requests for url: https://api.coingecko.com/api/v3/coins/usd-coin/market_chart?vs_currency=usd&days=365&interval=daily
+2025-08-27 06:18:54,658 - __main__ - WARNING - API request failed (attempt 3): 429 Client Error: Too Many Requests for url: https://api.coingecko.com/api/v3/coins/usd-coin/market_chart?vs_currency=usd&days=365&interval=daily
+2025-08-27 06:18:54,659 - __main__ - ERROR - All API request attempts failed for https://api.coingecko.com/api/v3/coins/usd-coin/market_chart
+2025-08-27 06:18:54,659 - __main__ - WARNING - Failed to fetch historical data for usd-coin
+2025-08-27 06:18:54,659 - __main__ - WARNING - Failed to get valid historical data for USDC
+2025-08-27 06:18:54,659 - __main__ - INFO - Processing Lido Staked Ether (8/30)
+2025-08-27 06:18:54,736 - __main__ - WARNING - API request failed (attempt 1): 429 Client Error: Too Many Requests for url: https://api.coingecko.com/api/v3/coins/staked-ether/market_chart?vs_currency=usd&days=365&interval=daily
+2025-08-27 06:19:10,575 - __main__ - INFO - CryptoDataCollector initialized successfully
+2025-08-27 06:19:10,576 - __main__ - INFO - Starting comprehensive data collection
+2025-08-27 06:19:10,576 - __main__ - INFO - Fetching top 30 cryptocurrencies by market cap
+2025-08-27 06:19:10,642 - __main__ - WARNING - API request failed (attempt 1): 429 Client Error: Too Many Requests for url: https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=30&page=1&sparkline=False&price_change_percentage=24h%2C7d
+2025-08-27 06:19:11,697 - __main__ - WARNING - API request failed (attempt 2): 429 Client Error: Too Many Requests for url: https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=30&page=1&sparkline=False&price_change_percentage=24h%2C7d
+2025-08-27 06:19:13,765 - __main__ - WARNING - API request failed (attempt 3): 429 Client Error: Too Many Requests for url: https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=30&page=1&sparkline=False&price_change_percentage=24h%2C7d
+2025-08-27 06:19:13,765 - __main__ - ERROR - All API request attempts failed for https://api.coingecko.com/api/v3/coins/markets
+2025-08-27 06:19:13,766 - __main__ - ERROR - Failed to fetch top cryptocurrencies
+2025-08-27 06:19:13,766 - __main__ - ERROR - Failed to fetch top cryptocurrencies. Aborting collection.
+2025-08-27 06:38:44,286 - __main__ - INFO - CryptoDataCollector initialized successfully
+2025-08-27 06:38:44,287 - __main__ - INFO - Starting comprehensive data collection
+2025-08-27 06:38:44,287 - __main__ - INFO - Fetching top 30 cryptocurrencies by market cap
+2025-08-27 06:38:49,575 - __main__ - INFO - Successfully fetched 30 cryptocurrencies
+2025-08-27 06:38:49,585 - __main__ - INFO - Saved daily snapshot to crypto_data/daily_snapshots/2025-08-27_snapshot.csv
+2025-08-27 06:38:49,585 - __main__ - INFO - Starting historical data collection
+2025-08-27 06:38:49,585 - __main__ - INFO - Processing Bitcoin (1/30)
+2025-08-27 06:38:54,768 - __main__ - INFO - Saved historical data for Bitcoin to crypto_data/historical/bitcoin_historical.csv
+2025-08-27 06:38:54,768 - __main__ - INFO - Processing Ethereum (2/30)
+2025-08-27 06:39:00,048 - __main__ - INFO - Saved historical data for Ethereum to crypto_data/historical/ethereum_historical.csv
+2025-08-27 06:39:00,048 - __main__ - INFO - Processing XRP (3/30)
+2025-08-27 06:39:05,261 - __main__ - INFO - Saved historical data for XRP to crypto_data/historical/ripple_historical.csv
+2025-08-27 06:39:05,261 - __main__ - INFO - Processing Tether (4/30)
+2025-08-27 06:39:10,478 - __main__ - INFO - Saved historical data for Tether to crypto_data/historical/tether_historical.csv
+2025-08-27 06:39:10,478 - __main__ - INFO - Processing BNB (5/30)
+2025-08-27 06:39:15,685 - __main__ - INFO - Saved historical data for BNB to crypto_data/historical/binancecoin_historical.csv
+2025-08-27 06:39:15,685 - __main__ - INFO - Processing Solana (6/30)
+2025-08-27 06:39:15,738 - __main__ - WARNING - API request failed (attempt 1): 429 Client Error: Too Many Requests for url: https://api.coingecko.com/api/v3/coins/solana/market_chart?vs_currency=usd&days=365&interval=daily
+2025-08-27 06:39:16,787 - __main__ - WARNING - API request failed (attempt 2): 429 Client Error: Too Many Requests for url: https://api.coingecko.com/api/v3/coins/solana/market_chart?vs_currency=usd&days=365&interval=daily
+2025-08-27 06:39:18,846 - __main__ - WARNING - API request failed (attempt 3): 429 Client Error: Too Many Requests for url: https://api.coingecko.com/api/v3/coins/solana/market_chart?vs_currency=usd&days=365&interval=daily
+2025-08-27 06:39:18,846 - __main__ - ERROR - All API request attempts failed for https://api.coingecko.com/api/v3/coins/solana/market_chart
+2025-08-27 06:39:18,846 - __main__ - WARNING - Failed to fetch historical data for solana
+2025-08-27 06:39:18,847 - __main__ - WARNING - Failed to get valid historical data for Solana
+2025-08-27 06:39:18,847 - __main__ - INFO - Processing USDC (7/30)
+2025-08-27 06:39:18,893 - __main__ - WARNING - API request failed (attempt 1): 429 Client Error: Too Many Requests for url: https://api.coingecko.com/api/v3/coins/usd-coin/market_chart?vs_currency=usd&days=365&interval=daily
+2025-08-27 06:39:19,953 - __main__ - WARNING - API request failed (attempt 2): 429 Client Error: Too Many Requests for url: https://api.coingecko.com/api/v3/coins/usd-coin/market_chart?vs_currency=usd&days=365&interval=daily
+2025-08-27 06:39:22,015 - __main__ - WARNING - API request failed (attempt 3): 429 Client Error: Too Many Requests for url: https://api.coingecko.com/api/v3/coins/usd-coin/market_chart?vs_currency=usd&days=365&interval=daily
+2025-08-27 06:39:22,015 - __main__ - ERROR - All API request attempts failed for https://api.coingecko.com/api/v3/coins/usd-coin/market_chart
+2025-08-27 06:39:22,016 - __main__ - WARNING - Failed to fetch historical data for usd-coin
+2025-08-27 06:39:22,016 - __main__ - WARNING - Failed to get valid historical data for USDC
+2025-08-27 06:39:22,016 - __main__ - INFO - Processing Lido Staked Ether (8/30)
+2025-08-27 06:39:22,069 - __main__ - WARNING - API request failed (attempt 1): 429 Client Error: Too Many Requests for url: https://api.coingecko.com/api/v3/coins/staked-ether/market_chart?vs_currency=usd&days=365&interval=daily
+2025-08-27 06:39:23,162 - __main__ - WARNING - API request failed (attempt 2): 429 Client Error: Too Many Requests for url: https://api.coingecko.com/api/v3/coins/staked-ether/market_chart?vs_currency=usd&days=365&interval=daily
+2025-08-27 06:39:25,224 - __main__ - WARNING - API request failed (attempt 3): 429 Client Error: Too Many Requests for url: https://api.coingecko.com/api/v3/coins/staked-ether/market_chart?vs_currency=usd&days=365&interval=daily
+2025-08-27 06:39:25,224 - __main__ - ERROR - All API request attempts failed for https://api.coingecko.com/api/v3/coins/staked-ether/market_chart
+2025-08-27 06:39:25,225 - __main__ - WARNING - Failed to fetch historical data for staked-ether
+2025-08-27 06:39:25,225 - __main__ - WARNING - Failed to get valid historical data for Lido Staked Ether
+2025-08-27 06:39:25,225 - __main__ - INFO - Processing Dogecoin (9/30)
+2025-08-27 06:39:25,288 - __main__ - WARNING - API request failed (attempt 1): 429 Client Error: Too Many Requests for url: https://api.coingecko.com/api/v3/coins/dogecoin/market_chart?vs_currency=usd&days=365&interval=daily
+2025-08-27 06:39:26,345 - __main__ - WARNING - API request failed (attempt 2): 429 Client Error: Too Many Requests for url: https://api.coingecko.com/api/v3/coins/dogecoin/market_chart?vs_currency=usd&days=365&interval=daily
+2025-08-27 06:39:28,426 - __main__ - WARNING - API request failed (attempt 3): 429 Client Error: Too Many Requests for url: https://api.coingecko.com/api/v3/coins/dogecoin/market_chart?vs_currency=usd&days=365&interval=daily
+2025-08-27 06:39:28,426 - __main__ - ERROR - All API request attempts failed for https://api.coingecko.com/api/v3/coins/dogecoin/market_chart
+2025-08-27 06:39:28,426 - __main__ - WARNING - Failed to fetch historical data for dogecoin
+2025-08-27 06:39:28,426 - __main__ - WARNING - Failed to get valid historical data for Dogecoin
+2025-08-27 06:39:28,426 - __main__ - INFO - Processing TRON (10/30)
+2025-08-27 06:39:28,486 - __main__ - WARNING - API request failed (attempt 1): 429 Client Error: Too Many Requests for url: https://api.coingecko.com/api/v3/coins/tron/market_chart?vs_currency=usd&days=365&interval=daily
+2025-08-27 06:39:29,544 - __main__ - WARNING - API request failed (attempt 2): 429 Client Error: Too Many Requests for url: https://api.coingecko.com/api/v3/coins/tron/market_chart?vs_currency=usd&days=365&interval=daily
+2025-08-27 06:39:31,619 - __main__ - WARNING - API request failed (attempt 3): 429 Client Error: Too Many Requests for url: https://api.coingecko.com/api/v3/coins/tron/market_chart?vs_currency=usd&days=365&interval=daily
+2025-08-27 06:39:31,619 - __main__ - ERROR - All API request attempts failed for https://api.coingecko.com/api/v3/coins/tron/market_chart
+2025-08-27 06:39:31,619 - __main__ - WARNING - Failed to fetch historical data for tron
+2025-08-27 06:39:31,619 - __main__ - WARNING - Failed to get valid historical data for TRON
+2025-08-27 06:39:31,619 - __main__ - INFO - Processing Cardano (11/30)
+2025-08-27 06:39:31,710 - __main__ - WARNING - API request failed (attempt 1): 429 Client Error: Too Many Requests for url: https://api.coingecko.com/api/v3/coins/cardano/market_chart?vs_currency=usd&days=365&interval=daily
+2025-08-27 06:39:32,764 - __main__ - WARNING - API request failed (attempt 2): 429 Client Error: Too Many Requests for url: https://api.coingecko.com/api/v3/coins/cardano/market_chart?vs_currency=usd&days=365&interval=daily
+2025-08-27 06:39:34,826 - __main__ - WARNING - API request failed (attempt 3): 429 Client Error: Too Many Requests for url: https://api.coingecko.com/api/v3/coins/cardano/market_chart?vs_currency=usd&days=365&interval=daily
+2025-08-27 06:39:34,826 - __main__ - ERROR - All API request attempts failed for https://api.coingecko.com/api/v3/coins/cardano/market_chart
+2025-08-27 06:39:34,827 - __main__ - WARNING - Failed to fetch historical data for cardano
+2025-08-27 06:39:34,827 - __main__ - WARNING - Failed to get valid historical data for Cardano
+2025-08-27 06:39:34,827 - __main__ - INFO - Processing Wrapped stETH (12/30)
+2025-08-27 06:39:34,873 - __main__ - WARNING - API request failed (attempt 1): 429 Client Error: Too Many Requests for url: https://api.coingecko.com/api/v3/coins/wrapped-steth/market_chart?vs_currency=usd&days=365&interval=daily
+2025-08-27 06:39:35,933 - __main__ - WARNING - API request failed (attempt 2): 429 Client Error: Too Many Requests for url: https://api.coingecko.com/api/v3/coins/wrapped-steth/market_chart?vs_currency=usd&days=365&interval=daily
+2025-08-27 06:39:38,004 - __main__ - WARNING - API request failed (attempt 3): 429 Client Error: Too Many Requests for url: https://api.coingecko.com/api/v3/coins/wrapped-steth/market_chart?vs_currency=usd&days=365&interval=daily
+2025-08-27 06:39:38,004 - __main__ - ERROR - All API request attempts failed for https://api.coingecko.com/api/v3/coins/wrapped-steth/market_chart
+2025-08-27 06:39:38,005 - __main__ - WARNING - Failed to fetch historical data for wrapped-steth
+2025-08-27 06:39:38,005 - __main__ - WARNING - Failed to get valid historical data for Wrapped stETH
+2025-08-27 06:39:38,005 - __main__ - INFO - Processing Hyperliquid (13/30)
+2025-08-27 06:39:38,048 - __main__ - WARNING - API request failed (attempt 1): 429 Client Error: Too Many Requests for url: https://api.coingecko.com/api/v3/coins/hyperliquid/market_chart?vs_currency=usd&days=365&interval=daily
+2025-08-27 06:39:39,144 - __main__ - WARNING - API request failed (attempt 2): 429 Client Error: Too Many Requests for url: https://api.coingecko.com/api/v3/coins/hyperliquid/market_chart?vs_currency=usd&days=365&interval=daily
+2025-08-27 06:39:41,200 - __main__ - WARNING - API request failed (attempt 3): 429 Client Error: Too Many Requests for url: https://api.coingecko.com/api/v3/coins/hyperliquid/market_chart?vs_currency=usd&days=365&interval=daily
+2025-08-27 06:39:41,201 - __main__ - ERROR - All API request attempts failed for https://api.coingecko.com/api/v3/coins/hyperliquid/market_chart
+2025-08-27 06:39:41,201 - __main__ - WARNING - Failed to fetch historical data for hyperliquid
+2025-08-27 06:39:41,201 - __main__ - WARNING - Failed to get valid historical data for Hyperliquid
+2025-08-27 06:39:41,201 - __main__ - INFO - Processing Chainlink (14/30)
+2025-08-27 06:39:41,257 - __main__ - WARNING - API request failed (attempt 1): 429 Client Error: Too Many Requests for url: https://api.coingecko.com/api/v3/coins/chainlink/market_chart?vs_currency=usd&days=365&interval=daily
+2025-08-27 06:39:42,312 - __main__ - WARNING - API request failed (attempt 2): 429 Client Error: Too Many Requests for url: https://api.coingecko.com/api/v3/coins/chainlink/market_chart?vs_currency=usd&days=365&interval=daily
+2025-08-27 06:39:44,367 - __main__ - WARNING - API request failed (attempt 3): 429 Client Error: Too Many Requests for url: https://api.coingecko.com/api/v3/coins/chainlink/market_chart?vs_currency=usd&days=365&interval=daily
+2025-08-27 06:39:44,368 - __main__ - ERROR - All API request attempts failed for https://api.coingecko.com/api/v3/coins/chainlink/market_chart
+2025-08-27 06:39:44,368 - __main__ - WARNING - Failed to fetch historical data for chainlink
+2025-08-27 06:39:44,368 - __main__ - WARNING - Failed to get valid historical data for Chainlink
+2025-08-27 06:39:44,368 - __main__ - INFO - Processing Wrapped Beacon ETH (15/30)
+2025-08-27 06:39:44,420 - __main__ - WARNING - API request failed (attempt 1): 429 Client Error: Too Many Requests for url: https://api.coingecko.com/api/v3/coins/wrapped-beacon-eth/market_chart?vs_currency=usd&days=365&interval=daily
+2025-08-27 06:39:45,475 - __main__ - WARNING - API request failed (attempt 2): 429 Client Error: Too Many Requests for url: https://api.coingecko.com/api/v3/coins/wrapped-beacon-eth/market_chart?vs_currency=usd&days=365&interval=daily
+2025-08-27 06:39:47,539 - __main__ - WARNING - API request failed (attempt 3): 429 Client Error: Too Many Requests for url: https://api.coingecko.com/api/v3/coins/wrapped-beacon-eth/market_chart?vs_currency=usd&days=365&interval=daily
+2025-08-27 06:39:47,539 - __main__ - ERROR - All API request attempts failed for https://api.coingecko.com/api/v3/coins/wrapped-beacon-eth/market_chart
+2025-08-27 06:39:47,539 - __main__ - WARNING - Failed to fetch historical data for wrapped-beacon-eth
+2025-08-27 06:39:47,539 - __main__ - WARNING - Failed to get valid historical data for Wrapped Beacon ETH
+2025-08-27 06:39:47,539 - __main__ - INFO - Processing Wrapped Bitcoin (16/30)
+2025-08-27 06:39:47,590 - __main__ - WARNING - API request failed (attempt 1): 429 Client Error: Too Many Requests for url: https://api.coingecko.com/api/v3/coins/wrapped-bitcoin/market_chart?vs_currency=usd&days=365&interval=daily
+2025-08-27 06:39:48,645 - __main__ - WARNING - API request failed (attempt 2): 429 Client Error: Too Many Requests for url: https://api.coingecko.com/api/v3/coins/wrapped-bitcoin/market_chart?vs_currency=usd&days=365&interval=daily
+2025-08-27 06:39:50,698 - __main__ - WARNING - API request failed (attempt 3): 429 Client Error: Too Many Requests for url: https://api.coingecko.com/api/v3/coins/wrapped-bitcoin/market_chart?vs_currency=usd&days=365&interval=daily
+2025-08-27 06:39:50,698 - __main__ - ERROR - All API request attempts failed for https://api.coingecko.com/api/v3/coins/wrapped-bitcoin/market_chart
+2025-08-27 06:39:50,698 - __main__ - WARNING - Failed to fetch historical data for wrapped-bitcoin
+2025-08-27 06:39:50,699 - __main__ - WARNING - Failed to get valid historical data for Wrapped Bitcoin
+2025-08-27 06:39:50,699 - __main__ - INFO - Processing Wrapped eETH (17/30)
+2025-08-27 06:39:50,758 - __main__ - WARNING - API request failed (attempt 1): 429 Client Error: Too Many Requests for url: https://api.coingecko.com/api/v3/coins/wrapped-eeth/market_chart?vs_currency=usd&days=365&interval=daily
+2025-08-27 06:49:54,279 - __main__ - INFO - CryptoDataCollector (Polygon.io) initialized successfully
+2025-08-27 06:49:54,279 - __main__ - INFO - Starting comprehensive data collection using Polygon.io API
+2025-08-27 06:49:54,280 - __main__ - INFO - Fetching available cryptocurrency tickers
+2025-08-27 06:49:54,852 - __main__ - INFO - Found 289 cryptocurrency tickers
+2025-08-27 06:49:54,857 - __main__ - INFO - Processing 30 cryptocurrency tickers
+2025-08-27 06:49:54,858 - __main__ - INFO - Processing X:00USD (1/30)
+2025-08-27 06:49:55,563 - __main__ - WARNING - API request failed (attempt 1): 403 Client Error: Forbidden for url: https://api.polygon.io/v2/last/trade/X:00USD?apikey=5NJm5do7SXXp9aOKcr28ppmVCJ57MdP7
+2025-08-27 06:49:56,814 - __main__ - WARNING - API request failed (attempt 2): 403 Client Error: Forbidden for url: https://api.polygon.io/v2/last/trade/X:00USD?apikey=5NJm5do7SXXp9aOKcr28ppmVCJ57MdP7
+2025-08-27 06:49:59,069 - __main__ - WARNING - API request failed (attempt 3): 403 Client Error: Forbidden for url: https://api.polygon.io/v2/last/trade/X:00USD?apikey=5NJm5do7SXXp9aOKcr28ppmVCJ57MdP7
+2025-08-27 06:49:59,069 - __main__ - ERROR - All API request attempts failed for https://api.polygon.io/v2/last/trade/X:00USD
+2025-08-27 06:49:59,069 - __main__ - WARNING - Failed to fetch current price for X:00USD
+2025-08-27 06:49:59,070 - __main__ - WARNING - Invalid price data for X:00USD, using placeholder
+2025-08-27 06:49:59,622 - __main__ - INFO - Saved historical data for X:00USD to crypto_data/historical/X_00USD_historical.csv
+2025-08-27 06:49:59,622 - __main__ - INFO - Processing X:A8USD (2/30)
+2025-08-27 06:50:00,332 - __main__ - WARNING - API request failed (attempt 1): 403 Client Error: Forbidden for url: https://api.polygon.io/v2/last/trade/X:A8USD?apikey=5NJm5do7SXXp9aOKcr28ppmVCJ57MdP7
+2025-08-27 06:50:01,605 - __main__ - WARNING - API request failed (attempt 2): 403 Client Error: Forbidden for url: https://api.polygon.io/v2/last/trade/X:A8USD?apikey=5NJm5do7SXXp9aOKcr28ppmVCJ57MdP7
+2025-08-27 06:50:03,856 - __main__ - WARNING - API request failed (attempt 3): 403 Client Error: Forbidden for url: https://api.polygon.io/v2/last/trade/X:A8USD?apikey=5NJm5do7SXXp9aOKcr28ppmVCJ57MdP7
+2025-08-27 06:50:03,857 - __main__ - ERROR - All API request attempts failed for https://api.polygon.io/v2/last/trade/X:A8USD
+2025-08-27 06:50:03,857 - __main__ - WARNING - Failed to fetch current price for X:A8USD
+2025-08-27 06:50:03,857 - __main__ - WARNING - Invalid price data for X:A8USD, using placeholder
+2025-08-27 06:50:04,366 - __main__ - INFO - Saved historical data for X:A8USD to crypto_data/historical/X_A8USD_historical.csv
+2025-08-27 06:50:04,366 - __main__ - INFO - Processing X:ABTUSD (3/30)
+2025-08-27 06:50:05,064 - __main__ - WARNING - API request failed (attempt 1): 403 Client Error: Forbidden for url: https://api.polygon.io/v2/last/trade/X:ABTUSD?apikey=5NJm5do7SXXp9aOKcr28ppmVCJ57MdP7
+2025-08-27 06:50:06,329 - __main__ - WARNING - API request failed (attempt 2): 403 Client Error: Forbidden for url: https://api.polygon.io/v2/last/trade/X:ABTUSD?apikey=5NJm5do7SXXp9aOKcr28ppmVCJ57MdP7
+2025-08-27 06:50:08,582 - __main__ - WARNING - API request failed (attempt 3): 403 Client Error: Forbidden for url: https://api.polygon.io/v2/last/trade/X:ABTUSD?apikey=5NJm5do7SXXp9aOKcr28ppmVCJ57MdP7
+2025-08-27 06:50:08,583 - __main__ - ERROR - All API request attempts failed for https://api.polygon.io/v2/last/trade/X:ABTUSD
+2025-08-27 06:50:08,583 - __main__ - WARNING - Failed to fetch current price for X:ABTUSD
+2025-08-27 06:50:08,583 - __main__ - WARNING - Invalid price data for X:ABTUSD, using placeholder
+2025-08-27 06:50:09,111 - __main__ - INFO - Saved historical data for X:ABTUSD to crypto_data/historical/X_ABTUSD_historical.csv
+2025-08-27 06:50:09,111 - __main__ - INFO - Processing X:ACAUSD (4/30)
+2025-08-27 06:50:09,819 - __main__ - WARNING - API request failed (attempt 1): 403 Client Error: Forbidden for url: https://api.polygon.io/v2/last/trade/X:ACAUSD?apikey=5NJm5do7SXXp9aOKcr28ppmVCJ57MdP7
+2025-08-27 06:50:11,079 - __main__ - WARNING - API request failed (attempt 2): 403 Client Error: Forbidden for url: https://api.polygon.io/v2/last/trade/X:ACAUSD?apikey=5NJm5do7SXXp9aOKcr28ppmVCJ57MdP7
+2025-08-27 06:50:13,331 - __main__ - WARNING - API request failed (attempt 3): 403 Client Error: Forbidden for url: https://api.polygon.io/v2/last/trade/X:ACAUSD?apikey=5NJm5do7SXXp9aOKcr28ppmVCJ57MdP7
+2025-08-27 06:50:13,331 - __main__ - ERROR - All API request attempts failed for https://api.polygon.io/v2/last/trade/X:ACAUSD
+2025-08-27 06:50:13,332 - __main__ - WARNING - Failed to fetch current price for X:ACAUSD
+2025-08-27 06:50:13,332 - __main__ - WARNING - Invalid price data for X:ACAUSD, using placeholder
+2025-08-27 06:50:13,836 - __main__ - INFO - Saved historical data for X:ACAUSD to crypto_data/historical/X_ACAUSD_historical.csv
+2025-08-27 06:50:13,837 - __main__ - INFO - Processing X:ACHUSD (5/30)
+2025-08-27 06:50:14,538 - __main__ - WARNING - API request failed (attempt 1): 403 Client Error: Forbidden for url: https://api.polygon.io/v2/last/trade/X:ACHUSD?apikey=5NJm5do7SXXp9aOKcr28ppmVCJ57MdP7
+2025-08-27 06:50:15,789 - __main__ - WARNING - API request failed (attempt 2): 403 Client Error: Forbidden for url: https://api.polygon.io/v2/last/trade/X:ACHUSD?apikey=5NJm5do7SXXp9aOKcr28ppmVCJ57MdP7
+2025-08-27 06:50:18,045 - __main__ - WARNING - API request failed (attempt 3): 403 Client Error: Forbidden for url: https://api.polygon.io/v2/last/trade/X:ACHUSD?apikey=5NJm5do7SXXp9aOKcr28ppmVCJ57MdP7
+2025-08-27 06:50:18,046 - __main__ - ERROR - All API request attempts failed for https://api.polygon.io/v2/last/trade/X:ACHUSD
+2025-08-27 06:50:18,046 - __main__ - WARNING - Failed to fetch current price for X:ACHUSD
+2025-08-27 06:50:18,046 - __main__ - WARNING - Invalid price data for X:ACHUSD, using placeholder
+2025-08-27 06:50:18,580 - __main__ - INFO - Saved historical data for X:ACHUSD to crypto_data/historical/X_ACHUSD_historical.csv
+2025-08-27 06:50:18,580 - __main__ - INFO - Processing X:ACSUSD (6/30)
+2025-08-27 06:50:19,278 - __main__ - WARNING - API request failed (attempt 1): 403 Client Error: Forbidden for url: https://api.polygon.io/v2/last/trade/X:ACSUSD?apikey=5NJm5do7SXXp9aOKcr28ppmVCJ57MdP7
+2025-08-27 06:50:20,559 - __main__ - WARNING - API request failed (attempt 2): 403 Client Error: Forbidden for url: https://api.polygon.io/v2/last/trade/X:ACSUSD?apikey=5NJm5do7SXXp9aOKcr28ppmVCJ57MdP7
+2025-08-27 16:48:20,575 - __main__ - INFO - CryptoDataCollector (Polygon.io) initialized successfully
+2025-08-27 16:48:20,575 - __main__ - INFO - Starting comprehensive data collection using Polygon.io API
+2025-08-27 16:48:20,575 - __main__ - INFO - Fetching available cryptocurrency tickers
+2025-08-27 16:48:21,645 - __main__ - INFO - Found 30 cryptocurrency tickers
+2025-08-27 16:48:21,645 - __main__ - INFO - Processing 30 cryptocurrency tickers
+2025-08-27 16:48:21,645 - __main__ - INFO - Processing X:AAVEUSD (1/30)
+2025-08-27 16:48:24,277 - __main__ - INFO - Saved historical data for X:AAVEUSD to crypto_data/historical/X_AAVEUSD_historical.csv
+2025-08-27 16:48:24,278 - __main__ - INFO - Processing X:ADAUSD (2/30)
+2025-08-27 16:48:26,613 - __main__ - INFO - Saved historical data for X:ADAUSD to crypto_data/historical/X_ADAUSD_historical.csv
+2025-08-27 16:48:26,613 - __main__ - INFO - Processing X:ALGOUSD (3/30)
+2025-08-27 16:48:27,801 - __main__ - WARNING - API request failed (attempt 1): 429 Client Error: Too Many Requests for url: https://api.polygon.io/v2/aggs/ticker/X:ALGOUSD/range/1/day/2024-08-27/2025-08-27?adjusted=true&sort=asc&limit=50000&apikey=5NJm5do7SXXp9aOKcr28ppmVCJ57MdP7
+2025-08-27 16:48:29,089 - __main__ - WARNING - API request failed (attempt 2): 429 Client Error: Too Many Requests for url: https://api.polygon.io/v2/aggs/ticker/X:ALGOUSD/range/1/day/2024-08-27/2025-08-27?adjusted=true&sort=asc&limit=50000&apikey=5NJm5do7SXXp9aOKcr28ppmVCJ57MdP7
+2025-08-27 16:48:31,348 - __main__ - WARNING - API request failed (attempt 3): 429 Client Error: Too Many Requests for url: https://api.polygon.io/v2/aggs/ticker/X:ALGOUSD/range/1/day/2024-08-27/2025-08-27?adjusted=true&sort=asc&limit=50000&apikey=5NJm5do7SXXp9aOKcr28ppmVCJ57MdP7
+2025-08-27 16:48:31,349 - __main__ - ERROR - All API request attempts failed for https://api.polygon.io/v2/aggs/ticker/X:ALGOUSD/range/1/day/2024-08-27/2025-08-27
+2025-08-27 16:48:31,349 - __main__ - WARNING - Failed to fetch daily bars for X:ALGOUSD
+2025-08-27 16:48:31,349 - __main__ - WARNING - Failed to get valid historical data for X:ALGOUSD
+2025-08-27 16:48:31,349 - __main__ - INFO - Processing X:ATOMUSD (4/30)
+2025-08-27 16:48:32,075 - __main__ - WARNING - API request failed (attempt 1): 429 Client Error: Too Many Requests for url: https://api.polygon.io/v2/aggs/ticker/X:ATOMUSD/prev?apikey=5NJm5do7SXXp9aOKcr28ppmVCJ57MdP7
+2025-08-27 16:48:33,330 - __main__ - WARNING - API request failed (attempt 2): 429 Client Error: Too Many Requests for url: https://api.polygon.io/v2/aggs/ticker/X:ATOMUSD/prev?apikey=5NJm5do7SXXp9aOKcr28ppmVCJ57MdP7
+2025-08-27 16:48:35,593 - __main__ - WARNING - API request failed (attempt 3): 429 Client Error: Too Many Requests for url: https://api.polygon.io/v2/aggs/ticker/X:ATOMUSD/prev?apikey=5NJm5do7SXXp9aOKcr28ppmVCJ57MdP7
+2025-08-27 16:48:35,593 - __main__ - ERROR - All API request attempts failed for https://api.polygon.io/v2/aggs/ticker/X:ATOMUSD/prev
+2025-08-27 16:48:35,593 - __main__ - WARNING - Failed to fetch previous close for X:ATOMUSD
+2025-08-27 16:48:35,593 - __main__ - WARNING - Invalid price data for X:ATOMUSD, using placeholder
+2025-08-27 16:48:35,852 - __main__ - WARNING - API request failed (attempt 1): 429 Client Error: Too Many Requests for url: https://api.polygon.io/v2/aggs/ticker/X:ATOMUSD/range/1/day/2024-08-27/2025-08-27?adjusted=true&sort=asc&limit=50000&apikey=5NJm5do7SXXp9aOKcr28ppmVCJ57MdP7
+2025-08-27 16:48:37,130 - __main__ - WARNING - API request failed (attempt 2): 429 Client Error: Too Many Requests for url: https://api.polygon.io/v2/aggs/ticker/X:ATOMUSD/range/1/day/2024-08-27/2025-08-27?adjusted=true&sort=asc&limit=50000&apikey=5NJm5do7SXXp9aOKcr28ppmVCJ57MdP7
+2025-08-27 16:48:39,390 - __main__ - WARNING - API request failed (attempt 3): 429 Client Error: Too Many Requests for url: https://api.polygon.io/v2/aggs/ticker/X:ATOMUSD/range/1/day/2024-08-27/2025-08-27?adjusted=true&sort=asc&limit=50000&apikey=5NJm5do7SXXp9aOKcr28ppmVCJ57MdP7
+2025-08-27 16:48:39,390 - __main__ - ERROR - All API request attempts failed for https://api.polygon.io/v2/aggs/ticker/X:ATOMUSD/range/1/day/2024-08-27/2025-08-27
+2025-08-27 16:48:39,391 - __main__ - WARNING - Failed to fetch daily bars for X:ATOMUSD
+2025-08-27 16:48:39,391 - __main__ - WARNING - Failed to get valid historical data for X:ATOMUSD
+2025-08-27 16:48:39,391 - __main__ - INFO - Processing X:AVAXUSD (5/30)
+2025-08-27 16:48:39,651 - __main__ - WARNING - API request failed (attempt 1): 429 Client Error: Too Many Requests for url: https://api.polygon.io/v3/reference/tickers/X:AVAXUSD?apikey=5NJm5do7SXXp9aOKcr28ppmVCJ57MdP7
+2025-08-27 16:48:40,932 - __main__ - WARNING - API request failed (attempt 2): 429 Client Error: Too Many Requests for url: https://api.polygon.io/v3/reference/tickers/X:AVAXUSD?apikey=5NJm5do7SXXp9aOKcr28ppmVCJ57MdP7
+2025-08-27 16:48:43,196 - __main__ - WARNING - API request failed (attempt 3): 429 Client Error: Too Many Requests for url: https://api.polygon.io/v3/reference/tickers/X:AVAXUSD?apikey=5NJm5do7SXXp9aOKcr28ppmVCJ57MdP7
+2025-08-27 16:48:43,196 - __main__ - ERROR - All API request attempts failed for https://api.polygon.io/v3/reference/tickers/X:AVAXUSD
+2025-08-27 16:48:43,196 - __main__ - WARNING - Failed to fetch details for ticker: X:AVAXUSD
+2025-08-27 16:48:43,196 - __main__ - WARNING - Invalid ticker details for X:AVAXUSD, skipping
+2025-08-27 16:48:43,197 - __main__ - INFO - Processing X:BATUSD (6/30)
+2025-08-27 16:48:43,452 - __main__ - WARNING - API request failed (attempt 1): 429 Client Error: Too Many Requests for url: https://api.polygon.io/v3/reference/tickers/X:BATUSD?apikey=5NJm5do7SXXp9aOKcr28ppmVCJ57MdP7
+2025-08-27 16:48:44,713 - __main__ - WARNING - API request failed (attempt 2): 429 Client Error: Too Many Requests for url: https://api.polygon.io/v3/reference/tickers/X:BATUSD?apikey=5NJm5do7SXXp9aOKcr28ppmVCJ57MdP7
+2025-08-27 16:48:46,969 - __main__ - WARNING - API request failed (attempt 3): 429 Client Error: Too Many Requests for url: https://api.polygon.io/v3/reference/tickers/X:BATUSD?apikey=5NJm5do7SXXp9aOKcr28ppmVCJ57MdP7
+2025-08-27 16:48:46,970 - __main__ - ERROR - All API request attempts failed for https://api.polygon.io/v3/reference/tickers/X:BATUSD
+2025-08-27 16:48:46,970 - __main__ - WARNING - Failed to fetch details for ticker: X:BATUSD
+2025-08-27 16:48:46,970 - __main__ - WARNING - Invalid ticker details for X:BATUSD, skipping
+2025-08-27 16:48:46,970 - __main__ - INFO - Processing X:BCHUSD (7/30)
+2025-08-27 16:48:47,238 - __main__ - WARNING - API request failed (attempt 1): 429 Client Error: Too Many Requests for url: https://api.polygon.io/v3/reference/tickers/X:BCHUSD?apikey=5NJm5do7SXXp9aOKcr28ppmVCJ57MdP7
+2025-08-27 16:48:48,501 - __main__ - WARNING - API request failed (attempt 2): 429 Client Error: Too Many Requests for url: https://api.polygon.io/v3/reference/tickers/X:BCHUSD?apikey=5NJm5do7SXXp9aOKcr28ppmVCJ57MdP7
+2025-08-27 16:48:50,759 - __main__ - WARNING - API request failed (attempt 3): 429 Client Error: Too Many Requests for url: https://api.polygon.io/v3/reference/tickers/X:BCHUSD?apikey=5NJm5do7SXXp9aOKcr28ppmVCJ57MdP7
+2025-08-27 16:48:50,759 - __main__ - ERROR - All API request attempts failed for https://api.polygon.io/v3/reference/tickers/X:BCHUSD
+2025-08-27 16:48:50,760 - __main__ - WARNING - Failed to fetch details for ticker: X:BCHUSD
+2025-08-27 16:48:50,760 - __main__ - WARNING - Invalid ticker details for X:BCHUSD, skipping
+2025-08-27 16:48:50,760 - __main__ - INFO - Processing X:BTCUSD (8/30)
+2025-08-27 16:48:51,072 - __main__ - WARNING - API request failed (attempt 1): 429 Client Error: Too Many Requests for url: https://api.polygon.io/v3/reference/tickers/X:BTCUSD?apikey=5NJm5do7SXXp9aOKcr28ppmVCJ57MdP7
+2025-08-27 16:48:52,427 - __main__ - WARNING - API request failed (attempt 2): 429 Client Error: Too Many Requests for url: https://api.polygon.io/v3/reference/tickers/X:BTCUSD?apikey=5NJm5do7SXXp9aOKcr28ppmVCJ57MdP7
+2025-08-27 16:48:54,686 - __main__ - WARNING - API request failed (attempt 3): 429 Client Error: Too Many Requests for url: https://api.polygon.io/v3/reference/tickers/X:BTCUSD?apikey=5NJm5do7SXXp9aOKcr28ppmVCJ57MdP7
+2025-08-27 16:48:54,687 - __main__ - ERROR - All API request attempts failed for https://api.polygon.io/v3/reference/tickers/X:BTCUSD
+2025-08-27 16:48:54,687 - __main__ - WARNING - Failed to fetch details for ticker: X:BTCUSD
+2025-08-27 16:48:54,687 - __main__ - WARNING - Invalid ticker details for X:BTCUSD, skipping
+2025-08-27 16:48:54,687 - __main__ - INFO - Processing X:COMPUSD (9/30)
+2025-08-27 16:48:54,939 - __main__ - WARNING - API request failed (attempt 1): 429 Client Error: Too Many Requests for url: https://api.polygon.io/v3/reference/tickers/X:COMPUSD?apikey=5NJm5do7SXXp9aOKcr28ppmVCJ57MdP7
+2025-08-27 16:48:56,227 - __main__ - WARNING - API request failed (attempt 2): 429 Client Error: Too Many Requests for url: https://api.polygon.io/v3/reference/tickers/X:COMPUSD?apikey=5NJm5do7SXXp9aOKcr28ppmVCJ57MdP7
+2025-08-27 16:48:58,487 - __main__ - WARNING - API request failed (attempt 3): 429 Client Error: Too Many Requests for url: https://api.polygon.io/v3/reference/tickers/X:COMPUSD?apikey=5NJm5do7SXXp9aOKcr28ppmVCJ57MdP7
+2025-08-27 16:48:58,487 - __main__ - ERROR - All API request attempts failed for https://api.polygon.io/v3/reference/tickers/X:COMPUSD
+2025-08-27 16:48:58,488 - __main__ - WARNING - Failed to fetch details for ticker: X:COMPUSD
+2025-08-27 16:48:58,488 - __main__ - WARNING - Invalid ticker details for X:COMPUSD, skipping
+2025-08-27 16:48:58,488 - __main__ - INFO - Processing X:CRVUSD (10/30)
+2025-08-27 16:48:58,740 - __main__ - WARNING - API request failed (attempt 1): 429 Client Error: Too Many Requests for url: https://api.polygon.io/v3/reference/tickers/X:CRVUSD?apikey=5NJm5do7SXXp9aOKcr28ppmVCJ57MdP7
+2025-08-27 16:49:01,308 - __main__ - INFO - Saved historical data for X:CRVUSD to crypto_data/historical/X_CRVUSD_historical.csv
+2025-08-27 16:49:01,309 - __main__ - INFO - Processing X:DOGEUSD (11/30)
+2025-08-27 16:49:02,901 - __main__ - INFO - Saved historical data for X:DOGEUSD to crypto_data/historical/X_DOGEUSD_historical.csv
+2025-08-27 16:49:02,901 - __main__ - INFO - Processing X:DOTUSD (12/30)
+2025-08-27 16:49:04,100 - __main__ - WARNING - API request failed (attempt 1): 429 Client Error: Too Many Requests for url: https://api.polygon.io/v2/aggs/ticker/X:DOTUSD/range/1/day/2024-08-27/2025-08-27?adjusted=true&sort=asc&limit=50000&apikey=5NJm5do7SXXp9aOKcr28ppmVCJ57MdP7
+2025-08-27 16:49:15,285 - __main__ - INFO - CryptoDataCollector (Polygon.io) initialized successfully
+2025-08-27 16:49:15,285 - __main__ - INFO - Starting comprehensive data collection using Polygon.io API
+2025-08-27 16:49:15,285 - __main__ - INFO - Fetching available cryptocurrency tickers
+2025-08-27 16:49:15,839 - __main__ - INFO - Found 30 cryptocurrency tickers
+2025-08-27 16:49:15,839 - __main__ - INFO - Processing 30 cryptocurrency tickers
+2025-08-27 16:49:15,839 - __main__ - INFO - Processing X:AAVEUSD (1/30)
+2025-08-27 16:49:16,552 - __main__ - WARNING - API request failed (attempt 1): 429 Client Error: Too Many Requests for url: https://api.polygon.io/v2/aggs/ticker/X:AAVEUSD/prev?apikey=5NJm5do7SXXp9aOKcr28ppmVCJ57MdP7
+2025-08-27 16:49:17,813 - __main__ - WARNING - API request failed (attempt 2): 429 Client Error: Too Many Requests for url: https://api.polygon.io/v2/aggs/ticker/X:AAVEUSD/prev?apikey=5NJm5do7SXXp9aOKcr28ppmVCJ57MdP7
+2025-08-27 16:52:53,101 - __main__ - INFO - CryptoDataCollector (Polygon.io) initialized successfully
+2025-08-27 16:52:53,102 - __main__ - INFO - Starting comprehensive data collection using Polygon.io API
+2025-08-27 16:52:53,102 - __main__ - INFO - Fetching available cryptocurrency tickers
+2025-08-27 16:52:53,672 - __main__ - INFO - Found 30 cryptocurrency tickers
+2025-08-27 16:52:53,672 - __main__ - INFO - Processing 30 cryptocurrency tickers
+2025-08-27 16:52:53,672 - __main__ - INFO - Processing X:AAVEUSD (1/30)
+2025-08-27 16:52:55,143 - __main__ - INFO - Saved historical data for X:AAVEUSD to crypto_data/historical/X_AAVEUSD_historical.csv
+2025-08-27 16:52:55,143 - __main__ - INFO - Processing X:ADAUSD (2/30)
+2025-08-27 16:52:56,680 - __main__ - INFO - Saved historical data for X:ADAUSD to crypto_data/historical/X_ADAUSD_historical.csv
+2025-08-27 16:52:56,680 - __main__ - INFO - Processing X:ALGOUSD (3/30)
+2025-08-27 16:52:58,144 - __main__ - INFO - Saved historical data for X:ALGOUSD to crypto_data/historical/X_ALGOUSD_historical.csv
+2025-08-27 16:52:58,144 - __main__ - INFO - Processing X:ATOMUSD (4/30)
+2025-08-27 16:52:59,662 - __main__ - INFO - Saved historical data for X:ATOMUSD to crypto_data/historical/X_ATOMUSD_historical.csv
+2025-08-27 16:52:59,662 - __main__ - INFO - Processing X:AVAXUSD (5/30)
+2025-08-27 16:53:01,156 - __main__ - INFO - Saved historical data for X:AVAXUSD to crypto_data/historical/X_AVAXUSD_historical.csv
+2025-08-27 16:53:01,156 - __main__ - INFO - Processing X:BATUSD (6/30)
+2025-08-27 16:53:02,689 - __main__ - INFO - Saved historical data for X:BATUSD to crypto_data/historical/X_BATUSD_historical.csv
+2025-08-27 16:53:02,689 - __main__ - INFO - Processing X:BCHUSD (7/30)
+2025-08-27 16:53:04,169 - __main__ - INFO - Saved historical data for X:BCHUSD to crypto_data/historical/X_BCHUSD_historical.csv
+2025-08-27 16:53:04,169 - __main__ - INFO - Processing X:BTCUSD (8/30)
+2025-08-27 16:53:05,702 - __main__ - INFO - Saved historical data for X:BTCUSD to crypto_data/historical/X_BTCUSD_historical.csv
+2025-08-27 16:53:05,702 - __main__ - INFO - Processing X:COMPUSD (9/30)
+2025-08-27 16:53:07,244 - __main__ - INFO - Saved historical data for X:COMPUSD to crypto_data/historical/X_COMPUSD_historical.csv
+2025-08-27 16:53:07,244 - __main__ - INFO - Processing X:CRVUSD (10/30)
+2025-08-27 16:53:08,695 - __main__ - INFO - Saved historical data for X:CRVUSD to crypto_data/historical/X_CRVUSD_historical.csv
+2025-08-27 16:53:08,695 - __main__ - INFO - Processing X:DOGEUSD (11/30)
+2025-08-27 16:53:10,157 - __main__ - INFO - Saved historical data for X:DOGEUSD to crypto_data/historical/X_DOGEUSD_historical.csv
+2025-08-27 16:53:10,158 - __main__ - INFO - Processing X:DOTUSD (12/30)
+2025-08-27 16:53:11,634 - __main__ - INFO - Saved historical data for X:DOTUSD to crypto_data/historical/X_DOTUSD_historical.csv
+2025-08-27 16:53:11,634 - __main__ - INFO - Processing X:ENJUSD (13/30)
+2025-08-27 16:53:13,137 - __main__ - INFO - Saved historical data for X:ENJUSD to crypto_data/historical/X_ENJUSD_historical.csv
+2025-08-27 16:53:13,137 - __main__ - INFO - Processing X:ETHUSD (14/30)
+2025-08-27 16:53:14,634 - __main__ - INFO - Saved historical data for X:ETHUSD to crypto_data/historical/X_ETHUSD_historical.csv
+2025-08-27 16:53:14,634 - __main__ - INFO - Processing X:FTTUSD (15/30)
+2025-08-27 16:53:16,039 - __main__ - WARNING - Failed to fetch daily bars for X:FTTUSD
+2025-08-27 16:53:16,039 - __main__ - WARNING - Failed to get valid historical data for X:FTTUSD
+2025-08-27 16:53:16,039 - __main__ - INFO - Processing X:LINKUSD (16/30)
+2025-08-27 16:53:17,533 - __main__ - INFO - Saved historical data for X:LINKUSD to crypto_data/historical/X_LINKUSD_historical.csv
+2025-08-27 16:53:17,533 - __main__ - INFO - Processing X:LTCUSD (17/30)
+2025-08-27 16:53:19,031 - __main__ - INFO - Saved historical data for X:LTCUSD to crypto_data/historical/X_LTCUSD_historical.csv
+2025-08-27 16:53:19,031 - __main__ - INFO - Processing X:MANAUSD (18/30)
+2025-08-27 16:53:20,502 - __main__ - INFO - Saved historical data for X:MANAUSD to crypto_data/historical/X_MANAUSD_historical.csv
+2025-08-27 16:53:20,502 - __main__ - INFO - Processing X:MATICUSD (19/30)
+2025-08-27 16:53:21,968 - __main__ - INFO - Saved historical data for X:MATICUSD to crypto_data/historical/X_MATICUSD_historical.csv
+2025-08-27 16:53:21,968 - __main__ - INFO - Processing X:MKRUSD (20/30)
+2025-08-27 16:53:23,479 - __main__ - INFO - Saved historical data for X:MKRUSD to crypto_data/historical/X_MKRUSD_historical.csv
+2025-08-27 16:53:23,479 - __main__ - INFO - Processing X:NEARUSD (21/30)
+2025-08-27 16:53:25,071 - __main__ - INFO - Saved historical data for X:NEARUSD to crypto_data/historical/X_NEARUSD_historical.csv
+2025-08-27 16:53:25,071 - __main__ - INFO - Processing X:SANDUSD (22/30)
+2025-08-27 16:53:26,540 - __main__ - INFO - Saved historical data for X:SANDUSD to crypto_data/historical/X_SANDUSD_historical.csv
+2025-08-27 16:53:26,540 - __main__ - INFO - Processing X:SNXUSD (23/30)
+2025-08-27 16:53:28,014 - __main__ - INFO - Saved historical data for X:SNXUSD to crypto_data/historical/X_SNXUSD_historical.csv
+2025-08-27 16:53:28,014 - __main__ - INFO - Processing X:SOLUSD (24/30)
+2025-08-27 16:53:29,481 - __main__ - INFO - Saved historical data for X:SOLUSD to crypto_data/historical/X_SOLUSD_historical.csv
+2025-08-27 16:53:29,481 - __main__ - INFO - Processing X:SUSHIUSD (25/30)
+2025-08-27 16:53:31,046 - __main__ - INFO - Saved historical data for X:SUSHIUSD to crypto_data/historical/X_SUSHIUSD_historical.csv
+2025-08-27 16:53:31,046 - __main__ - INFO - Processing X:UNIUSD (26/30)
+2025-08-27 16:53:32,542 - __main__ - INFO - Saved historical data for X:UNIUSD to crypto_data/historical/X_UNIUSD_historical.csv
+2025-08-27 16:53:32,542 - __main__ - INFO - Processing X:XLMUSD (27/30)
+2025-08-27 16:53:34,028 - __main__ - INFO - Saved historical data for X:XLMUSD to crypto_data/historical/X_XLMUSD_historical.csv
+2025-08-27 16:53:34,029 - __main__ - INFO - Processing X:XRPUSD (28/30)
+2025-08-27 16:53:35,550 - __main__ - INFO - Saved historical data for X:XRPUSD to crypto_data/historical/X_XRPUSD_historical.csv
+2025-08-27 16:53:35,550 - __main__ - INFO - Processing X:YFIUSD (29/30)
+2025-08-27 16:53:37,065 - __main__ - INFO - Saved historical data for X:YFIUSD to crypto_data/historical/X_YFIUSD_historical.csv
+2025-08-27 16:53:37,065 - __main__ - INFO - Processing X:ZRXUSD (30/30)
+2025-08-27 16:53:38,560 - __main__ - INFO - Saved historical data for X:ZRXUSD to crypto_data/historical/X_ZRXUSD_historical.csv
+2025-08-27 16:53:38,564 - __main__ - INFO - Saved daily snapshot to crypto_data/daily_snapshots/2025-08-27_snapshot.csv
+2025-08-27 16:53:38,564 - __main__ - INFO - Data collection completed successfully

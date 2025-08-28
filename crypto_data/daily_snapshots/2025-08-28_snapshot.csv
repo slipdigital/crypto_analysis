@@ -1,0 +1,31 @@
+date,rank,ticker,ticker_name,current_price,open_price,high_price,low_price,volume,volume_weighted_price,number_of_transactions,timestamp,market_status,type,active,currency_name,base_currency_symbol,base_currency_name
+2025-08-28,1,X:AAVEUSD,Aave - United States dollar,320.56,335.83,336.51,319.52,56261.75533854914,327.065,76161,1756339199999,,,True,United States dollar,AAVE,Aave
+2025-08-28,2,X:ADAUSD,Cardano - United States dollar,0.8508,0.8665,0.8791,0.8467,50700471.09104679,0.8639,108721,1756339199999,,,True,United States dollar,ADA,Cardano
+2025-08-28,3,X:ALGOUSD,Algorand - United States dollar,0.2473,0.25484,0.26006,0.2468,25289946.03250663,0.2522,23480,1756339199999,,,True,United States dollar,ALGO,Algorand
+2025-08-28,4,X:ATOMUSD,Cosmos - United States dollar,4.491,4.527,4.599,4.474,484454.2499999987,4.5344,12201,1756339199999,,,True,United States dollar,ATOM,Cosmos
+2025-08-28,5,X:AVAXUSD,Avalanche - United States dollar,24.42,24.18,25.358,23.86,664994.6850853268,24.7231,34865,1756339199999,,,True,United States dollar,AVAX,Avalanche
+2025-08-28,6,X:BATUSD,Basic Attention Token - United States dollar,0.15043,0.15037,0.15359,0.14829,509539.5362262738,0.1513,961,1756339199999,,,True,United States dollar,BAT,Basic Attention Token
+2025-08-28,7,X:BCHUSD,Bitcoin Cash - United States dollar,550.24,550.86,563.29,544.32,10658.841158111949,554.6086,18300,1756339199999,,,True,United States dollar,BCH,Bitcoin Cash
+2025-08-28,8,X:BTCUSD,Bitcoin - United States dollar,111470.0,112010.0,112850.0,110600.0,399.52496936000443,111643.5398,10087,1756339199999,,,True,United States dollar,BTC,Bitcoin
+2025-08-28,9,X:COMPUSD,Compound - United States dollar,43.9,44.58,45.076,43.76,34273.55224735903,44.3271,10677,1756339199999,,,True,United States dollar,COMP,Compound
+2025-08-28,10,X:CRVUSD,Curve DAO Token - United States dollar,0.8086,0.8077,0.838,0.801,8300827.398179306,0.8178,42189,1756339199999,,,True,United States dollar,CRV,Curve DAO Token
+2025-08-28,11,X:DOGEUSD,Dogecoin - United States dollar,0.21864,0.21854,0.22411,0.2166,803291.0844631299,0.2208,1280,1756339199999,,,True,United States dollar,DOGE,Dogecoin
+2025-08-28,12,X:DOTUSD,Polkadot - United States dollar,3.836,3.887,3.934,3.821,3521567.723910175,3.8783,35744,1756339199999,,,True,United States dollar,DOT,Polkadot
+2025-08-28,13,X:ENJUSD,Enjin Coin - United States dollar,0.0674,0.0682,0.09235,0.0668,373064.4138831205,0.07012,738,1756339199999,,,True,United States dollar,ENJ,Enjin Coin
+2025-08-28,14,X:ETHUSD,Ethereum - United States dollar,4506.95,4601.63,4670.0,4481.39,187530.16003732287,4594.4107,734575,1756339199999,,,True,United States dollar,ETH,Ethereum
+2025-08-28,15,X:FTTUSD,FTX Token - United States dollar,1.2402,1.2401,1.7,1.0994,6430.46440808,1.2404,184,1669766399999,,,True,United States dollar,FTT,FTX Token
+2025-08-28,16,X:LINKUSD,Chainlink - United States dollar,23.776,24.386,24.694,23.583,2557055.1642564903,24.2075,133249,1756339199999,,,True,United States dollar,LINK,Chainlink
+2025-08-28,17,X:LTCUSD,Litecoin - United States dollar,112.35,113.68,116.36,112.25,20221.31641566891,113.4322,5923,1756339199999,,,True,United States dollar,LTC,Litecoin
+2025-08-28,18,X:MANAUSD,Decentraland - United States dollar,0.2859,0.2878,0.2915,0.2838,1441348.5799999959,0.2875,2040,1756339199999,,,True,United States dollar,MANA,Decentraland
+2025-08-28,19,X:MATICUSD,Polygon - United States dollar,0.2404,0.2441,0.2463,0.2384,1988222.2000000088,0.2427,3106,1756339199999,,,True,United States dollar,MATIC,Polygon
+2025-08-28,20,X:MKRUSD,Maker - United States dollar,1588.75,1597.59,1628.5,1558.98,1276.11795154988,1591.1021,19444,1756339199999,,,True,United States dollar,MKR,Maker
+2025-08-28,21,X:NEARUSD,NEAR Protocol - United States dollar,2.518,2.526,2.577,2.496,1233557.3078002913,2.5321,13005,1756339199999,,,True,United States dollar,NEAR,NEAR Protocol
+2025-08-28,22,X:SANDUSD,The Sandbox - United States dollar,0.2793,0.2815,0.2861,0.2783,2032365.6735427668,0.282,8797,1756339199999,,,True,United States dollar,SAND,The Sandbox
+2025-08-28,23,X:SNXUSD,Synthetix - United States dollar,0.717,0.773,0.82,0.712,1764188.3680320513,0.7474,4814,1756339199999,,,True,United States dollar,SNX,Synthetix
+2025-08-28,24,X:SOLUSD,Solana - United States dollar,202.93,195.87,212.34,193.77,2673609.7083063573,205.5099,740176,1756339199999,,,True,United States dollar,SOL,Solana
+2025-08-28,25,X:SUSHIUSD,Sushi - United States dollar,0.7809,0.7852,0.8066,0.7744,1294499.7867428665,0.7874,8498,1756339199999,,,True,United States dollar,SUSHI,Sushi
+2025-08-28,26,X:UNIUSD,Uniswap - United States dollar,9.871,9.953,10.142,9.78,464118.5473261393,9.9602,41994,1756339199999,,,True,United States dollar,UNI,Uniswap
+2025-08-28,27,X:XLMUSD,Stellar - United States dollar,0.379008,0.394854,0.394942,0.377589,65230785.434377365,0.3853,93564,1756339199999,,,True,United States dollar,XLM,Stellar
+2025-08-28,28,X:XRPUSD,Ripple - United States dollar,2.9687,3.0128,3.0496,2.962,87330533.57653672,3.0053,313855,1756339199999,,,True,United States dollar,XRP,Ripple
+2025-08-28,29,X:YFIUSD,yearn.finance - United States dollar,5454.53,5524.35,5562.82,5433.01,39.84084302000028,5504.7199,1298,1756339199999,,,True,United States dollar,YFI,yearn.finance
+2025-08-28,30,X:ZRXUSD,0x - United States dollar,0.24933,0.248215,0.25438,0.24503,451026.0443285404,0.2497,868,1756339199999,,,True,United States dollar,ZRX,0x
