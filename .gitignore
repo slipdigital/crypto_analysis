@@ -1,0 +1,10 @@
+crypto_data/*
+*.env
+.DS_Store
+__pycache__/
+.ipynb_checkpoints/
+.vscode/
+.idea/
+*.pyc
+logs/
+config/settings.json
