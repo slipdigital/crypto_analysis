@@ -25,5 +25,11 @@
     "format": "%(asctime)s - %(name)s - %(levelname)s - %(message)s",
     "max_log_size_mb": 10,
     "backup_count": 5
+  },
+  "flask": {
+    "secret_key": "crypto-dashboard-secret-key-change-in-production",
+    "debug": true,
+    "host": "0.0.0.0",
+    "port": 5000
   }
 }

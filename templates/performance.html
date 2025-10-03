@@ -1,0 +1,584 @@
+{% extends "base.html" %}
+
+{% block title %}Performance Analysis - Crypto Dashboard{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <h1 class="mb-4">
+            <i class="fas fa-rocket me-2"></i>
+            Performance Analysis
+        </h1>
+    </div>
+</div>
+
+<!-- Performance Summary Cards -->
+<div class="row mb-4">
+    <div class="col-md-3 mb-3">
+        <div class="card bg-success text-white">
+            <div class="card-body text-center">
+                <h6 class="card-title">Positive Performers (7d)</h6>
+                <h3 class="mb-0" id="positive-performers">-</h3>
+                <small>out of top 10</small>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3 mb-3">
+        <div class="card bg-danger text-white">
+            <div class="card-body text-center">
+                <h6 class="card-title">Negative Performers (7d)</h6>
+                <h3 class="mb-0" id="negative-performers">-</h3>
+                <small>out of top 10</small>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3 mb-3">
+        <div class="card bg-primary text-white">
+            <div class="card-body text-center">
+                <h6 class="card-title">Best Performer</h6>
+                <h4 class="mb-0" id="best-performer">-</h4>
+                <small id="best-performer-change">-</small>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3 mb-3">
+        <div class="card bg-warning text-white">
+            <div class="card-body text-center">
+                <h6 class="card-title">Most Volatile</h6>
+                <h4 class="mb-0" id="most-volatile">-</h4>
+                <small id="most-volatile-value">-</small>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Time Period Filter -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body">
+                <div class="row align-items-center">
+                    <div class="col-md-6">
+                        <h6 class="mb-0">Filter by Time Period:</h6>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="btn-group w-100" role="group" id="period-filter">
+                            <input type="radio" class="btn-check" name="period" id="period-1d" value="1d">
+                            <label class="btn btn-outline-primary" for="period-1d">1 Day</label>
+                            
+                            <input type="radio" class="btn-check" name="period" id="period-3d" value="3d">
+                            <label class="btn btn-outline-primary" for="period-3d">3 Days</label>
+                            
+                            <input type="radio" class="btn-check" name="period" id="period-7d" value="7d" checked>
+                            <label class="btn btn-outline-primary" for="period-7d">7 Days</label>
+                            
+                            <input type="radio" class="btn-check" name="period" id="period-14d" value="14d">
+                            <label class="btn btn-outline-primary" for="period-14d">14 Days</label>
+                            
+                            <input type="radio" class="btn-check" name="period" id="period-30d" value="30d">
+                            <label class="btn btn-outline-primary" for="period-30d">30 Days</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Performance Table -->
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">
+                    <i class="fas fa-table me-2"></i>
+                    Performance Rankings
+                </h5>
+                <div class="d-flex gap-2">
+                    <button class="btn btn-sm btn-outline-primary" onclick="refreshPerformanceData()">
+                        <i class="fas fa-sync-alt me-1"></i>
+                        Refresh
+                    </button>
+                    <button class="btn btn-sm btn-outline-success" onclick="exportPerformanceData()">
+                        <i class="fas fa-download me-1"></i>
+                        Export CSV
+                    </button>
+                </div>
+            </div>
+            <div class="card-body">
+                <div id="performance-table-container">
+                    <div class="text-center py-5">
+                        <div class="spinner-border text-primary" role="status">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                        <p class="mt-3 text-muted">Loading performance data...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Performance Charts -->
+<div class="row mt-4">
+    <div class="col-lg-6 mb-4">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-chart-bar me-2"></i>
+                    Momentum Score Distribution
+                </h5>
+            </div>
+            <div class="card-body">
+                <div style="height: 300px;">
+                    <canvas id="momentum-chart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-lg-6 mb-4">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-chart-line me-2"></i>
+                    Performance Comparison
+                </h5>
+            </div>
+            <div class="card-body">
+                <div style="height: 300px;">
+                    <canvas id="performance-comparison-chart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Performance Insights -->
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-lightbulb me-2"></i>
+                    Performance Insights
+                </h5>
+            </div>
+            <div class="card-body">
+                <div id="performance-insights">
+                    <div class="text-center py-3">
+                        <div class="spinner-border text-secondary" role="status">
+                            <span class="visually-hidden">Loading insights...</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+let performanceData = [];
+let performanceTable;
+let momentumChart;
+let performanceComparisonChart;
+let currentPeriod = '7d';
+
+document.addEventListener('DOMContentLoaded', function() {
+    loadPerformanceData();
+    
+    // Add event listeners for period filter
+    document.querySelectorAll('input[name="period"]').forEach(radio => {
+        radio.addEventListener('change', function() {
+            currentPeriod = this.value;
+            updatePerformanceDisplay();
+        });
+    });
+});
+
+function loadPerformanceData() {
+    fetch('/api/performance')
+        .then(response => response.json())
+        .then(data => {
+            if (data.success && data.data.length > 0) {
+                performanceData = data.data;
+                updatePerformanceDisplay();
+                updateSummaryCards();
+                renderPerformanceCharts();
+                loadPerformanceInsights();
+            } else {
+                showPerformanceError('No performance data available. Please run data collection first.');
+            }
+        })
+        .catch(error => {
+            console.error('Error loading performance data:', error);
+            showPerformanceError('Error loading performance data: ' + error.message);
+        });
+}
+
+function updatePerformanceDisplay() {
+    if (performanceData.length === 0) return;
+    
+    // Sort by the selected period's performance
+    const sortedData = [...performanceData].sort((a, b) => {
+        const aChange = a[`${currentPeriod}_change`] || 0;
+        const bChange = b[`${currentPeriod}_change`] || 0;
+        return bChange - aChange;
+    });
+    
+    renderPerformanceTable(sortedData);
+}
+
+function renderPerformanceTable(data) {
+    let html = `
+        <div class="table-responsive">
+            <table id="performance-table" class="table table-hover">
+                <thead class="table-dark">
+                    <tr>
+                        <th>Rank</th>
+                        <th>Symbol</th>
+                        <th>Name</th>
+                        <th>Price</th>
+                        <th>Market Cap Rank</th>
+                        <th>1d</th>
+                        <th>3d</th>
+                        <th>7d</th>
+                        <th>14d</th>
+                        <th>30d</th>
+                        <th>Momentum</th>
+                        <th>Volatility</th>
+                    </tr>
+                </thead>
+                <tbody>
+    `;
+    
+    data.forEach((crypto, index) => {
+        html += `
+            <tr>
+                <td>
+                    <strong class="text-primary">#${index + 1}</strong>
+                </td>
+                <td>
+                    <strong class="text-primary">${crypto.symbol}</strong>
+                </td>
+                <td>
+                    <div>
+                        <strong>${crypto.name}</strong>
+                    </div>
+                </td>
+                <td>
+                    <strong>${crypto.price_formatted}</strong>
+                </td>
+                <td>
+                    <span class="badge bg-secondary">#${crypto.market_cap_rank}</span>
+                </td>
+                <td>
+                    <span class="badge bg-${crypto['1d_change_class']}">${crypto['1d_change_formatted']}</span>
+                </td>
+                <td>
+                    <span class="badge bg-${crypto['3d_change_class']}">${crypto['3d_change_formatted']}</span>
+                </td>
+                <td>
+                    <span class="badge bg-${crypto['7d_change_class']}">${crypto['7d_change_formatted']}</span>
+                </td>
+                <td>
+                    <span class="badge bg-${crypto['14d_change_class']}">${crypto['14d_change_formatted']}</span>
+                </td>
+                <td>
+                    <span class="badge bg-${crypto['30d_change_class']}">${crypto['30d_change_formatted']}</span>
+                </td>
+                <td>
+                    <span class="badge bg-info">${crypto.momentum_score}</span>
+                </td>
+                <td>
+                    <small class="text-muted">${crypto[`${currentPeriod}_volatility`]}%</small>
+                </td>
+            </tr>
+        `;
+    });
+    
+    html += `
+                </tbody>
+            </table>
+        </div>
+    `;
+    
+    document.getElementById('performance-table-container').innerHTML = html;
+    
+    // Initialize DataTable
+    if (performanceTable) {
+        performanceTable.destroy();
+    }
+    
+    performanceTable = $('#performance-table').DataTable({
+        pageLength: 10,
+        order: [[0, 'asc']], // Sort by rank
+        columnDefs: [
+            { orderable: false, targets: [1] }, // Disable sorting for symbol column
+            { type: 'num', targets: [0, 3, 4, 10] } // Numeric sorting
+        ],
+        language: {
+            search: "Search cryptocurrencies:",
+            lengthMenu: "Show _MENU_ entries per page",
+            info: "Showing _START_ to _END_ of _TOTAL_ entries"
+        }
+    });
+}
+
+function updateSummaryCards() {
+    if (performanceData.length === 0) return;
+    
+    // Count positive and negative performers for 7d
+    const positiveCount = performanceData.filter(crypto => crypto['7d_change'] > 0).length;
+    const negativeCount = performanceData.filter(crypto => crypto['7d_change'] < 0).length;
+    
+    // Find best performer
+    const bestPerformer = performanceData.reduce((best, crypto) => 
+        crypto['7d_change'] > best['7d_change'] ? crypto : best
+    );
+    
+    // Find most volatile
+    const mostVolatile = performanceData.reduce((most, crypto) => 
+        crypto['7d_volatility'] > most['7d_volatility'] ? crypto : most
+    );
+    
+    document.getElementById('positive-performers').textContent = positiveCount;
+    document.getElementById('negative-performers').textContent = negativeCount;
+    document.getElementById('best-performer').textContent = bestPerformer.symbol;
+    document.getElementById('best-performer-change').textContent = bestPerformer['7d_change_formatted'];
+    document.getElementById('most-volatile').textContent = mostVolatile.symbol;
+    document.getElementById('most-volatile-value').textContent = `${mostVolatile['7d_volatility']}% volatility`;
+}
+
+function renderPerformanceCharts() {
+    renderMomentumChart();
+    renderPerformanceComparisonChart();
+}
+
+function renderMomentumChart() {
+    const ctx = document.getElementById('momentum-chart').getContext('2d');
+    
+    if (momentumChart) {
+        momentumChart.destroy();
+    }
+    
+    const labels = performanceData.map(crypto => crypto.symbol);
+    const momentumScores = performanceData.map(crypto => crypto.momentum_score);
+    
+    momentumChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: labels,
+            datasets: [{
+                label: 'Momentum Score',
+                data: momentumScores,
+                backgroundColor: momentumScores.map(score => 
+                    score > 0 ? 'rgba(40, 167, 69, 0.6)' : 'rgba(220, 53, 69, 0.6)'
+                ),
+                borderColor: momentumScores.map(score => 
+                    score > 0 ? '#28a745' : '#dc3545'
+                ),
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    display: false
+                }
+            },
+            scales: {
+                y: {
+                    title: {
+                        display: true,
+                        text: 'Momentum Score'
+                    }
+                },
+                x: {
+                    title: {
+                        display: true,
+                        text: 'Cryptocurrency'
+                    }
+                }
+            }
+        }
+    });
+}
+
+function renderPerformanceComparisonChart() {
+    const ctx = document.getElementById('performance-comparison-chart').getContext('2d');
+    
+    if (performanceComparisonChart) {
+        performanceComparisonChart.destroy();
+    }
+    
+    const labels = performanceData.map(crypto => crypto.symbol);
+    const periods = ['1d', '3d', '7d', '14d', '30d'];
+    const colors = ['#007bff', '#28a745', '#ffc107', '#fd7e14', '#6f42c1'];
+    
+    const datasets = periods.map((period, index) => ({
+        label: period.toUpperCase(),
+        data: performanceData.map(crypto => crypto[`${period}_change`]),
+        borderColor: colors[index],
+        backgroundColor: 'transparent',
+        borderWidth: 2,
+        tension: 0.1
+    }));
+    
+    performanceComparisonChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: labels,
+            datasets: datasets
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    display: true,
+                    position: 'top'
+                }
+            },
+            scales: {
+                y: {
+                    title: {
+                        display: true,
+                        text: 'Price Change (%)'
+                    }
+                },
+                x: {
+                    title: {
+                        display: true,
+                        text: 'Cryptocurrency'
+                    }
+                }
+            }
+        }
+    });
+}
+
+function loadPerformanceInsights() {
+    const insights = generatePerformanceInsights();
+    document.getElementById('performance-insights').innerHTML = insights;
+}
+
+function generatePerformanceInsights() {
+    if (performanceData.length === 0) return '<p class="text-muted">No insights available</p>';
+    
+    const positiveCount7d = performanceData.filter(crypto => crypto['7d_change'] > 0).length;
+    const avgMomentum = (performanceData.reduce((sum, crypto) => sum + crypto.momentum_score, 0) / performanceData.length).toFixed(1);
+    
+    const bestPerformer = performanceData.reduce((best, crypto) => 
+        crypto['7d_change'] > best['7d_change'] ? crypto : best
+    );
+    
+    const worstPerformer = performanceData.reduce((worst, crypto) => 
+        crypto['7d_change'] < worst['7d_change'] ? crypto : worst
+    );
+    
+    return `
+        <div class="row">
+            <div class="col-md-6">
+                <h6><i class="fas fa-chart-line me-2 text-success"></i>Performance Highlights</h6>
+                <ul class="list-unstyled">
+                    <li><strong>Positive 7-day performers:</strong> ${positiveCount7d} out of ${performanceData.length}</li>
+                    <li><strong>Average momentum score:</strong> ${avgMomentum}</li>
+                    <li><strong>Best 7-day performer:</strong> ${bestPerformer.symbol} (${bestPerformer['7d_change_formatted']})</li>
+                    <li><strong>Worst 7-day performer:</strong> ${worstPerformer.symbol} (${worstPerformer['7d_change_formatted']})</li>
+                </ul>
+            </div>
+            <div class="col-md-6">
+                <h6><i class="fas fa-info-circle me-2 text-info"></i>About Performance Analysis</h6>
+                <ul class="list-unstyled">
+                    <li><strong>Momentum Score:</strong> Weighted combination of short-term gains, trend strength, and volatility</li>
+                    <li><strong>Volatility:</strong> Standard deviation of daily returns over the period</li>
+                    <li><strong>Trend Strength:</strong> Measures consistency of price direction (0-100%)</li>
+                </ul>
+            </div>
+        </div>
+        
+        <div class="mt-3">
+            <div class="alert alert-info">
+                <i class="fas fa-lightbulb me-2"></i>
+                <strong>Tip:</strong> Higher momentum scores indicate stronger short-term growth potential, 
+                but consider volatility and market cap rank for a complete analysis.
+            </div>
+        </div>
+    `;
+}
+
+function refreshPerformanceData() {
+    document.getElementById('performance-table-container').innerHTML = `
+        <div class="text-center py-5">
+            <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Refreshing...</span>
+            </div>
+            <p class="mt-3 text-muted">Refreshing performance data...</p>
+        </div>
+    `;
+    
+    loadPerformanceData();
+}
+
+function exportPerformanceData() {
+    if (performanceData.length === 0) {
+        alert('No data available to export');
+        return;
+    }
+    
+    // Create CSV content
+    const headers = [
+        'Symbol', 'Name', 'Price (USD)', 'Market Cap Rank', 'Momentum Score',
+        '1d Change (%)', '3d Change (%)', '7d Change (%)', '14d Change (%)', '30d Change (%)',
+        '7d Volatility (%)'
+    ];
+    
+    const csvContent = [
+        headers.join(','),
+        ...performanceData.map(crypto => [
+            crypto.symbol,
+            `"${crypto.name}"`,
+            crypto.current_price,
+            crypto.market_cap_rank,
+            crypto.momentum_score,
+            crypto['1d_change'],
+            crypto['3d_change'],
+            crypto['7d_change'],
+            crypto['14d_change'],
+            crypto['30d_change'],
+            crypto['7d_volatility']
+        ].join(','))
+    ].join('\n');
+    
+    // Download CSV
+    const blob = new Blob([csvContent], { type: 'text/csv' });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `performance_analysis_${new Date().toISOString().split('T')[0]}.csv`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    window.URL.revokeObjectURL(url);
+}
+
+function showPerformanceError(message) {
+    document.getElementById('performance-table-container').innerHTML = `
+        <div class="alert alert-danger text-center">
+            <i class="fas fa-exclamation-circle fa-3x mb-3"></i>
+            <h5>Error Loading Performance Data</h5>
+            <p>${message}</p>
+            <button class="btn btn-outline-danger" onclick="refreshPerformanceData()">
+                <i class="fas fa-retry me-1"></i>
+                Try Again
+            </button>
+        </div>
+    `;
+}
+</script>
+{% endblock %}

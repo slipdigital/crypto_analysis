@@ -1,0 +1,848 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - Crypto Dashboard{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <h1 class="mb-4">
+            <i class="fas fa-tachometer-alt me-2"></i>
+            Cryptocurrency Dashboard
+        </h1>
+    </div>
+</div>
+
+<!-- Summary Cards -->
+<div class="row mb-4">
+    <div class="col-md-3 mb-3">
+        <div class="card bg-primary text-white">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h6 class="card-title">Total Market Cap</h6>
+                        <h4 class="mb-0" id="total-market-cap">
+                            {{ market_summary.total_market_cap_formatted or '$0' }}
+                        </h4>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="fas fa-dollar-sign fa-2x"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3 mb-3">
+        <div class="card bg-success text-white">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h6 class="card-title">Cryptocurrencies</h6>
+                        <h4 class="mb-0" id="total-cryptos">
+                            {{ market_summary.total_cryptocurrencies or 0 }}
+                        </h4>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="fas fa-coins fa-2x"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3 mb-3">
+        <div class="card bg-warning text-white">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h6 class="card-title">Bitcoin Dominance</h6>
+                        <h4 class="mb-0" id="bitcoin-dominance">
+                            {{ market_summary.bitcoin_dominance or 0 }}%
+                        </h4>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="fab fa-bitcoin fa-2x"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3 mb-3">
+        <div class="card bg-info text-white">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h6 class="card-title">Top 10 Share</h6>
+                        <h4 class="mb-0" id="top-10-share">
+                            {{ market_summary.top_10_share or 0 }}%
+                        </h4>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="fas fa-chart-pie fa-2x"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Top Performers and Quick Charts -->
+<div class="row">
+    <!-- Top Performers -->
+    <div class="col-lg-6 mb-4">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">
+                    <i class="fas fa-rocket me-2"></i>
+                    Top Performers (7d)
+                </h5>
+                <div class="btn-group">
+                    <a href="{{ url_for('performance') }}" class="btn btn-sm btn-outline-primary">
+                        View All
+                    </a>
+                    <button class="btn btn-sm btn-outline-success" onclick="runBacktest()" id="backtest-btn">
+                        <i class="fas fa-play me-1"></i>
+                        Run Backtest
+                    </button>
+                    <button class="btn btn-sm btn-outline-info" onclick="runDataCollection()" id="data-collection-btn">
+                        <i class="fas fa-download me-1"></i>
+                        Collect Data
+                    </button>
+                    <button class="btn btn-sm btn-outline-warning" onclick="generateReports()" id="reports-btn">
+                        <i class="fas fa-file-alt me-1"></i>
+                        Generate Reports
+                    </button>
+                </div>
+            </div>
+            <div class="card-body">
+                {% if top_performers %}
+                <div class="table-responsive">
+                    <table class="table table-sm">
+                        <thead>
+                            <tr>
+                                <th>Rank</th>
+                                <th>Symbol</th>
+                                <th>Name</th>
+                                <th>Price</th>
+                                <th>7d Change</th>
+                                <th>Momentum</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for crypto in top_performers %}
+                            <tr>
+                                <td>{{ crypto.rank }}</td>
+                                <td>
+                                    <strong class="text-primary">{{ crypto.symbol }}</strong>
+                                </td>
+                                <td>{{ crypto.name[:20] }}{% if crypto.name|length > 20 %}...{% endif %}</td>
+                                <td>{{ crypto.price_formatted }}</td>
+                                <td>
+                                    <span class="badge bg-{{ crypto.change_7d_class }}">
+                                        {{ crypto.change_7d_formatted }}
+                                    </span>
+                                </td>
+                                <td>
+                                    <span class="badge bg-secondary">
+                                        {{ crypto.momentum_score }}
+                                    </span>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="text-center py-4">
+                    <i class="fas fa-chart-line fa-3x text-muted mb-3"></i>
+                    <p class="text-muted">No performance data available</p>
+                    <small class="text-muted">Run data collection to see performance metrics</small>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    
+    <!-- Market Overview Chart -->
+    <div class="col-lg-6 mb-4">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">
+                    <i class="fas fa-chart-area me-2"></i>
+                    Market Overview
+                </h5>
+                <a href="{{ url_for('charts') }}" class="btn btn-sm btn-outline-primary">
+                    View Charts
+                </a>
+            </div>
+            <div class="card-body">
+                <div style="height: 300px;">
+                    <canvas id="market-overview-chart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Background Tasks Status -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">
+                    <i class="fas fa-tasks me-2"></i>
+                    Background Tasks
+                </h5>
+                <button class="btn btn-sm btn-outline-secondary" onclick="refreshTasks()">
+                    <i class="fas fa-sync-alt me-1"></i>
+                    Refresh
+                </button>
+            </div>
+            <div class="card-body">
+                <div id="tasks-container">
+                    <div class="text-center py-3">
+                        <i class="fas fa-clock fa-2x text-muted mb-2"></i>
+                        <p class="text-muted mb-0">No background tasks running</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Market Cap Rankings Preview -->
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">
+                    <i class="fas fa-trophy me-2"></i>
+                    Market Cap Rankings
+                </h5>
+                <a href="{{ url_for('market_cap') }}" class="btn btn-sm btn-outline-primary">
+                    View Full Rankings
+                </a>
+            </div>
+            <div class="card-body">
+                <div id="market-cap-preview">
+                    <div class="text-center py-4">
+                        <div class="spinner-border text-primary" role="status">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                        <p class="mt-2 text-muted">Loading market cap data...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+let currentTaskId = null;
+let taskCheckInterval = null;
+
+document.addEventListener('DOMContentLoaded', function() {
+    // Load market cap preview
+    loadMarketCapPreview();
+    
+    // Load market overview chart
+    loadMarketOverviewChart();
+    
+    // Load background tasks
+    refreshTasks();
+    
+    // Refresh data every 5 minutes
+    setInterval(function() {
+        loadMarketCapPreview();
+        updateSummaryCards();
+        refreshTasks();
+    }, 300000);
+});
+
+function loadMarketCapPreview() {
+    fetch('/api/market-cap')
+        .then(response => response.json())
+        .then(data => {
+            if (data.success && data.data.length > 0) {
+                const preview = data.data.slice(0, 10); // Top 10
+                let html = `
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Rank</th>
+                                    <th>Symbol</th>
+                                    <th>Name</th>
+                                    <th>Price</th>
+                                    <th>Market Cap</th>
+                                    <th>24h Change</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                `;
+                
+                preview.forEach(crypto => {
+                    html += `
+                        <tr>
+                            <td><strong>#${crypto.rank}</strong></td>
+                            <td><strong class="text-primary">${crypto.symbol}</strong></td>
+                            <td>${crypto.name}</td>
+                            <td>${crypto.price_formatted}</td>
+                            <td>${crypto.market_cap_formatted}</td>
+                            <td>
+                                <span class="badge bg-${crypto.price_change_class}">
+                                    ${crypto.price_change_24h_formatted}
+                                </span>
+                            </td>
+                        </tr>
+                    `;
+                });
+                
+                html += `
+                            </tbody>
+                        </table>
+                    </div>
+                `;
+                
+                document.getElementById('market-cap-preview').innerHTML = html;
+            } else {
+                document.getElementById('market-cap-preview').innerHTML = `
+                    <div class="text-center py-4">
+                        <i class="fas fa-exclamation-triangle fa-3x text-warning mb-3"></i>
+                        <p class="text-muted">No market cap data available</p>
+                        <small class="text-muted">Please run data collection first</small>
+                    </div>
+                `;
+            }
+        })
+        .catch(error => {
+            console.error('Error loading market cap preview:', error);
+            document.getElementById('market-cap-preview').innerHTML = `
+                <div class="text-center py-4">
+                    <i class="fas fa-exclamation-circle fa-3x text-danger mb-3"></i>
+                    <p class="text-danger">Error loading market cap data</p>
+                    <small class="text-muted">${error.message}</small>
+                </div>
+            `;
+        });
+}
+
+function loadMarketOverviewChart() {
+    const ctx = document.getElementById('market-overview-chart').getContext('2d');
+    
+    // Get data from API instead of template variables
+    fetch('/api/summary')
+        .then(response => response.json())
+        .then(data => {
+            if (data.success && data.data.market_summary) {
+                const summary = data.data.market_summary;
+                const bitcoinDominance = summary.bitcoin_dominance || 0;
+                const top10Share = summary.top_10_share || 0;
+                const ethereumShare = Math.max(0, top10Share - bitcoinDominance);
+                const othersShare = Math.max(0, 100 - top10Share);
+                
+                // Create chart
+                new Chart(ctx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: ['Bitcoin', 'Ethereum', 'Others'],
+                        datasets: [{
+                            data: [bitcoinDominance, ethereumShare, othersShare],
+                            backgroundColor: [
+                                '#f7931a',
+                                '#627eea',
+                                '#6c757d'
+                            ],
+                            borderWidth: 2,
+                            borderColor: '#fff'
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                position: 'bottom'
+                            },
+                            tooltip: {
+                                callbacks: {
+                                    label: function(context) {
+                                        return context.label + ': ' + context.parsed.toFixed(1) + '%';
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+        })
+        .catch(error => {
+            console.error('Error loading market overview chart:', error);
+        });
+}
+
+function updateSummaryCards() {
+    fetch('/api/summary')
+        .then(response => response.json())
+        .then(data => {
+            if (data.success && data.data.market_summary) {
+                const summary = data.data.market_summary;
+                
+                if (summary.total_market_cap_formatted) {
+                    document.getElementById('total-market-cap').textContent = summary.total_market_cap_formatted;
+                }
+                if (summary.total_cryptocurrencies) {
+                    document.getElementById('total-cryptos').textContent = summary.total_cryptocurrencies;
+                }
+                if (summary.bitcoin_dominance) {
+                    document.getElementById('bitcoin-dominance').textContent = summary.bitcoin_dominance + '%';
+                }
+                if (summary.top_10_share) {
+                    document.getElementById('top-10-share').textContent = summary.top_10_share + '%';
+                }
+            }
+        })
+        .catch(error => {
+            console.error('Error updating summary cards:', error);
+        });
+}
+
+// Background Task Functions
+function runBacktest() {
+    const button = document.getElementById('backtest-btn');
+    
+    // Disable button and show loading state
+    button.disabled = true;
+    button.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span>Starting...';
+    
+    fetch('/api/run-backtest', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            currentTaskId = data.task_id;
+            
+            // Show success message
+            showToast('Backtest started successfully!', 'success');
+            
+            // Start monitoring the task
+            startTaskMonitoring(data.task_id);
+            
+            // Refresh tasks display
+            refreshTasks();
+        } else {
+            showToast('Failed to start backtest: ' + (data.error || 'Unknown error'), 'danger');
+        }
+    })
+    .catch(error => {
+        console.error('Error starting backtest:', error);
+        showToast('Error starting backtest: ' + error.message, 'danger');
+    })
+    .finally(() => {
+        // Re-enable button
+        button.disabled = false;
+        button.innerHTML = '<i class="fas fa-play me-1"></i>Run Backtest';
+    });
+}
+
+function runDataCollection() {
+    const button = document.getElementById('data-collection-btn');
+    
+    // Disable button and show loading state
+    button.disabled = true;
+    button.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span>Starting...';
+    
+    fetch('/api/run-data-collection', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            force_update: false
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            // Show success message
+            showToast('Data collection started successfully!', 'success');
+            
+            // Start monitoring the task
+            startTaskMonitoring(data.task_id);
+            
+            // Refresh tasks display
+            refreshTasks();
+        } else {
+            showToast('Failed to start data collection: ' + (data.error || 'Unknown error'), 'danger');
+        }
+    })
+    .catch(error => {
+        console.error('Error starting data collection:', error);
+        showToast('Error starting data collection: ' + error.message, 'danger');
+    })
+    .finally(() => {
+        // Re-enable button
+        button.disabled = false;
+        button.innerHTML = '<i class="fas fa-download me-1"></i>Collect Data';
+    });
+}
+
+function generateReports() {
+    const button = document.getElementById('reports-btn');
+    
+    // Disable button and show loading state
+    button.disabled = true;
+    button.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span>Starting...';
+    
+    fetch('/api/generate-reports', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            report_types: ['market_cap', 'performance']
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            // Show success message
+            showToast('Report generation started successfully!', 'success');
+            
+            // Start monitoring the task
+            startTaskMonitoring(data.task_id);
+            
+            // Refresh tasks display
+            refreshTasks();
+        } else {
+            showToast('Failed to start report generation: ' + (data.error || 'Unknown error'), 'danger');
+        }
+    })
+    .catch(error => {
+        console.error('Error starting report generation:', error);
+        showToast('Error starting report generation: ' + error.message, 'danger');
+    })
+    .finally(() => {
+        // Re-enable button
+        button.disabled = false;
+        button.innerHTML = '<i class="fas fa-file-alt me-1"></i>Generate Reports';
+    });
+}
+
+function startTaskMonitoring(taskId) {
+    // Clear any existing interval
+    if (taskCheckInterval) {
+        clearInterval(taskCheckInterval);
+    }
+    
+    // Check task status every 2 seconds
+    taskCheckInterval = setInterval(() => {
+        checkTaskStatus(taskId);
+    }, 2000);
+}
+
+function checkTaskStatus(taskId) {
+    fetch(`/api/task-status/${taskId}`)
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                const task = data.task;
+                
+                // Update task display
+                updateTaskDisplay(task);
+                
+                // If task is completed or failed, stop monitoring
+                if (task.status === 'completed' || task.status === 'failed') {
+                    clearInterval(taskCheckInterval);
+                    taskCheckInterval = null;
+                    
+                    if (task.status === 'completed') {
+                        showToast('Backtest completed successfully!', 'success');
+                    } else {
+                        showToast('Backtest failed: ' + (task.error || 'Unknown error'), 'danger');
+                    }
+                    
+                    // Refresh tasks display
+                    setTimeout(() => {
+                        refreshTasks();
+                    }, 1000);
+                }
+            }
+        })
+        .catch(error => {
+            console.error('Error checking task status:', error);
+        });
+}
+
+function refreshTasks() {
+    fetch('/api/tasks')
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                displayTasks(data.tasks);
+            } else {
+                console.error('Error loading tasks:', data.error);
+            }
+        })
+        .catch(error => {
+            console.error('Error loading tasks:', error);
+        });
+}
+
+function displayTasks(tasks) {
+    const container = document.getElementById('tasks-container');
+    
+    if (!tasks || tasks.length === 0) {
+        container.innerHTML = `
+            <div class="text-center py-3">
+                <i class="fas fa-clock fa-2x text-muted mb-2"></i>
+                <p class="text-muted mb-0">No background tasks</p>
+            </div>
+        `;
+        return;
+    }
+    
+    let html = '';
+    
+    tasks.forEach(task => {
+        const statusClass = getTaskStatusClass(task.status);
+        const statusIcon = getTaskStatusIcon(task.status);
+        const taskName = task.name ? task.name.split('.').pop() : 'Unknown';
+        const taskId = task.id || 'unknown';
+        const shortTaskId = taskId.substring(0, 8);
+        
+        // Handle different task formats (legacy vs Celery)
+        const progress = task.progress || 0;
+        const message = task.message || 'Task running...';
+        const worker = task.worker || 'N/A';
+        const startTime = task.start_time || task.time_start;
+        
+        html += `
+            <div class="card mb-2">
+                <div class="card-body py-2">
+                    <div class="row align-items-center">
+                        <div class="col-md-3">
+                            <small class="text-muted">Task:</small><br>
+                            <strong class="small">${taskName}</strong><br>
+                            <code class="small">${shortTaskId}...</code>
+                        </div>
+                        <div class="col-md-2">
+                            <small class="text-muted">Status:</small><br>
+                            <span class="badge bg-${statusClass}">
+                                <i class="fas fa-${statusIcon} me-1"></i>
+                                ${task.status.charAt(0).toUpperCase() + task.status.slice(1)}
+                            </span>
+                        </div>
+                        <div class="col-md-3">
+                            <small class="text-muted">Progress:</small><br>
+                            <div class="progress" style="height: 18px;">
+                                <div class="progress-bar bg-${statusClass}"
+                                     style="width: ${progress}%"
+                                     aria-valuenow="${progress}"
+                                     aria-valuemin="0"
+                                     aria-valuemax="100">
+                                    ${progress}%
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-2">
+                            <small class="text-muted">Worker:</small><br>
+                            <span class="small">${worker}</span>
+                        </div>
+                        <div class="col-md-2">
+                            <div class="btn-group-vertical w-100">
+                                ${(task.status === 'running' || task.status === 'scheduled') ? `
+                                    <button class="btn btn-sm btn-outline-danger" onclick="cancelTask('${taskId}')">
+                                        <i class="fas fa-times me-1"></i>
+                                        Cancel
+                                    </button>
+                                ` : ''}
+                                ${task.status === 'completed' && task.results ? `
+                                    <button class="btn btn-sm btn-outline-info" onclick="showTaskResults('${taskId}')">
+                                        <i class="fas fa-eye me-1"></i>
+                                        Results
+                                    </button>
+                                ` : ''}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row mt-2">
+                        <div class="col-12">
+                            <small class="text-muted">Status:</small>
+                            <span class="small">${message}</span>
+                        </div>
+                    </div>
+                    ${task.error ? `
+                        <div class="row mt-2">
+                            <div class="col-12">
+                                <div class="alert alert-danger py-1 mb-0">
+                                    <small><strong>Error:</strong> ${task.error}</small>
+                                </div>
+                            </div>
+                        </div>
+                    ` : ''}
+                </div>
+            </div>
+        `;
+    });
+    
+    container.innerHTML = html;
+}
+
+function cancelTask(taskId) {
+    if (!confirm('Are you sure you want to cancel this task?')) {
+        return;
+    }
+    
+    fetch(`/api/cancel-task/${taskId}`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            showToast('Task cancelled successfully', 'warning');
+            refreshTasks();
+        } else {
+            showToast('Failed to cancel task: ' + (data.error || 'Unknown error'), 'danger');
+        }
+    })
+    .catch(error => {
+        console.error('Error cancelling task:', error);
+        showToast('Error cancelling task: ' + error.message, 'danger');
+    });
+}
+
+function updateTaskDisplay(task) {
+    // This function updates a specific task in the display
+    // For now, we'll just refresh all tasks
+    refreshTasks();
+}
+
+function getTaskStatusClass(status) {
+    switch (status) {
+        case 'completed': return 'success';
+        case 'failed': return 'danger';
+        case 'running': return 'primary';
+        case 'starting': return 'info';
+        default: return 'secondary';
+    }
+}
+
+function getTaskStatusIcon(status) {
+    switch (status) {
+        case 'completed': return 'check';
+        case 'failed': return 'times';
+        case 'running': return 'spinner fa-spin';
+        case 'starting': return 'clock';
+        default: return 'question';
+    }
+}
+
+function calculateDuration(startTime, endTime) {
+    const start = new Date(startTime);
+    const end = new Date(endTime);
+    const diff = Math.abs(end - start);
+    
+    const minutes = Math.floor(diff / 60000);
+    const seconds = Math.floor((diff % 60000) / 1000);
+    
+    if (minutes > 0) {
+        return `${minutes}m ${seconds}s`;
+    } else {
+        return `${seconds}s`;
+    }
+}
+
+function showTaskResults(taskId) {
+    fetch(`/api/task-status/${taskId}`)
+        .then(response => response.json())
+        .then(data => {
+            if (data.success && data.task.results) {
+                const results = data.task.results;
+                
+                // Create modal to show results
+                const modal = document.createElement('div');
+                modal.className = 'modal fade';
+                modal.innerHTML = `
+                    <div class="modal-dialog modal-lg">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title">
+                                    <i class="fas fa-chart-line me-2"></i>
+                                    Backtest Results - ${taskId}
+                                </h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                            </div>
+                            <div class="modal-body">
+                                <pre class="bg-light p-3 rounded" style="max-height: 400px; overflow-y: auto;">${results.output}</pre>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                
+                document.body.appendChild(modal);
+                
+                const bsModal = new bootstrap.Modal(modal);
+                bsModal.show();
+                
+                // Remove modal from DOM after hiding
+                modal.addEventListener('hidden.bs.modal', () => {
+                    modal.remove();
+                });
+            }
+        })
+        .catch(error => {
+            console.error('Error loading task results:', error);
+            showToast('Error loading task results', 'danger');
+        });
+}
+
+function showToast(message, type = 'info') {
+    // Create toast container if it doesn't exist
+    let toastContainer = document.getElementById('toast-container');
+    if (!toastContainer) {
+        toastContainer = document.createElement('div');
+        toastContainer.id = 'toast-container';
+        toastContainer.className = 'toast-container position-fixed top-0 end-0 p-3';
+        toastContainer.style.zIndex = '9999';
+        document.body.appendChild(toastContainer);
+    }
+    
+    // Create toast
+    const toast = document.createElement('div');
+    toast.className = `toast align-items-center text-white bg-${type} border-0`;
+    toast.setAttribute('role', 'alert');
+    toast.innerHTML = `
+        <div class="d-flex">
+            <div class="toast-body">
+                ${message}
+            </div>
+            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+        </div>
+    `;
+    
+    toastContainer.appendChild(toast);
+    
+    const bsToast = new bootstrap.Toast(toast);
+    bsToast.show();
+    
+    // Remove from DOM after hiding
+    toast.addEventListener('hidden.bs.toast', () => {
+        toast.remove();
+    });
+}
+</script>
+{% endblock %}

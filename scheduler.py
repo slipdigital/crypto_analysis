@@ -9,7 +9,7 @@ import logging
 import os
 import sys
 from datetime import datetime
-from crypto_collector import CryptoDataCollector
+from backtest.crypto_collector import CryptoDataCollector
 
 
 class CryptoScheduler:

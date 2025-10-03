@@ -1,0 +1,645 @@
+{% extends "base.html" %}
+
+{% block title %}Price Charts - Crypto Dashboard{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <h1 class="mb-4">
+            <i class="fas fa-chart-area me-2"></i>
+            Price Charts
+        </h1>
+    </div>
+</div>
+
+<!-- Chart Controls -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body">
+                <div class="row align-items-center">
+                    <div class="col-md-4">
+                        <label for="crypto-select" class="form-label">Select Cryptocurrency:</label>
+                        <select id="crypto-select" class="form-select">
+                            <option value="">Choose a cryptocurrency...</option>
+                            {% for crypto in cryptocurrencies %}
+                            <option value="{{ crypto.symbol }}" data-ticker="{{ crypto.ticker }}">
+                                {{ crypto.symbol }} - {{ crypto.name }}
+                            </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <label for="period-select" class="form-label">Time Period:</label>
+                        <select id="period-select" class="form-select">
+                            <option value="7d">7 Days</option>
+                            <option value="30d" selected>30 Days</option>
+                            <option value="90d">90 Days</option>
+                            <option value="1y">1 Year</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <label for="chart-type-select" class="form-label">Chart Type:</label>
+                        <select id="chart-type-select" class="form-select">
+                            <option value="line" selected>Line Chart</option>
+                            <option value="candlestick">Candlestick</option>
+                            <option value="volume">Volume</option>
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <label class="form-label">&nbsp;</label>
+                        <button id="load-chart-btn" class="btn btn-primary w-100" onclick="loadChart()">
+                            <i class="fas fa-chart-line me-1"></i>
+                            Load Chart
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Price Information -->
+<div class="row mb-4" id="price-info" style="display: none;">
+    <div class="col-md-3 mb-3">
+        <div class="card bg-primary text-white">
+            <div class="card-body text-center">
+                <h6 class="card-title">Current Price</h6>
+                <h4 class="mb-0" id="current-price">$0.00</h4>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3 mb-3">
+        <div class="card" id="price-change-card">
+            <div class="card-body text-center">
+                <h6 class="card-title">Price Change</h6>
+                <h4 class="mb-0" id="price-change">0.00%</h4>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3 mb-3">
+        <div class="card bg-success text-white">
+            <div class="card-body text-center">
+                <h6 class="card-title">Period High</h6>
+                <h4 class="mb-0" id="period-high">$0.00</h4>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3 mb-3">
+        <div class="card bg-danger text-white">
+            <div class="card-body text-center">
+                <h6 class="card-title">Period Low</h6>
+                <h4 class="mb-0" id="period-low">$0.00</h4>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Main Chart -->
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="mb-0" id="chart-title">
+                    <i class="fas fa-chart-line me-2"></i>
+                    Select a cryptocurrency to view chart
+                </h5>
+                <div class="btn-group" role="group">
+                    <button type="button" class="btn btn-sm btn-outline-secondary" onclick="toggleFullscreen()">
+                        <i class="fas fa-expand me-1"></i>
+                        Fullscreen
+                    </button>
+                    <button type="button" class="btn btn-sm btn-outline-secondary" onclick="downloadChart()">
+                        <i class="fas fa-download me-1"></i>
+                        Download
+                    </button>
+                </div>
+            </div>
+            <div class="card-body">
+                <div id="chart-container" style="height: 500px;">
+                    <div class="d-flex align-items-center justify-content-center h-100">
+                        <div class="text-center">
+                            <i class="fas fa-chart-line fa-4x text-muted mb-3"></i>
+                            <h5 class="text-muted">No Chart Data</h5>
+                            <p class="text-muted">Select a cryptocurrency and click "Load Chart" to view price data</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Volume Chart (for candlestick view) -->
+<div class="row mt-4" id="volume-chart-row" style="display: none;">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-chart-bar me-2"></i>
+                    Volume
+                </h5>
+            </div>
+            <div class="card-body">
+                <div id="volume-chart-container" style="height: 200px;">
+                    <canvas id="volume-chart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Chart Comparison -->
+<div class="row mt-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-balance-scale me-2"></i>
+                    Compare Cryptocurrencies
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="row mb-3">
+                    <div class="col-md-8">
+                        <label for="comparison-select" class="form-label">Select cryptocurrencies to compare:</label>
+                        <select id="comparison-select" class="form-select" multiple>
+                            {% for crypto in cryptocurrencies %}
+                            <option value="{{ crypto.symbol }}">{{ crypto.symbol }} - {{ crypto.name }}</option>
+                            {% endfor %}
+                        </select>
+                        <small class="text-muted">Hold Ctrl/Cmd to select multiple cryptocurrencies</small>
+                    </div>
+                    <div class="col-md-2">
+                        <label for="comparison-period" class="form-label">Period:</label>
+                        <select id="comparison-period" class="form-select">
+                            <option value="7d">7 Days</option>
+                            <option value="30d" selected>30 Days</option>
+                            <option value="90d">90 Days</option>
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <label class="form-label">&nbsp;</label>
+                        <button class="btn btn-success w-100" onclick="loadComparisonChart()">
+                            <i class="fas fa-chart-line me-1"></i>
+                            Compare
+                        </button>
+                    </div>
+                </div>
+                <div id="comparison-chart-container" style="height: 400px;">
+                    <div class="d-flex align-items-center justify-content-center h-100">
+                        <div class="text-center">
+                            <i class="fas fa-balance-scale fa-4x text-muted mb-3"></i>
+                            <h5 class="text-muted">No Comparison Data</h5>
+                            <p class="text-muted">Select multiple cryptocurrencies to compare their performance</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+let currentChart = null;
+let volumeChart = null;
+let comparisonChart = null;
+
+document.addEventListener('DOMContentLoaded', function() {
+    // Auto-load first cryptocurrency if available
+    const cryptoSelect = document.getElementById('crypto-select');
+    if (cryptoSelect.options.length > 1) {
+        cryptoSelect.selectedIndex = 1; // Select first crypto (skip the placeholder)
+        loadChart();
+    }
+});
+
+function loadChart() {
+    const cryptoSelect = document.getElementById('crypto-select');
+    const periodSelect = document.getElementById('period-select');
+    const chartTypeSelect = document.getElementById('chart-type-select');
+    
+    const symbol = cryptoSelect.value;
+    const period = periodSelect.value;
+    const chartType = chartTypeSelect.value;
+    
+    if (!symbol) {
+        alert('Please select a cryptocurrency');
+        return;
+    }
+    
+    // Show loading state
+    document.getElementById('chart-container').innerHTML = `
+        <div class="d-flex align-items-center justify-content-center h-100">
+            <div class="text-center">
+                <div class="spinner-border text-primary mb-3" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+                <h5 class="text-muted">Loading Chart Data</h5>
+                <p class="text-muted">Fetching ${symbol} price data...</p>
+            </div>
+        </div>
+    `;
+    
+    // Update chart title
+    const cryptoName = cryptoSelect.options[cryptoSelect.selectedIndex].text;
+    document.getElementById('chart-title').innerHTML = `
+        <i class="fas fa-chart-line me-2"></i>
+        ${cryptoName} - ${period.toUpperCase()} ${chartType.charAt(0).toUpperCase() + chartType.slice(1)} Chart
+    `;
+    
+    // Fetch chart data
+    fetch(`/api/chart-data/${symbol}?type=${chartType}&period=${period}`)
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                renderChart(data.data, chartType);
+                updatePriceInfo(data.data);
+            } else {
+                showChartError(data.error || 'Failed to load chart data');
+            }
+        })
+        .catch(error => {
+            console.error('Error loading chart:', error);
+            showChartError('Error loading chart: ' + error.message);
+        });
+}
+
+function renderChart(data, chartType) {
+    const container = document.getElementById('chart-container');
+    container.innerHTML = '<canvas id="price-chart"></canvas>';
+    
+    const ctx = document.getElementById('price-chart').getContext('2d');
+    
+    // Destroy existing chart
+    if (currentChart) {
+        currentChart.destroy();
+    }
+    
+    let chartConfig;
+    
+    if (chartType === 'line') {
+        chartConfig = {
+            type: 'line',
+            data: {
+                datasets: [{
+                    label: `${data.symbol} Price`,
+                    data: data.data,
+                    borderColor: '#007bff',
+                    backgroundColor: 'rgba(0, 123, 255, 0.1)',
+                    borderWidth: 2,
+                    fill: true,
+                    tension: 0.1
+                }]
+            },
+            options: getChartOptions('Price (USD)')
+        };
+    } else if (chartType === 'volume') {
+        chartConfig = {
+            type: 'bar',
+            data: {
+                datasets: [{
+                    label: `${data.symbol} Volume`,
+                    data: data.data,
+                    backgroundColor: 'rgba(40, 167, 69, 0.6)',
+                    borderColor: '#28a745',
+                    borderWidth: 1
+                }]
+            },
+            options: getChartOptions('Volume')
+        };
+    } else if (chartType === 'candlestick') {
+        // For candlestick, we'll use a line chart as a simplified version
+        // In a real implementation, you'd use a specialized candlestick library
+        chartConfig = {
+            type: 'line',
+            data: {
+                datasets: [
+                    {
+                        label: `${data.symbol} High`,
+                        data: data.data.map(d => ({x: d.x, y: d.h})),
+                        borderColor: '#28a745',
+                        backgroundColor: 'transparent',
+                        borderWidth: 1,
+                        pointRadius: 0
+                    },
+                    {
+                        label: `${data.symbol} Low`,
+                        data: data.data.map(d => ({x: d.x, y: d.l})),
+                        borderColor: '#dc3545',
+                        backgroundColor: 'transparent',
+                        borderWidth: 1,
+                        pointRadius: 0
+                    },
+                    {
+                        label: `${data.symbol} Close`,
+                        data: data.data.map(d => ({x: d.x, y: d.c})),
+                        borderColor: '#007bff',
+                        backgroundColor: 'rgba(0, 123, 255, 0.1)',
+                        borderWidth: 2,
+                        fill: false
+                    }
+                ]
+            },
+            options: getChartOptions('Price (USD)')
+        };
+    }
+    
+    currentChart = new Chart(ctx, chartConfig);
+    
+    // Show volume chart for candlestick view
+    if (chartType === 'candlestick' && data.period_volume) {
+        document.getElementById('volume-chart-row').style.display = 'block';
+        renderVolumeChart(data);
+    } else {
+        document.getElementById('volume-chart-row').style.display = 'none';
+    }
+}
+
+function renderVolumeChart(data) {
+    const ctx = document.getElementById('volume-chart').getContext('2d');
+    
+    if (volumeChart) {
+        volumeChart.destroy();
+    }
+    
+    volumeChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            datasets: [{
+                label: 'Volume',
+                data: data.data.map(d => ({x: d.x, y: d.volume || 0})),
+                backgroundColor: 'rgba(108, 117, 125, 0.6)',
+                borderColor: '#6c757d',
+                borderWidth: 1
+            }]
+        },
+        options: getChartOptions('Volume')
+    });
+}
+
+function getChartOptions(yAxisLabel) {
+    return {
+        responsive: true,
+        maintainAspectRatio: false,
+        interaction: {
+            intersect: false,
+            mode: 'index'
+        },
+        plugins: {
+            legend: {
+                display: true,
+                position: 'top'
+            },
+            tooltip: {
+                enabled: true,
+                mode: 'index',
+                intersect: false
+            }
+        },
+        scales: {
+            x: {
+                type: 'time',
+                time: {
+                    displayFormats: {
+                        day: 'MMM DD',
+                        week: 'MMM DD',
+                        month: 'MMM YYYY'
+                    }
+                },
+                title: {
+                    display: true,
+                    text: 'Date'
+                }
+            },
+            y: {
+                title: {
+                    display: true,
+                    text: yAxisLabel
+                }
+            }
+        }
+    };
+}
+
+function updatePriceInfo(data) {
+    document.getElementById('price-info').style.display = 'block';
+    
+    if (data.latest_price) {
+        document.getElementById('current-price').textContent = `$${data.latest_price.toFixed(2)}`;
+    }
+    
+    if (data.price_change_percent !== undefined) {
+        const changeElement = document.getElementById('price-change');
+        const cardElement = document.getElementById('price-change-card');
+        
+        changeElement.textContent = `${data.price_change_percent > 0 ? '+' : ''}${data.price_change_percent.toFixed(2)}%`;
+        
+        // Update card color based on change
+        cardElement.className = 'card';
+        if (data.price_change_percent > 0) {
+            cardElement.classList.add('bg-success', 'text-white');
+        } else if (data.price_change_percent < 0) {
+            cardElement.classList.add('bg-danger', 'text-white');
+        } else {
+            cardElement.classList.add('bg-secondary', 'text-white');
+        }
+    }
+    
+    if (data.period_high) {
+        document.getElementById('period-high').textContent = `$${data.period_high.toFixed(2)}`;
+    }
+    
+    if (data.period_low) {
+        document.getElementById('period-low').textContent = `$${data.period_low.toFixed(2)}`;
+    }
+}
+
+function loadComparisonChart() {
+    const comparisonSelect = document.getElementById('comparison-select');
+    const periodSelect = document.getElementById('comparison-period');
+    
+    const selectedSymbols = Array.from(comparisonSelect.selectedOptions).map(option => option.value);
+    const period = periodSelect.value;
+    
+    if (selectedSymbols.length < 2) {
+        alert('Please select at least 2 cryptocurrencies to compare');
+        return;
+    }
+    
+    if (selectedSymbols.length > 5) {
+        alert('Please select no more than 5 cryptocurrencies for better readability');
+        return;
+    }
+    
+    // Show loading state
+    document.getElementById('comparison-chart-container').innerHTML = `
+        <div class="d-flex align-items-center justify-content-center h-100">
+            <div class="text-center">
+                <div class="spinner-border text-success mb-3" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+                <h5 class="text-muted">Loading Comparison Data</h5>
+                <p class="text-muted">Comparing ${selectedSymbols.join(', ')}...</p>
+            </div>
+        </div>
+    `;
+    
+    // Fetch comparison data for each symbol
+    Promise.all(selectedSymbols.map(symbol => 
+        fetch(`/api/historical/${symbol}?period=${period}`)
+            .then(response => response.json())
+    ))
+    .then(responses => {
+        const validData = responses.filter(response => response.success);
+        if (validData.length > 0) {
+            renderComparisonChart(validData, period);
+        } else {
+            showComparisonError('No valid data found for comparison');
+        }
+    })
+    .catch(error => {
+        console.error('Error loading comparison data:', error);
+        showComparisonError('Error loading comparison data: ' + error.message);
+    });
+}
+
+function renderComparisonChart(dataArray, period) {
+    const container = document.getElementById('comparison-chart-container');
+    container.innerHTML = '<canvas id="comparison-chart"></canvas>';
+    
+    const ctx = document.getElementById('comparison-chart').getContext('2d');
+    
+    if (comparisonChart) {
+        comparisonChart.destroy();
+    }
+    
+    const colors = ['#007bff', '#28a745', '#dc3545', '#ffc107', '#6f42c1'];
+    
+    const datasets = dataArray.map((response, index) => {
+        const data = response.data;
+        
+        // Calculate percentage change from first price
+        const prices = data.prices || [];
+        if (prices.length === 0) return null;
+        
+        const firstPrice = prices[0];
+        const normalizedData = data.dates.map((date, i) => ({
+            x: date,
+            y: ((prices[i] - firstPrice) / firstPrice) * 100
+        }));
+        
+        return {
+            label: `${data.symbol} (${data.name})`,
+            data: normalizedData,
+            borderColor: colors[index % colors.length],
+            backgroundColor: 'transparent',
+            borderWidth: 2,
+            fill: false,
+            tension: 0.1
+        };
+    }).filter(dataset => dataset !== null);
+    
+    comparisonChart = new Chart(ctx, {
+        type: 'line',
+        data: { datasets },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            interaction: {
+                intersect: false,
+                mode: 'index'
+            },
+            plugins: {
+                legend: {
+                    display: true,
+                    position: 'top'
+                },
+                tooltip: {
+                    enabled: true,
+                    mode: 'index',
+                    intersect: false,
+                    callbacks: {
+                        label: function(context) {
+                            return context.dataset.label + ': ' + context.parsed.y.toFixed(2) + '%';
+                        }
+                    }
+                }
+            },
+            scales: {
+                x: {
+                    type: 'time',
+                    time: {
+                        displayFormats: {
+                            day: 'MMM DD',
+                            week: 'MMM DD',
+                            month: 'MMM YYYY'
+                        }
+                    },
+                    title: {
+                        display: true,
+                        text: 'Date'
+                    }
+                },
+                y: {
+                    title: {
+                        display: true,
+                        text: 'Percentage Change (%)'
+                    }
+                }
+            }
+        }
+    });
+}
+
+function showChartError(message) {
+    document.getElementById('chart-container').innerHTML = `
+        <div class="d-flex align-items-center justify-content-center h-100">
+            <div class="text-center">
+                <i class="fas fa-exclamation-triangle fa-4x text-warning mb-3"></i>
+                <h5 class="text-warning">Chart Error</h5>
+                <p class="text-muted">${message}</p>
+                <button class="btn btn-outline-primary" onclick="loadChart()">
+                    <i class="fas fa-retry me-1"></i>
+                    Try Again
+                </button>
+            </div>
+        </div>
+    `;
+}
+
+function showComparisonError(message) {
+    document.getElementById('comparison-chart-container').innerHTML = `
+        <div class="d-flex align-items-center justify-content-center h-100">
+            <div class="text-center">
+                <i class="fas fa-exclamation-triangle fa-4x text-warning mb-3"></i>
+                <h5 class="text-warning">Comparison Error</h5>
+                <p class="text-muted">${message}</p>
+                <button class="btn btn-outline-success" onclick="loadComparisonChart()">
+                    <i class="fas fa-retry me-1"></i>
+                    Try Again
+                </button>
+            </div>
+        </div>
+    `;
+}
+
+function toggleFullscreen() {
+    const chartCard = document.querySelector('.card');
+    if (chartCard.requestFullscreen) {
+        chartCard.requestFullscreen();
+    }
+}
+
+function downloadChart() {
+    if (currentChart) {
+        const link = document.createElement('a');
+        link.download = 'crypto-chart.png';
+        link.href = currentChart.toBase64Image();
+        link.click();
+    }
+}
+</script>
+{% endblock %}

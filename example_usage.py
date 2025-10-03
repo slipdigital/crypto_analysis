@@ -7,8 +7,8 @@ import os
 import sys
 import json
 from datetime import datetime
-from crypto_collector import CryptoDataCollector
-from data_utils import CryptoDataUtils
+from backtest.crypto_collector import CryptoDataCollector
+from dashboard.data_utils import CryptoDataUtils
 from scheduler import CryptoScheduler
 
 
