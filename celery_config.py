@@ -10,10 +10,10 @@ from datetime import timedelta
 def make_celery(app_name=__name__):
     """Create and configure Celery instance"""
     
-    # Use memory transport for development (no external dependencies)
-    # For production, use Redis: redis://localhost:6379/0
-    broker_url = os.environ.get('CELERY_BROKER_URL', 'memory://')
-    result_backend = os.environ.get('CELERY_RESULT_BACKEND', 'cache+memory://')
+    # Use Redis for both broker and result backend
+    # Default Redis URL is redis://localhost:6379/0
+    broker_url = os.environ.get('CELERY_BROKER_URL', 'redis://localhost:6379/0')
+    result_backend = os.environ.get('CELERY_RESULT_BACKEND', 'redis://localhost:6379/0')
     
     # Create Celery instance
     celery = Celery(
