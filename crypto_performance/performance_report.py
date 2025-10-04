@@ -15,7 +15,7 @@ from market_cap.market_cap_report import MarketCapReportGenerator
 class CryptoPerformanceAnalyzer:
     """Analyze short-term performance of top cryptocurrencies"""
     
-    def __init__(self, config_path: str = "config/settings.json"):
+    def __init__(self, config_path: str = "../config/settings.json"):
         """Initialize the performance analyzer"""
         self.config = self._load_config(config_path)
         self.market_cap_generator = MarketCapReportGenerator(config_path)
@@ -37,8 +37,8 @@ class CryptoPerformanceAnalyzer:
         except FileNotFoundError:
             return {
                 "data": {
-                    "historical_directory": "crypto_data/historical",
-                    "snapshots_directory": "crypto_data/daily_snapshots"
+                    "historical_directory": "../crypto_data/historical",
+                    "snapshots_directory": "../crypto_data/daily_snapshots"
                 }
             }
     

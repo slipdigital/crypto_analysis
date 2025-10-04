@@ -2,12 +2,12 @@
   "api": {
     "polygon_base_url": "https://api.polygon.io",
     "api_key": "5NJm5do7SXXp9aOKcr28ppmVCJ57MdP7",
-    "rate_limit_delay": 0.2,
+    "rate_limit_delay": 0.002,
     "max_retries": 3,
     "timeout": 30
   },
   "data": {
-    "top_n_cryptos": 30,
+    "top_n_cryptos": 100,
     "historical_days": 365,
     "data_directory": "crypto_data",
     "historical_directory": "crypto_data/historical",

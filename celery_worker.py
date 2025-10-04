@@ -13,10 +13,7 @@ def main():
     """Start Celery worker"""
     
     # Set the worker name based on hostname (Windows compatible)
-    try:
-        hostname = platform.node() or 'localhost'
-    except:
-        hostname = 'localhost'
+    hostname = 'localhost'
     
     worker_name = f"crypto_worker@{hostname}"
     

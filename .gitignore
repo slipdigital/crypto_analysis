@@ -12,3 +12,5 @@ config/settings.json
 /market_cap/market_cap_report_*.csv
 /market_cap/market_cap_report_*.html
 /crypto_performance/performance_report_*.csv
+/market_cap_report*.csv
+/market_cap_report*.html

@@ -15,7 +15,7 @@ import time
 class MarketCapReportGenerator:
     """Generate market cap reports for cryptocurrencies"""
     
-    def __init__(self, config_path: str = "config/settings.json"):
+    def __init__(self, config_path: str = "../config/settings.json"):
         """Initialize the report generator"""
         self.config = self._load_config(config_path)
         
