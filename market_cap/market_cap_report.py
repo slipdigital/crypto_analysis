@@ -60,7 +60,7 @@ class MarketCapReportGenerator:
             with open(config_path, 'r') as f:
                 return json.load(f)
         except FileNotFoundError:
-            # Use default config if file not found
+            # Use default config if a file not found
             return {
                 "data": {
                     "snapshots_directory": "crypto_data/daily_snapshots"
