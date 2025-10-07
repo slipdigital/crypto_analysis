@@ -18,41 +18,10 @@ class MarketCapReportGenerator:
     def __init__(self, config_path: str = "../config/settings.json"):
         """Initialize the report generator"""
         self.config = self._load_config(config_path)
+        self.crypto_supply_data = None
         
-        # Cryptocurrency market cap data (approximate circulating supply in millions)
-        # This data would normally come from the API, but we'll use estimates for the report
-        self.crypto_supply_data = {
-            'X:BTCUSD': {'supply': 19.8, 'symbol': 'BTC', 'name': 'Bitcoin'},
-            'X:ETHUSD': {'supply': 120.5, 'symbol': 'ETH', 'name': 'Ethereum'},
-            'X:XRPUSD': {'supply': 56000, 'symbol': 'XRP', 'name': 'Ripple'},
-            'X:ADAUSD': {'supply': 35000, 'symbol': 'ADA', 'name': 'Cardano'},
-            'X:SOLUSD': {'supply': 470, 'symbol': 'SOL', 'name': 'Solana'},
-            'X:DOGEUSD': {'supply': 146000, 'symbol': 'DOGE', 'name': 'Dogecoin'},
-            'X:DOTUSD': {'supply': 1400, 'symbol': 'DOT', 'name': 'Polkadot'},
-            'X:MATICUSD': {'supply': 9300, 'symbol': 'MATIC', 'name': 'Polygon'},
-            'X:LTCUSD': {'supply': 75, 'symbol': 'LTC', 'name': 'Litecoin'},
-            'X:BCHUSD': {'supply': 19.8, 'symbol': 'BCH', 'name': 'Bitcoin Cash'},
-            'X:LINKUSD': {'supply': 550, 'symbol': 'LINK', 'name': 'Chainlink'},
-            'X:XLMUSD': {'supply': 29000, 'symbol': 'XLM', 'name': 'Stellar'},
-            'X:UNIUSD': {'supply': 750, 'symbol': 'UNI', 'name': 'Uniswap'},
-            'X:AAVEUSD': {'supply': 16, 'symbol': 'AAVE', 'name': 'Aave'},
-            'X:ALGOUSD': {'supply': 7500, 'symbol': 'ALGO', 'name': 'Algorand'},
-            'X:ATOMUSD': {'supply': 390, 'symbol': 'ATOM', 'name': 'Cosmos'},
-            'X:AVAXUSD': {'supply': 410, 'symbol': 'AVAX', 'name': 'Avalanche'},
-            'X:FTTUSD': {'supply': 330, 'symbol': 'FTT', 'name': 'FTX Token'},
-            'X:NEARUSD': {'supply': 1100, 'symbol': 'NEAR', 'name': 'NEAR Protocol'},
-            'X:MANAUSD': {'supply': 1900, 'symbol': 'MANA', 'name': 'Decentraland'},
-            'X:SANDUSD': {'supply': 2300, 'symbol': 'SAND', 'name': 'The Sandbox'},
-            'X:CRVUSD': {'supply': 1100, 'symbol': 'CRV', 'name': 'Curve DAO Token'},
-            'X:SUSHIUSD': {'supply': 250, 'symbol': 'SUSHI', 'name': 'Sushi'},
-            'X:COMPUSD': {'supply': 10, 'symbol': 'COMP', 'name': 'Compound'},
-            'X:YFIUSD': {'supply': 0.037, 'symbol': 'YFI', 'name': 'yearn.finance'},
-            'X:SNXUSD': {'supply': 320, 'symbol': 'SNX', 'name': 'Synthetix'},
-            'X:MKRUSD': {'supply': 1, 'symbol': 'MKR', 'name': 'Maker'},
-            'X:BATUSD': {'supply': 1500, 'symbol': 'BAT', 'name': 'Basic Attention Token'},
-            'X:ZRXUSD': {'supply': 1000, 'symbol': 'ZRX', 'name': '0x'},
-            'X:ENJUSD': {'supply': 1000, 'symbol': 'ENJ', 'name': 'Enjin Coin'}
-        }
+        # Load supply data from crypto_tickers.csv
+        self._load_supply_data()
     
     def _load_config(self, config_path: str) -> Dict:
         """Load configuration from JSON file"""
@@ -60,12 +29,68 @@ class MarketCapReportGenerator:
             with open(config_path, 'r') as f:
                 return json.load(f)
         except FileNotFoundError:
-            # Use default config if a file not found
+            # Use default config if file not found
             return {
                 "data": {
-                    "snapshots_directory": "crypto_data/daily_snapshots"
+                    "snapshots_directory": "crypto_data/daily_snapshots",
+                    "data_directory": "crypto_data"
                 }
             }
+    
+    def _load_supply_data(self):
+        """Load cryptocurrency supply data from crypto_tickers.csv"""
+        try:
+            # Try different possible paths for the CSV file
+            possible_paths = [
+                "crypto_data/crypto_tickers.csv",
+                "../crypto_data/crypto_tickers.csv",
+                os.path.join(self.config.get("data", {}).get("data_directory", "crypto_data"), "crypto_tickers.csv")
+            ]
+            
+            ticker_df = None
+            for path in possible_paths:
+                if os.path.exists(path):
+                    ticker_df = pd.read_csv(path)
+                    print(f"✅ Loaded supply data from: {path}")
+                    break
+            
+            if ticker_df is None:
+                print("⚠️  Warning: crypto_tickers.csv not found. Using empty supply data.")
+                print("💡 Run 'python update_tickers.py' to generate ticker data first.")
+                self.crypto_supply_data = {}
+                return
+            
+            # Build supply data dictionary from the CSV
+            self.crypto_supply_data = {}
+            
+            for _, row in ticker_df.iterrows():
+                ticker = row.get('ticker', '')
+                crypto_symbol = row.get('crypto_symbol', '')
+                name = row.get('name', '')
+                
+                # Calculate supply from market cap and price if available
+                # Formula: supply = market_cap / price
+                market_cap = row.get('market_cap')
+                current_price = row.get('current_price')
+                
+                supply_millions = 0
+                if pd.notna(market_cap) and pd.notna(current_price) and current_price > 0:
+                    # Calculate supply in millions
+                    supply_millions = market_cap / (current_price * 1_000_000)
+                
+                if ticker:
+                    self.crypto_supply_data[ticker] = {
+                        'supply': supply_millions,
+                        'symbol': crypto_symbol if crypto_symbol else ticker.split(':')[-1].replace('USD', ''),
+                        'name': name if name else ticker
+                    }
+            
+            print(f"📊 Loaded supply data for {len(self.crypto_supply_data)} cryptocurrencies")
+            
+        except Exception as e:
+            print(f"⚠️  Error loading supply data: {e}")
+            print("💡 Using empty supply data. Run 'python update_tickers.py' to generate ticker data.")
+            self.crypto_supply_data = {}
     
     def load_latest_snapshot(self) -> Optional[pd.DataFrame]:
         """Load the most recent daily snapshot"""
@@ -104,17 +129,26 @@ class MarketCapReportGenerator:
             ticker = row['ticker']
             price = row['current_price']
             
-            # Get supply data
+            # Get supply data from loaded CSV
             supply_info = self.crypto_supply_data.get(ticker, {})
             supply = supply_info.get('supply', 0)
+            symbol = supply_info.get('symbol', ticker.split(':')[-1].replace('USD', ''))
+            name = supply_info.get('name', row.get('ticker_name', ticker))
             
             # Calculate market cap (price × supply in millions)
-            market_cap = price * supply * 1_000_000  # Convert millions to actual numbers
+            market_cap = price * supply * 1_000_000 if supply > 0 else 0
+            
+            # If market cap is 0, check if it's available directly in the row
+            if market_cap == 0 and 'market_cap' in row and pd.notna(row['market_cap']):
+                market_cap = row['market_cap']
+                # Recalculate supply if we have market cap and price
+                if price > 0:
+                    supply = market_cap / (price * 1_000_000)
             
             market_cap_data.append({
                 'rank': len(market_cap_data) + 1,
-                'symbol': supply_info.get('symbol', ticker.split(':')[-1].replace('USD', '')),
-                'name': supply_info.get('name', row.get('ticker_name', ticker)),
+                'symbol': symbol,
+                'name': name,
                 'ticker': ticker,
                 'current_price': price,
                 'circulating_supply_millions': supply,
@@ -340,6 +374,13 @@ class MarketCapReportGenerator:
         print("🚀 Generating Cryptocurrency Market Cap Report...")
         print("=" * 60)
         
+        # Check if supply data is loaded
+        if not self.crypto_supply_data:
+            print("⚠️  Warning: No supply data available")
+            print("💡 Market cap calculations may be limited")
+            print("💡 Run 'python update_tickers.py' to generate complete ticker data")
+            print()
+        
         # Load data
         df = self.load_latest_snapshot()
         if df is None:
@@ -350,6 +391,14 @@ class MarketCapReportGenerator:
         # Calculate market caps
         print("📊 Calculating market capitalizations...")
         market_cap_df = self.calculate_market_caps(df)
+        
+        # Check how many have valid market caps
+        valid_market_caps = (market_cap_df['market_cap_usd'] > 0).sum()
+        print(f"✅ Calculated market cap for {valid_market_caps}/{len(market_cap_df)} cryptocurrencies")
+        
+        if valid_market_caps == 0:
+            print("⚠️  Warning: No valid market cap data available")
+            print("💡 Ensure crypto_tickers.csv has market_cap data")
         
         # Generate console report
         console_report = self.generate_console_report(market_cap_df)
@@ -364,8 +413,13 @@ class MarketCapReportGenerator:
         print(f"🌐 HTML report saved: {html_filename}")
         
         print(f"\n✅ Report generation completed!")
-        print(f"📈 Top cryptocurrency by market cap: {market_cap_df.iloc[0]['symbol']} ({market_cap_df.iloc[0]['name']})")
-        print(f"💰 Market cap: {self.format_currency(market_cap_df.iloc[0]['market_cap_usd'])}")
+        
+        if valid_market_caps > 0:
+            top_crypto = market_cap_df.iloc[0]
+            print(f"📈 Top cryptocurrency by market cap: {top_crypto['symbol']} ({top_crypto['name']})")
+            print(f"💰 Market cap: {self.format_currency(top_crypto['market_cap_usd'])}")
+        else:
+            print("💡 No market cap rankings available - please update ticker data")
 
 
 def main():
