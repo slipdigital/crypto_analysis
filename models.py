@@ -23,5 +23,3 @@ class Ticker(Base):
     price_change_24h = Column(Float)
     last_trade_timestamp = Column(Float)
     last_updated = Column(String)
-    delisted = Column(String)
-    collected_date = Column(DateTime)

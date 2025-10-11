@@ -1,3 +1,4 @@
+
 """
 Cryptocurrency Ticker Collector
 Fetches all available cryptocurrency tickers from Polygon.io and stores them in a CSV file.
@@ -23,6 +24,21 @@ from models import Ticker, Base
 
 
 class CryptoTickerCollector(BasePolygonCollector):
+    def get_outdated_tickers(self, max_age_hours: int = 24) -> List[str]:
+        """
+        Return a list of tickers in the database whose last_updated is older than max_age_hours.
+        """
+        session = self.Session()
+        try:
+            cutoff = datetime.now() - timedelta(hours=max_age_hours)
+            outdated = session.query(Ticker).filter(Ticker.last_updated < cutoff.strftime('%Y-%m-%d %H:%M:%S')).all()
+            return [t.ticker for t in outdated]
+        except Exception as e:
+            self.logger.error(f"Error fetching outdated tickers: {e}")
+            return []
+        finally:
+            session.close()
+
     def get_coingecko_id_map(self) -> Dict[str, str]:
         """
         Fetch all CoinGecko coins and build a symbol-to-id map (lowercase).
@@ -155,12 +171,15 @@ class CryptoTickerCollector(BasePolygonCollector):
         all_tickers = []
         next_url = None
         page = 1
-        
-        while True:
+        max_pages = 100
+        seen_urls = set()
+        while page <= max_pages:
             self.logger.info(f"Fetching page {page} of crypto tickers...")
-            
             if next_url:
-                # Use the next_url from pagination
+                if next_url in seen_urls:
+                    self.logger.error(f"Detected repeated next_url, breaking to avoid infinite loop: {next_url}")
+                    break
+                seen_urls.add(next_url)
                 try:
                     params = {'apikey': self.api_key}
                     response = requests.get(next_url, params=params, timeout=self.timeout)
@@ -171,34 +190,27 @@ class CryptoTickerCollector(BasePolygonCollector):
                     self.logger.error(f"Failed to fetch page {page}: {e}")
                     break
             else:
-                # Initial request
                 params = {
                     'market': 'crypto',
                     'active': 'true',
-                    'limit': 1000,  # Maximum allowed per request
+                    'limit': 1000,
                     'sort': 'ticker',
                     'order': 'asc'
                 }
-                
                 data = self._make_api_request("v3/reference/tickers", params)
-            
             if not data or 'results' not in data:
                 self.logger.warning(f"No results found on page {page}")
                 break
-            
-            # Add tickers from this page
             page_tickers = data['results']
             all_tickers.extend(page_tickers)
             self.logger.info(f"Retrieved {len(page_tickers)} tickers from page {page}")
-            
-            # Check for next page
             if 'next_url' in data and data['next_url']:
                 next_url = data['next_url']
                 page += 1
             else:
-                # No more pages
                 break
-        
+        if page > max_pages:
+            self.logger.warning(f"Stopped pagination after {max_pages} pages to avoid infinite loop.")
         self.logger.info(f"Successfully fetched {len(all_tickers)} total cryptocurrency tickers")
         return all_tickers
     
@@ -467,175 +479,139 @@ class CryptoTickerCollector(BasePolygonCollector):
         
         return market_data
 
-    def process_ticker_data(self, tickers: List[Dict], enrich_data: bool = True, market_cap_only: bool = False) -> pd.DataFrame:
+    def process_ticker_data(self, tickers: List[Dict], enrich_data: bool = True, market_cap_only: bool = False):
         """
-        Process raw ticker data into a structured DataFrame
-        
+        Process raw ticker data and write directly to the database
         Args:
             tickers: List of ticker dictionaries from Polygon.io
             enrich_data: Whether to fetch additional market data (price, market cap)
             market_cap_only: If True, only update market cap (skip price enrichment)
         """
-        self.logger.info("Processing ticker data...")
-        
-        # First pass: extract basic info and identify USD pairs that need enrichment
-        processed_data = []
-        tickers_to_enrich = []
-        crypto_symbols_to_fetch = []
-        ticker_info_map = {}
-        
-        total_tickers = len(tickers)
-        
-        self.logger.info(f"First pass: Processing {total_tickers} tickers...")
-        for idx, ticker_info in enumerate(tickers, 1):
-            try:
-                # Extract relevant information
-                ticker = ticker_info.get('ticker', '')
-                name = ticker_info.get('name', '')
-                market = ticker_info.get('market', '')
-                locale = ticker_info.get('locale', '')
-                active = ticker_info.get('active', False)
-                currency_symbol = ticker_info.get('currency_symbol', '')
-                currency_name = ticker_info.get('currency_name', '')
-                base_currency_symbol = ticker_info.get('base_currency_symbol', '')
-                base_currency_name = ticker_info.get('base_currency_name', '')
-                last_updated = ticker_info.get('last_updated_utc', '')
-                delisted = ticker_info.get('delisted_utc', '')
-                
-                # Determine if it's a USD pair
-                is_usd_pair = ticker.endswith('USD') or base_currency_symbol == 'USD'
-                
-                # Extract crypto symbol (e.g., BTC from X:BTCUSD)
-                crypto_symbol = ''
-                if ticker.startswith('X:') and ticker.endswith('USD'):
-                    crypto_symbol = ticker.replace('X:', '').replace('USD', '')
-                elif '-' in ticker:
-                    parts = ticker.split('-')
-                    if len(parts) >= 2:
-                        crypto_symbol = parts[0]
-                
-                row = {
-                    'ticker': ticker,
-                    'name': name,
-                    'crypto_symbol': crypto_symbol,
-                    'market': market,
-                    'locale': locale,
-                    'active': active,
-                    'is_usd_pair': is_usd_pair,
-                    'currency_symbol': currency_symbol,
-                    'currency_name': currency_name,
-                    'base_currency_symbol': base_currency_symbol,
-                    'base_currency_name': base_currency_name,
-                    'current_price': None,
-                    'market_cap': None,
-                    'volume_24h': None,
-                    'price_change_24h': None,
-                    'last_trade_timestamp': None,
-                    'last_updated': last_updated,
-                    'delisted': delisted,
-                    'collected_date': datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-                }
-                
-                processed_data.append(row)
-                
-                # Track tickers that need enrichment
-                if enrich_data and active and is_usd_pair and crypto_symbol:
-                    tickers_to_enrich.append(ticker)
-                    ticker_info_map[ticker] = (len(processed_data) - 1, ticker_info, crypto_symbol)
-                    if crypto_symbol not in crypto_symbols_to_fetch:
-                        crypto_symbols_to_fetch.append(crypto_symbol)
-                
-            except Exception as e:
-                self.logger.warning(f"Error processing ticker {ticker_info.get('ticker', 'unknown')}: {e}")
-                continue
-        
-        self.logger.info(f"First pass complete. Created {len(processed_data)} ticker records.")
-        self.logger.info(f"Identified {len(crypto_symbols_to_fetch)} unique crypto symbols to enrich")
-        
-        # Second pass: batch fetch market data for all USD pairs
-        if enrich_data and tickers_to_enrich:
-            self.logger.info(f"Enriching {len(tickers_to_enrich)} USD pair tickers with market data...")
-            
-            # Fetch all price data in parallel
-            self.logger.info("Step 1/2: Fetching price data...")
-            price_data_map = self.get_previous_close_batch(tickers_to_enrich)
-            
-            # Fetch market cap/overview data for unique crypto symbols
-            self.logger.info(f"Step 2/2: Fetching market cap/overview data for {len(crypto_symbols_to_fetch)} crypto symbols...")
-            overview_data_map = self.get_crypto_overview_batch(crypto_symbols_to_fetch)
-            
-            self.logger.info(f"Merging enriched data into ticker records...")
-            # Update processed data with enriched information
-            enriched_count = 0
-            market_cap_found = 0
-            price_found = 0
-            
-            for ticker in tickers_to_enrich:
-                row_idx, ticker_info, crypto_symbol = ticker_info_map[ticker]
-                price_data = price_data_map.get(ticker)
-                overview_data = overview_data_map.get(crypto_symbol)
-                
-                market_data = self.enrich_ticker_with_market_data_fast(
-                    ticker, crypto_symbol, ticker_info, price_data, overview_data
-                )
-                
-                processed_data[row_idx]['current_price'] = market_data['current_price']
-                processed_data[row_idx]['market_cap'] = market_data['market_cap']
-                processed_data[row_idx]['volume_24h'] = market_data['volume']
-                processed_data[row_idx]['price_change_24h'] = market_data['price_change_24h']
-                processed_data[row_idx]['last_trade_timestamp'] = market_data['last_trade_timestamp']
-                
-                if market_data['market_cap'] is not None:
-                    market_cap_found += 1
-                if market_data['current_price'] is not None:
-                    price_found += 1
-                
-                enriched_count += 1
-                if enriched_count % 50 == 0:
-                    self.logger.info(f"Merged data for {enriched_count}/{len(tickers_to_enrich)} tickers (MCap: {market_cap_found}, Price: {price_found})")
-            
-            self.logger.info(f"Enrichment complete for all {enriched_count} tickers")
-            self.logger.info(f"Market cap data found for {market_cap_found}/{enriched_count} tickers ({100*market_cap_found/enriched_count:.1f}%)")
-            self.logger.info(f"Price data found for {price_found}/{enriched_count} tickers ({100*price_found/enriched_count:.1f}%)")
-            
-            # Log warning if very few market caps were found
-            if market_cap_found < enriched_count * 0.1:  # Less than 10%
-                self.logger.warning(f"⚠️  Only {market_cap_found}/{enriched_count} tickers have market cap data")
-                print(f"\n⚠️  WARNING: Limited market cap data available ({market_cap_found}/{enriched_count} tickers)")
-        
-        self.logger.info("Creating DataFrame from processed data...")
-        df = pd.DataFrame(processed_data)
-        
-        # Sort by market cap (highest first) for USD pairs, then by ticker for others
-        if 'market_cap' in df.columns:
-            self.logger.info("Sorting tickers by market cap...")
-            # Convert market_cap to numeric for proper sorting
-            df['market_cap'] = pd.to_numeric(df['market_cap'], errors='coerce')
-            
-            df_usd = df[df['is_usd_pair'] == True].copy()
-            df_other = df[df['is_usd_pair'] == False].copy()
-            
-            df_usd = df_usd.sort_values('market_cap', ascending=False, na_position='last')
-            df_other = df_other.sort_values('ticker')
-            
-            df = pd.concat([df_usd, df_other], ignore_index=True)
-        
-        self.logger.info(f"Successfully processed {len(df)} tickers")
-        
-        return df
+        self.logger.info("Processing ticker data and writing directly to DB...")
+        session = self.Session()
+        try:
+            tickers_to_enrich = []
+            crypto_symbols_to_fetch = []
+            ticker_info_map = {}
+            total_tickers = len(tickers)
+            self.logger.info(f"First pass: Processing {total_tickers} tickers...")
+            for idx, ticker_info in enumerate(tickers, 1):
+                try:
+                    ticker = ticker_info.get('ticker', '')
+                    name = ticker_info.get('name', '')
+                    market = ticker_info.get('market', '')
+                    locale = ticker_info.get('locale', '')
+                    active = ticker_info.get('active', False)
+                    currency_symbol = ticker_info.get('currency_symbol', '')
+                    currency_name = ticker_info.get('currency_name', '')
+                    base_currency_symbol = ticker_info.get('base_currency_symbol', '')
+                    base_currency_name = ticker_info.get('base_currency_name', '')
+                    last_updated = ticker_info.get('last_updated_utc', '')
+                    delisted = ticker_info.get('delisted_utc', '')
+                    is_usd_pair = ticker.endswith('USD') or base_currency_symbol == 'USD'
+                    crypto_symbol = ''
+                    if ticker.startswith('X:') and ticker.endswith('USD'):
+                        crypto_symbol = ticker.replace('X:', '').replace('USD', '')
+                    elif '-' in ticker:
+                        parts = ticker.split('-')
+                        if len(parts) >= 2:
+                            crypto_symbol = parts[0]
+                    row = {
+                        'ticker': ticker,
+                        'name': name,
+                        'crypto_symbol': crypto_symbol,
+                        'market': market,
+                        'locale': locale,
+                        'active': active,
+                        'is_usd_pair': is_usd_pair,
+                        'currency_symbol': currency_symbol,
+                        'currency_name': currency_name,
+                        'base_currency_symbol': base_currency_symbol,
+                        'base_currency_name': base_currency_name,
+                        'current_price': None,
+                        'market_cap': None,
+                        'volume_24h': None,
+                        'price_change_24h': None,
+                        'last_trade_timestamp': None,
+                        'last_updated': datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
+                        'delisted': delisted
+                    }
+                    # Track tickers that need enrichment
+                    if enrich_data and active and is_usd_pair and crypto_symbol:
+                        tickers_to_enrich.append(ticker)
+                        ticker_info_map[ticker] = (row, ticker_info, crypto_symbol)
+                        if crypto_symbol not in crypto_symbols_to_fetch:
+                            crypto_symbols_to_fetch.append(crypto_symbol)
+                    # Write basic info to DB
+                    ticker_obj = session.query(Ticker).filter_by(ticker=row['ticker']).first()
+                    if ticker_obj:
+                        for key, value in row.items():
+                            setattr(ticker_obj, key, value)
+                    else:
+                        ticker_obj = Ticker(**row)
+                        session.add(ticker_obj)
+                except Exception as e:
+                    self.logger.warning(f"Error processing ticker {ticker_info.get('ticker', 'unknown')}: {e}")
+                    continue
+            self.logger.info(f"First pass complete. Wrote {total_tickers} tickers to DB.")
+            self.logger.info(f"Identified {len(crypto_symbols_to_fetch)} unique crypto symbols to enrich")
+            # Second pass: batch fetch market data for all USD pairs
+            if enrich_data and tickers_to_enrich:
+                self.logger.info(f"Enriching {len(tickers_to_enrich)} USD pair tickers with market data...")
+                price_data_map = self.get_previous_close_batch(tickers_to_enrich)
+                overview_data_map = self.get_crypto_overview_batch(crypto_symbols_to_fetch)
+                self.logger.info(f"Merging enriched data into ticker records...")
+                enriched_count = 0
+                market_cap_found = 0
+                price_found = 0
+                for ticker in tickers_to_enrich:
+                    row, ticker_info, crypto_symbol = ticker_info_map[ticker]
+                    price_data = price_data_map.get(ticker)
+                    overview_data = overview_data_map.get(crypto_symbol)
+                    market_data = self.enrich_ticker_with_market_data_fast(
+                        ticker, crypto_symbol, ticker_info, price_data, overview_data
+                    )
+                    ticker_obj = session.query(Ticker).filter_by(ticker=row['ticker']).first()
+                    if ticker_obj:
+                        ticker_obj.current_price = market_data['current_price']
+                        ticker_obj.market_cap = market_data['market_cap']
+                        ticker_obj.volume_24h = market_data['volume']
+                        ticker_obj.price_change_24h = market_data['price_change_24h']
+                        ticker_obj.last_trade_timestamp = market_data['last_trade_timestamp']
+                        if market_data['market_cap'] is not None:
+                            market_cap_found += 1
+                        if market_data['current_price'] is not None:
+                            price_found += 1
+                        enriched_count += 1
+                        if enriched_count % 50 == 0:
+                            self.logger.info(f"Merged data for {enriched_count}/{len(tickers_to_enrich)} tickers (MCap: {market_cap_found}, Price: {price_found})")
+                self.logger.info(f"Enrichment complete for all {enriched_count} tickers")
+                self.logger.info(f"Market cap data found for {market_cap_found}/{enriched_count} tickers ({100*market_cap_found/enriched_count:.1f}%)")
+                self.logger.info(f"Price data found for {price_found}/{enriched_count} tickers ({100*price_found/enriched_count:.1f}%)")
+                if market_cap_found < enriched_count * 0.1:
+                    self.logger.warning(f"⚠️  Only {market_cap_found}/{enriched_count} tickers have market cap data")
+                    print(f"\n⚠️  WARNING: Limited market cap data available ({market_cap_found}/{enriched_count} tickers)")
+            session.commit()
+            self.logger.info(f"Successfully processed and saved {total_tickers} tickers to database.")
+        except Exception as e:
+            session.rollback()
+            self.logger.error(f"Failed to process and save ticker data to database: {e}")
+            raise
+        finally:
+            session.close()
     
-    def _get_last_update_time(self) -> Optional[datetime]:
+    def _get_last_update_time(self) -> Optional[str]:
         """
-        Get the timestamp of the last ticker update from the database
+        Get the timestamp of the last ticker update from the database (using last_updated)
         Returns:
-            datetime object of last update, or None if no records exist
+            last_updated string of last update, or None if no records exist
         """
         session = self.Session()
         try:
-            last_ticker = session.query(Ticker).order_by(Ticker.collected_date.desc()).first()
-            if last_ticker and last_ticker.collected_date:
-                self.logger.info(f"Last ticker update was at: {last_ticker.collected_date}")
-                return last_ticker.collected_date
+            last_ticker = session.query(Ticker).order_by(Ticker.last_updated.desc()).first()
+            if last_ticker and last_ticker.last_updated:
+                self.logger.info(f"Last ticker update was at: {last_ticker.last_updated}")
+                return last_ticker.last_updated
             else:
                 self.logger.info("No existing ticker records found in database")
                 return None
@@ -777,38 +753,37 @@ class CryptoTickerCollector(BasePolygonCollector):
         print(f"💾 Data saved")
         print("="*70 + "\n")
 
-    def run(self, enrich_data: bool = True, force_update: bool = False, top10: bool = False,
-            single_ticker: Optional[str] = None, market_cap_only: bool = False):
+    def run(self, enrich_data: bool = True, force_update: bool = False,
+            single_ticker: Optional[str] = None, market_cap_only: bool = False, max_age_hours: int = 24):
         self.logger.info("Starting crypto ticker collection process")
-
-        # Skip last_updated check if single_ticker is set
-        if not single_ticker and not force_update and not self._needs_update():
-            print("\n⏭️  Skipping update - data is less than 24 hours old")
-            print("💡 Use --force flag to update anyway")
-            self.logger.info("Skipping ticker update - data is recent enough")
-            return
-
         try:
             if single_ticker:
                 self.logger.info(f"Updating only single ticker: {single_ticker}")
                 tickers = [self.get_ticker_details(single_ticker)]
-                tickers = [t for t in tickers if t]  # Remove None if not found
+                tickers = [t for t in tickers if t]
             else:
-                tickers = self.get_all_crypto_tickers()
-                if not tickers:
-                    self.logger.error("No tickers retrieved. Aborting.")
-                    return
-                if top10:
-                    tickers = tickers[:10]
-                    self.logger.info("Limiting collection to the first 10 cryptocurrencies")
-
-            df = self.process_ticker_data(tickers, enrich_data=enrich_data, market_cap_only=market_cap_only)
-            if market_cap_only:
-                self.update_market_caps_only(df)
-            else:
-                self.save_to_db(df)
+                if force_update:
+                    tickers = self.get_all_crypto_tickers()
+                else:
+                    outdated_tickers = self.get_outdated_tickers(max_age_hours=max_age_hours)
+                    if not outdated_tickers:
+                        print("\n⏭️  Skipping update - no outdated tickers found")
+                        self.logger.info("No outdated tickers found. Skipping update.")
+                        return
+                    print(f"\n🔄 Updating {len(outdated_tickers)} outdated tickers...")
+                    # Fetch details sequentially for simplicity
+                    tickers = []
+                    for idx, t in enumerate(outdated_tickers, 1):
+                        result = self.get_ticker_details(t)
+                        if result:
+                            tickers.append(result)
+                        if idx % 25 == 0:
+                            print(f"  ...{idx}/{len(outdated_tickers)} outdated tickers details fetched")
+            if not tickers:
+                self.logger.error("No tickers retrieved. Aborting.")
+                return
+            self.process_ticker_data(tickers, enrich_data=enrich_data, market_cap_only=market_cap_only)
             self.logger.info("Crypto ticker collection completed successfully")
-
         except Exception as e:
             self.logger.error(f"Error during ticker collection: {e}")
             raise
@@ -829,7 +804,13 @@ def main():
     parser.add_argument(
         '--force',
         action='store_true',
-        help='Force update even if last update was less than 24 hours ago'
+        help='Force update all tickers regardless of last update time'
+    )
+    parser.add_argument(
+        '--max-age-hours',
+        type=int,
+        default=24,
+        help='Maximum age (in hours) before a ticker is considered outdated (default: 24)'
     )
     parser.add_argument(
         '--ticker',
@@ -864,9 +845,9 @@ def main():
         collector.run(
             enrich_data=not args.no_enrich,
             force_update=args.force,
-            top10=args.top10 if hasattr(args, 'top10') else False,
             single_ticker=args.ticker,
-            market_cap_only=args.market_cap_only
+            market_cap_only=args.market_cap_only,
+            max_age_hours=args.max_age_hours
         )
         
     except Exception as e:
