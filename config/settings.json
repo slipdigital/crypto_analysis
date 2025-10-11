@@ -32,4 +32,12 @@
     "host": "0.0.0.0",
     "port": 5000
   }
+  ,
+  "postgres": {
+    "host": "localhost",
+    "port": 5432,
+    "database": "crypto_tpi",
+    "username": "postgres",
+    "password": "123123"
+  }
 }

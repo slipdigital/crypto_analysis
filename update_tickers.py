@@ -14,13 +14,116 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 
 import pandas as pd
 import requests
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
+from bs4 import BeautifulSoup
 
 from base_collector import BasePolygonCollector
+from models import Ticker, Base
 
 
 class CryptoTickerCollector(BasePolygonCollector):
+    def get_coingecko_id_map(self) -> Dict[str, str]:
+        """
+        Fetch all CoinGecko coins and build a symbol-to-id map (lowercase).
+        Returns:
+            Dict mapping symbol (lowercase) to CoinGecko id
+        """
+        import requests
+        url = "https://api.coingecko.com/api/v3/coins/list"
+        try:
+            response = requests.get(url)
+            response.raise_for_status()
+            coins = response.json()
+            # Map symbol to id, prefer first occurrence
+            symbol_to_id = {}
+            for coin in coins:
+                symbol = coin.get('symbol', '').lower()
+                cg_id = coin.get('id', '')
+                if symbol and cg_id and symbol not in symbol_to_id:
+                    symbol_to_id[symbol] = cg_id
+            return symbol_to_id
+        except Exception as e:
+            self.logger.error(f"Failed to fetch CoinGecko coin list: {e}")
+            return {}
+
+    def get_coingecko_market_cap(self, cg_id: str) -> Optional[float]:
+        """
+        Fetch market cap for a CoinGecko id.
+        Args:
+            cg_id: CoinGecko id (e.g., 'bitcoin')
+        Returns:
+            Market cap as float or None
+        """
+        import requests
+        url = "https://api.coingecko.com/api/v3/coins/markets"
+        params = {
+            'vs_currency': 'usd',
+            'ids': cg_id
+        }
+        try:
+            response = requests.get(url, params=params)
+            response.raise_for_status()
+            data = response.json()
+            if data and isinstance(data, list) and len(data) > 0:
+                return data[0].get('market_cap')
+            else:
+                self.logger.warning(f"No market cap data found for {cg_id} on CoinGecko")
+                return None
+        except Exception as e:
+            self.logger.error(f"CoinGecko API request failed: {e}")
+            return None
+
+    def get_coingecko_market_cap_scrape(self, symbol: str) -> float:
+        """
+        Scrape market cap for a crypto symbol from coingecko.com
+        Args:
+            symbol: Crypto symbol (e.g., 'BTC', 'ETH')
+        Returns:
+            Market cap as float or None
+        """
+        import requests
+        url = f"https://www.coingecko.com/en/coins/{symbol.lower()}"
+        try:
+            response = requests.get(url, headers={"User-Agent": "Mozilla/5.0"})
+            response.raise_for_status()
+            soup = BeautifulSoup(response.text, "html.parser")
+            # Find the market cap value (CoinGecko uses data-coin-market-cap)
+            market_cap_tag = soup.find("span", {"data-target": "price.market_cap"})
+            if market_cap_tag:
+                market_cap_text = market_cap_tag.text.replace("$","").replace(",","").strip()
+                try:
+                    return float(market_cap_text)
+                except Exception:
+                    return None
+            # Fallback: try to find by label
+            for label in soup.find_all("span", class_="tw-text-gray-500"):
+                if "Market Cap" in label.text:
+                    parent = label.find_parent("div")
+                    if parent:
+                        value = parent.find("span", class_="no-wrap")
+                        if value:
+                            market_cap_text = value.text.replace("$","").replace(",","").strip()
+                            try:
+                                return float(market_cap_text)
+                            except Exception:
+                                return None
+            return None
+        except Exception as e:
+            self.logger.warning(f"Web scraping CoinGecko failed for {symbol}: {e}")
+            return None
     """Collector for all cryptocurrency tickers from Polygon.io"""
     
+    def setup_db(self):
+        """
+        Set up SQLAlchemy engine and session for local Postgres database using credentials from config.
+        """
+        pg_cfg = self.config.get("postgres", {})
+        db_url = f"postgresql+psycopg2://{pg_cfg.get('username','postgres')}:{pg_cfg.get('password','123123')}@{pg_cfg.get('host','localhost')}:{pg_cfg.get('port',5432)}/{pg_cfg.get('database','crypto_tpi')}"
+        self.engine = create_engine(db_url)
+        Base.metadata.create_all(self.engine)
+        self.Session = sessionmaker(bind=self.engine)
+
     def __init__(self, config_path: str = "config/settings.json"):
         """Initialize the ticker collector with configuration"""
         super().__init__(config_path)
@@ -30,6 +133,7 @@ class CryptoTickerCollector(BasePolygonCollector):
         self.batch_size = 50  # Process tickers in batches for progress reporting
         
         self.logger.info("CryptoTickerCollector initialized successfully")
+        self.setup_db()
     
     def _create_directories(self):
         """Create the necessary directories for data storage"""
@@ -251,45 +355,63 @@ class CryptoTickerCollector(BasePolygonCollector):
         
         return results
 
-    def get_crypto_overview_batch(self, crypto_symbols: List[str]) -> Dict[str, Dict]:
+    def get_top100_market_caps(self) -> dict:
         """
-        Batch fetch market cap and overview data for crypto symbols.
-        Since Polygon.io doesn't have a dedicated market cap endpoint,
-        we'll use ticker details which may contain some metadata.
-        
+        Scrape the CoinGecko homepage for the top 100 crypto market caps.
+        Returns:
+            Dict mapping symbol (uppercase) to market cap (float)
+        """
+        import requests
+        from bs4 import BeautifulSoup
+        url = "https://www.coingecko.com/"
+        try:
+            response = requests.get(url, headers={"User-Agent": "Mozilla/5.0"})
+            response.raise_for_status()
+            soup = BeautifulSoup(response.text, "html.parser")
+            # Find all table rows in the top 100 table
+            rows = soup.find_all("tr")
+            market_caps = {}
+            for row in rows:
+                cols = row.find_all("td")
+                if len(cols) < 8:
+                    continue
+                # Symbol is usually in the third column (index 2)
+                symbol_candidates = cols[2].find_all(text=True)
+                symbol = None
+                for candidate in symbol_candidates:
+                    candidate = candidate.strip().upper()
+                    if candidate.isalpha() and len(candidate) <= 6:
+                        symbol = candidate
+                        break
+                if not symbol:
+                    continue
+                # Market cap is usually in the eighth column (index 7)
+                mcap_text = cols[7].get_text().replace("$","").replace(",","").replace("--","").strip()
+                try:
+                    market_cap = float(mcap_text)
+                except Exception:
+                    continue
+                market_caps[symbol] = market_cap
+            return market_caps
+        except Exception as e:
+            self.logger.warning(f"Failed to scrape top 100 market caps from CoinGecko: {e}")
+            return {}
+
+    def get_crypto_overview_batch(self, crypto_symbols: list) -> dict:
+        """
+        Batch fetch market cap and overview data for crypto symbols using CoinGecko homepage scrape.
         Args:
             crypto_symbols: List of crypto symbols (e.g., ['BTC', 'ETH', 'XRP'])
-        
         Returns:
-            Dictionary mapping crypto symbol to overview data
+            Dictionary mapping crypto symbol to overview data (market_cap field)
         """
-        self.logger.info(f"Fetching overview data for {len(crypto_symbols)} crypto symbols...")
+        self.logger.info(f"Scraping CoinGecko homepage for top 100 market caps...")
+        top100_caps = self.get_top100_market_caps()
         overview_map = {}
-        
-        # Note: Polygon.io free tier doesn't provide market cap data directly
-        # We'll fetch what we can from ticker details
-        for idx, symbol in enumerate(crypto_symbols, 1):
-            try:
-                # Construct ticker format (X:SYMBOLUSD)
-                ticker = f"X:{symbol}USD"
-                
-                # Get ticker details
-                endpoint = f"v3/reference/tickers/{ticker}"
-                data = self._make_api_request(endpoint)
-                
-                if data and 'results' in data:
-                    overview_map[symbol] = data['results']
-                else:
-                    overview_map[symbol] = None
-                
-                if idx % 20 == 0:
-                    self.logger.info(f"Fetched overview for {idx}/{len(crypto_symbols)} symbols")
-                
-            except Exception as e:
-                self.logger.warning(f"Failed to fetch overview for {symbol}: {e}")
-                overview_map[symbol] = None
-        
-        self.logger.info(f"Overview data fetch complete. Found data for {sum(1 for v in overview_map.values() if v)} symbols")
+        for symbol in crypto_symbols:
+            mcap = top100_caps.get(symbol.upper())
+            overview_map[symbol] = {'market_cap': mcap} if mcap is not None else None
+        self.logger.info(f"Top 100 market cap scrape complete. Found data for {sum(1 for v in overview_map.values() if v)} symbols")
         return overview_map
 
     def enrich_ticker_with_market_data_fast(
@@ -334,25 +456,25 @@ class CryptoTickerCollector(BasePolygonCollector):
                 if open_price and close_price and open_price > 0:
                     market_data['price_change_24h'] = ((close_price - open_price) / open_price) * 100
             
-            # Note: Polygon.io doesn't provide market cap in their basic endpoints
-            # Market cap would require additional data sources or premium endpoints
-            # For now, we'll leave it as None unless found in overview data
-            if overview_data:
-                # Check if overview data has any market cap field (unlikely for free tier)
-                market_data['market_cap'] = overview_data.get('market_cap') or overview_data.get('market_cap_usd')
+            # Extract market_cap from ticker_info or overview_data if present
+            if ticker_info and 'market_cap' in ticker_info:
+                market_data['market_cap'] = ticker_info['market_cap']
+            elif overview_data and 'market_cap' in overview_data:
+                market_data['market_cap'] = overview_data['market_cap']
         
         except Exception as e:
             self.logger.warning(f"Error enriching {ticker}: {e}")
         
         return market_data
 
-    def process_ticker_data(self, tickers: List[Dict], enrich_data: bool = True) -> pd.DataFrame:
+    def process_ticker_data(self, tickers: List[Dict], enrich_data: bool = True, market_cap_only: bool = False) -> pd.DataFrame:
         """
         Process raw ticker data into a structured DataFrame
         
         Args:
             tickers: List of ticker dictionaries from Polygon.io
             enrich_data: Whether to fetch additional market data (price, market cap)
+            market_cap_only: If True, only update market cap (skip price enrichment)
         """
         self.logger.info("Processing ticker data...")
         
@@ -502,60 +624,42 @@ class CryptoTickerCollector(BasePolygonCollector):
         
         return df
     
-    def _get_last_update_time(self, filename: str = "crypto_tickers.csv") -> Optional[datetime]:
+    def _get_last_update_time(self) -> Optional[datetime]:
         """
-        Get the timestamp of the last ticker update from the CSV file
-        
+        Get the timestamp of the last ticker update from the database
         Returns:
-            datetime object of last update, or None if file doesn't exist
+            datetime object of last update, or None if no records exist
         """
-        filepath = os.path.join(self.config["data"]["data_directory"], filename)
-        
+        session = self.Session()
         try:
-            if not os.path.exists(filepath):
-                self.logger.info(f"No existing ticker file found at {filepath}")
+            last_ticker = session.query(Ticker).order_by(Ticker.collected_date.desc()).first()
+            if last_ticker and last_ticker.collected_date:
+                self.logger.info(f"Last ticker update was at: {last_ticker.collected_date}")
+                return last_ticker.collected_date
+            else:
+                self.logger.info("No existing ticker records found in database")
                 return None
-            
-            # Read the CSV file
-            df = pd.read_csv(filepath)
-            
-            if df.empty or 'collected_date' not in df.columns:
-                self.logger.warning("CSV file exists but has no collected_date column")
-                return None
-            
-            # Get the most recent collected_date
-            last_update_str = df['collected_date'].iloc[0]
-            last_update = datetime.strptime(last_update_str, '%Y-%m-%d %H:%M:%S')
-            
-            self.logger.info(f"Last ticker update was at: {last_update}")
-            return last_update
-            
         except Exception as e:
-            self.logger.warning(f"Error reading last update time: {e}")
+            self.logger.warning(f"Error reading last update time from database: {e}")
             return None
-    
-    def _needs_update(self, filename: str = "crypto_tickers.csv", hours: int = 24) -> bool:
+        finally:
+            session.close()
+
+    def _needs_update(self, hours: int = 24) -> bool:
         """
-        Check if the ticker data needs to be updated based on last update time
-        
+        Check if the ticker data needs to be updated based on last update time in the database
         Args:
-            filename: Name of the CSV file to check
             hours: Number of hours before update is needed (default: 24)
-        
         Returns:
             True if update is needed, False otherwise
         """
-        last_update = self._get_last_update_time(filename)
-        
+        last_update = self._get_last_update_time()
         if last_update is None:
-            self.logger.info("No previous update found. Update needed.")
+            self.logger.info("No previous update found in database. Update needed.")
             return True
-        
         time_since_update = datetime.now() - last_update
         hours_since_update = time_since_update.total_seconds() / 3600
-        
         self.logger.info(f"Time since last update: {hours_since_update:.2f} hours")
-        
         if hours_since_update >= hours:
             self.logger.info(f"Update needed (last update was {hours_since_update:.2f} hours ago)")
             return True
@@ -563,24 +667,49 @@ class CryptoTickerCollector(BasePolygonCollector):
             self.logger.info(f"Update not needed (last update was only {hours_since_update:.2f} hours ago)")
             return False
     
-    def save_to_csv(self, df: pd.DataFrame, filename: str = "crypto_tickers.csv"):
+    def save_to_db(self, df: pd.DataFrame):
         """
-        Save ticker data to CSV file
+        Save ticker data to local Postgres database using SQLAlchemy ORM.
         """
-        filepath = os.path.join(self.config["data"]["data_directory"], filename)
-        
+        session = self.Session()
         try:
-            df.to_csv(filepath, index=False)
-            self.logger.info(f"Successfully saved ticker data to {filepath}")
-            self.logger.info(f"Total tickers saved: {len(df)}")
-            
-            # Print summary statistics
+            for row in df.to_dict(orient='records'):
+                ticker_obj = session.query(Ticker).filter_by(ticker=row['ticker']).first()
+                if ticker_obj:
+                    for key, value in row.items():
+                        setattr(ticker_obj, key, value)
+                else:
+                    ticker_obj = Ticker(**row)
+                    session.add(ticker_obj)
+            session.commit()
+            self.logger.info(f"Successfully saved {len(df)} tickers to database.")
             self._print_summary(df)
-            
         except Exception as e:
-            self.logger.error(f"Failed to save ticker data to CSV: {e}")
+            session.rollback()
+            self.logger.error(f"Failed to save ticker data to database: {e}")
             raise
+        finally:
+            session.close()
     
+    def update_market_caps_only(self, df: pd.DataFrame):
+        """
+        Update only the market cap field for tickers in the database.
+        """
+        session = self.Session()
+        try:
+            for row in df.to_dict(orient='records'):
+                ticker_obj = session.query(Ticker).filter_by(ticker=row['ticker']).first()
+                if ticker_obj and row.get('market_cap') is not None:
+                    ticker_obj.market_cap = row['market_cap']
+            session.commit()
+            self.logger.info(f"Successfully updated market cap for {len(df)} tickers in database.")
+        except Exception as e:
+            session.rollback()
+            self.logger.error(f"Failed to update market cap in database: {e}")
+            raise
+        finally:
+            session.close()
+
     def _print_summary(self, df: pd.DataFrame):
         """
         Print summary statistics about the collected tickers
@@ -645,45 +774,41 @@ class CryptoTickerCollector(BasePolygonCollector):
                 print(f"  • {market}: {count}")
         
         print("="*70)
-        print(f"💾 Data saved to: crypto_data/crypto_tickers.csv")
+        print(f"💾 Data saved")
         print("="*70 + "\n")
-    
-    def run(self, enrich_data: bool = True, force_update: bool = False):
-        """
-        Main method to collect and save all crypto tickers
-        
-        Args:
-            enrich_data: Whether to fetch additional market data (slower but more complete)
-            force_update: Force update even if last update was less than 24 hours ago
-        """
+
+    def run(self, enrich_data: bool = True, force_update: bool = False, top10: bool = False,
+            single_ticker: Optional[str] = None, market_cap_only: bool = False):
         self.logger.info("Starting crypto ticker collection process")
-        
-        # Check if update is needed (unless forced)
-        if not force_update and not self._needs_update():
+
+        # Skip last_updated check if single_ticker is set
+        if not single_ticker and not force_update and not self._needs_update():
             print("\n⏭️  Skipping update - data is less than 24 hours old")
             print("💡 Use --force flag to update anyway")
             self.logger.info("Skipping ticker update - data is recent enough")
             return
-        
+
         try:
-            # Fetch all tickers
-            tickers = self.get_all_crypto_tickers()
-            
-            if not tickers:
-                self.logger.error("No tickers retrieved. Aborting.")
-                return
-            
-            # Process ticker data (with or without enrichment)
-            if enrich_data:
-                self.logger.info("Enriching ticker data with market cap and prices (this may take a while)...")
-            
-            df = self.process_ticker_data(tickers, enrich_data=enrich_data)
-            
-            # Save to CSV
-            self.save_to_csv(df)
-            
+            if single_ticker:
+                self.logger.info(f"Updating only single ticker: {single_ticker}")
+                tickers = [self.get_ticker_details(single_ticker)]
+                tickers = [t for t in tickers if t]  # Remove None if not found
+            else:
+                tickers = self.get_all_crypto_tickers()
+                if not tickers:
+                    self.logger.error("No tickers retrieved. Aborting.")
+                    return
+                if top10:
+                    tickers = tickers[:10]
+                    self.logger.info("Limiting collection to the first 10 cryptocurrencies")
+
+            df = self.process_ticker_data(tickers, enrich_data=enrich_data, market_cap_only=market_cap_only)
+            if market_cap_only:
+                self.update_market_caps_only(df)
+            else:
+                self.save_to_db(df)
             self.logger.info("Crypto ticker collection completed successfully")
-            
+
         except Exception as e:
             self.logger.error(f"Error during ticker collection: {e}")
             raise
@@ -706,7 +831,16 @@ def main():
         action='store_true',
         help='Force update even if last update was less than 24 hours ago'
     )
-    
+    parser.add_argument(
+        '--ticker',
+        type=str,
+        help='Update only a single ticker (e.g., X:BTCUSD)'
+    )
+    parser.add_argument(
+        '--market-cap-only',
+        action='store_true',
+        help='Update only market cap data for tickers in the database'
+    )
     args = parser.parse_args()
     
     print("\n🚀 Cryptocurrency Ticker Collector - Polygon.io")
@@ -720,11 +854,20 @@ def main():
     if args.force:
         print("🔄 Force mode: Updating regardless of last update time")
     
+    if args.market_cap_only:
+        print("🟢 Market Cap Only mode: Only updating market cap data")
+    
     print()
     
     try:
         collector = CryptoTickerCollector()
-        collector.run(enrich_data=not args.no_enrich, force_update=args.force)
+        collector.run(
+            enrich_data=not args.no_enrich,
+            force_update=args.force,
+            top10=args.top10 if hasattr(args, 'top10') else False,
+            single_ticker=args.ticker,
+            market_cap_only=args.market_cap_only
+        )
         
     except Exception as e:
         print(f"\n❌ Error: {e}")
