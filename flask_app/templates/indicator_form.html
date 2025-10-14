@@ -1,0 +1,141 @@
+{% extends "base.html" %}
+
+{% block title %}{% if mode == 'create' %}Create{% else %}Edit{% endif %} Indicator - Crypto Dashboard{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col">
+        <h1 class="display-5">
+            <i class="bi bi-{% if mode == 'create' %}plus-circle{% else %}pencil{% endif %}"></i> 
+            {% if mode == 'create' %}Create New Indicator{% else %}Edit Indicator{% endif %}
+        </h1>
+    </div>
+</div>
+
+<div class="mb-3">
+    <a href="/indicators" class="btn btn-outline-secondary">
+        <i class="bi bi-arrow-left"></i> Back to Indicators
+    </a>
+</div>
+
+{% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+        {% for category, message in messages %}
+        <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+        {% endfor %}
+    {% endif %}
+{% endwith %}
+
+<div class="card">
+    <div class="card-header bg-primary text-white">
+        <h3 class="mb-0">
+            <i class="bi bi-flag"></i> Indicator Details
+        </h3>
+    </div>
+    <div class="card-body">
+        <form method="post">
+            <div class="mb-3">
+                <label for="title" class="form-label">
+                    Title <span class="text-danger">*</span>
+                </label>
+                <input 
+                    type="text" 
+                    class="form-control" 
+                    id="title" 
+                    name="title" 
+                    value="{{ indicator.title if indicator else '' }}"
+                    required
+                    maxlength="200"
+                    placeholder="Enter indicator title (e.g., RSI Overbought, MACD Crossover)"
+                >
+                <div class="form-text">
+                    <i class="bi bi-info-circle"></i> A descriptive name for the indicator (max 200 characters)
+                </div>
+            </div>
+            
+            <div class="mb-3">
+                <label for="description" class="form-label">
+                    Description
+                </label>
+                <textarea 
+                    class="form-control" 
+                    id="description" 
+                    name="description" 
+                    rows="6"
+                    placeholder="Enter a detailed description of the indicator, including what it measures, how to interpret it, and when to use it..."
+                >{{ indicator.description if indicator else '' }}</textarea>
+                <div class="form-text">
+                    <i class="bi bi-info-circle"></i> Detailed explanation of the indicator (optional)
+                </div>
+            </div>
+            
+            {% if mode == 'edit' and indicator %}
+            <div class="alert alert-info">
+                <div class="row">
+                    <div class="col-md-6">
+                        <strong><i class="bi bi-calendar-plus"></i> Created:</strong> 
+                        {{ indicator.created_at[:19] if indicator.created_at else 'N/A' }}
+                    </div>
+                    <div class="col-md-6">
+                        <strong><i class="bi bi-calendar-check"></i> Last Updated:</strong> 
+                        {{ indicator.updated_at[:19] if indicator.updated_at else 'N/A' }}
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+            
+            <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                <a href="/indicators" class="btn btn-secondary">
+                    <i class="bi bi-x-circle"></i> Cancel
+                </a>
+                <button type="submit" class="btn btn-primary">
+                    <i class="bi bi-{% if mode == 'create' %}plus-circle{% else %}check-circle{% endif %}"></i> 
+                    {% if mode == 'create' %}Create Indicator{% else %}Update Indicator{% endif %}
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Tips Card -->
+<div class="card mt-4">
+    <div class="card-header bg-light">
+        <h5 class="mb-0">
+            <i class="bi bi-lightbulb"></i> Tips for Creating Indicators
+        </h5>
+    </div>
+    <div class="card-body">
+        <ul>
+            <li><strong>Be specific:</strong> Use clear, descriptive titles that explain what the indicator measures</li>
+            <li><strong>Include context:</strong> Describe when and how to use the indicator in your trading strategy</li>
+            <li><strong>Add parameters:</strong> Note any specific values, thresholds, or timeframes used</li>
+            <li><strong>Explain interpretation:</strong> Describe what different values or signals mean</li>
+            <li><strong>Reference sources:</strong> Mention any books, websites, or traders who popularized the indicator</li>
+        </ul>
+        
+        <h6 class="mt-3">Example Indicators:</h6>
+        <div class="row g-2">
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-body p-2">
+                        <strong>RSI Overbought (70+)</strong><br>
+                        <small class="text-muted">Relative Strength Index above 70 suggests the asset may be overbought and due for a pullback.</small>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-body p-2">
+                        <strong>Golden Cross</strong><br>
+                        <small class="text-muted">50-day MA crosses above 200-day MA, signaling a potential bullish trend reversal.</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

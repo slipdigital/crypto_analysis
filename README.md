@@ -1,36 +1,59 @@
-# Cryptocurrency Data Collection System - Polygon.io Edition
+# Cryptocurrency Data Collection & Analysis System
 
-A comprehensive Python system for collecting, storing, and analyzing daily cryptocurrency data for the top 30 cryptocurrencies using the Polygon.io API.
+A comprehensive Python system for collecting, storing, and analyzing cryptocurrency data with macro-economic indicators using the Polygon.io API and Federal Reserve Economic Data (FRED).
 
 ## Features
 
-- **Polygon.io Integration**: Professional-grade cryptocurrency data from Polygon.io
-- **Automated Data Collection**: Daily collection of cryptocurrency market data
-- **Historical Data**: Fetch up to 1 year of historical OHLCV data
-- **Top 30 Cryptos**: Automatically tracks available cryptocurrency tickers
-- **CSV Storage**: Organized data storage in CSV format for easy analysis
+### Cryptocurrency Data
+- **Polygon.io Integration**: Professional-grade cryptocurrency data
+- **Ticker Management**: Track 600+ crypto tickers with metadata
+- **Historical Data**: Fetch up to 2 years of historical OHLCV data
+- **Market Cap Tracking**: Import and track market capitalizations
+- **Database Storage**: PostgreSQL with SQLAlchemy ORM
+- **CSV Storage**: Organized data storage for easy analysis
+
+### Macro-Economic Indicators
+- **Global Liquidity Tracking**: Monitor central bank balance sheets and money supply
+- **FRED API Integration**: Access to Federal Reserve economic data
+- **Multi-Currency Support**: Track USD, EUR, and JPY liquidity measures
+- **Historical Analysis**: Decades of monetary data for correlation studies
+
+### Web Dashboard
+- **Flask Application**: Modern Bootstrap 5 UI
+- **Interactive Charts**: Top gainers/losers analysis
+- **Filtering & Search**: Find tickers by multiple criteria
+- **Data Editing**: Update market cap and other fields
+- **Performance Metrics**: Track returns across multiple timeframes
+
+### Automation
 - **Robust Error Handling**: Comprehensive error handling and retry logic
-- **Rate Limiting**: Built-in API rate limiting optimized for Polygon.io
+- **Rate Limiting**: Optimized for API constraints
 - **Data Validation**: Quality checks for collected data
-- **Backup & Recovery**: Data backup and restoration capabilities
-- **Scheduling**: Automated daily, weekly, or on-demand collection
 - **Logging**: Detailed logging for monitoring and debugging
 
 ## Project Structure
 
 ```
-ai_crypto_analisys/
+crypto_analysis/
 ├── config/
-│   └── settings.json          # Configuration file
-├── crypto_data/               # Data storage directory
-│   ├── historical/            # Historical data files
-│   ├── daily_snapshots/       # Daily market snapshots
-│   └── logs/                  # Log files
-├── crypto_collector.py        # Main data collection module
-├── scheduler.py               # Automation scheduler
-├── data_utils.py              # Data utilities and analysis
-├── requirements.txt           # Python dependencies
-└── README.md                  # This file
+│   └── settings.json              # Configuration (API keys, DB credentials)
+├── crypto_data/
+│   ├── crypto_tickers.csv         # Ticker list
+│   ├── historical/                # Historical OHLCV data
+│   └── daily_snapshots/           # Daily market snapshots
+├── flask_app/
+│   ├── app.py                     # Flask application
+│   ├── templates/                 # HTML templates
+│   └── static/                    # CSS and JavaScript
+├── models.py                      # SQLAlchemy database models
+├── update_tickers.py              # Collect ticker metadata
+├── update_ticker_data.py          # Collect historical price data
+├── collect_global_liquidity.py   # Collect macro liquidity data
+├── check_liquidity_data.py        # Check liquidity data status
+├── update_market_caps_from_csv.py # Import market cap data
+├── verify_schema.py               # Database schema verification
+├── requirements.txt               # Python dependencies
+└── README.md                      # This file
 ```
 
 ## Installation

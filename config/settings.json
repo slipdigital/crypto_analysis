@@ -2,9 +2,12 @@
   "api": {
     "polygon_base_url": "https://api.polygon.io",
     "api_key": "5NJm5do7SXXp9aOKcr28ppmVCJ57MdP7",
-    "rate_limit_delay": 0.002,
+    "rate_limit_delay": 0.5,
     "max_retries": 3,
     "timeout": 30
+  },
+  "livecoinwatch": {
+    "api_key": "7c012d6c-5d87-42f1-aa9e-35ba937a5821"
   },
   "data": {
     "top_n_cryptos": 100,
@@ -39,5 +42,9 @@
     "database": "crypto_tpi",
     "username": "postgres",
     "password": "123123"
+  },
+  "fred": {
+    "api_key": "YOUR_FRED_API_KEY_HERE",
+    "comment": "Get a free API key from https://fred.stlouisfed.org/docs/api/api_key.html"
   }
 }
