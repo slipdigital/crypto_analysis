@@ -1,5 +1,6 @@
-from sqlalchemy import Column, String, Float, Boolean, DateTime, Integer, Date, UniqueConstraint, Text
+from sqlalchemy import Column, String, Float, Boolean, DateTime, Integer, Date, UniqueConstraint, Text, ForeignKey
 from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import relationship
 
 Base = declarative_base()
 
@@ -21,13 +22,16 @@ class Ticker(Base):
     last_trade_timestamp = Column(Float)
     last_updated = Column(String)
     is_favorite = Column(Boolean, default=False)
+    
+    # Relationship to ticker_data
+    ticker_data = relationship("TickerData", back_populates="ticker_obj")
 
 class TickerData(Base):
     __tablename__ = 'ticker_data'
-    __table_args__ = (UniqueConstraint('ticker', 'date', name='_ticker_date_uc'),)
+    __table_args__ = (UniqueConstraint('ticker_id', 'date', name='_ticker_date_uc'),)
     
     id = Column(Integer, primary_key=True, autoincrement=True)
-    ticker = Column(String, nullable=False, index=True)
+    ticker_id = Column(Integer, ForeignKey('tickers.id'), nullable=False, index=True)
     date = Column(Date, nullable=False, index=True)
     open = Column(Float)
     high = Column(Float)
@@ -37,6 +41,9 @@ class TickerData(Base):
     vwap = Column(Float)  # Volume weighted average price
     transactions = Column(Integer)
     collected_at = Column(String)
+    
+    # Relationship to ticker
+    ticker_obj = relationship("Ticker", back_populates="ticker_data")
 
 class GlobalLiquidity(Base):
     __tablename__ = 'global_liquidity'
@@ -51,12 +58,24 @@ class GlobalLiquidity(Base):
     frequency = Column(String)  # Data frequency (e.g., "Monthly", "Weekly")
     collected_at = Column(String)
 
+class IndicatorType(Base):
+    __tablename__ = 'indicator_types'
+    
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    name = Column(String(100), nullable=False, unique=True)
+    description = Column(Text)
+    color = Column(String(7))  # Hex color code (e.g., #FF5733)
+    created_at = Column(String)
+    updated_at = Column(String)
+
 class Indicator(Base):
     __tablename__ = 'indicators'
     
     id = Column(Integer, primary_key=True, autoincrement=True)
     title = Column(String(200), nullable=False)
     description = Column(Text)
+    url = Column(String(500), nullable=True)  # Optional URL for reference/documentation
+    indicator_type_id = Column(Integer, ForeignKey('indicator_types.id'), nullable=True)
     created_at = Column(String)
     updated_at = Column(String)
 

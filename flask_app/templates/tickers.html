@@ -22,6 +22,44 @@
     {% endif %}
 {% endwith %}
 
+{% if outdated_tickers %}
+<div class="alert alert-warning alert-dismissible fade show" role="alert">
+    <h5 class="alert-heading">
+        <i class="bi bi-exclamation-triangle-fill me-2"></i>Outdated Favorite Ticker Data Warning
+    </h5>
+    <p class="mb-2">
+        <i class="bi bi-star-fill text-warning me-1"></i>
+        <strong>{{ outdated_tickers|length }}</strong> favorited ticker(s) have data that is more than 2 days old:
+    </p>
+    <div class="row">
+        <div class="col-md-12">
+            <div class="d-flex flex-wrap gap-2">
+                {% for item in outdated_tickers[:10] %}
+                <span class="badge bg-warning text-dark">
+                    <i class="bi bi-star-fill me-1"></i>{{ item.ticker }} 
+                    <small>({{ item.days_old }} day{% if item.days_old != 1 %}s{% endif %} old)</small>
+                </span>
+                {% endfor %}
+                {% if outdated_tickers|length > 10 %}
+                <span class="badge bg-secondary">
+                    +{{ outdated_tickers|length - 10 }} more
+                </span>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    <hr class="my-2">
+    <p class="mb-0">
+        <small>
+            <i class="bi bi-info-circle me-1"></i>
+            Consider running the data update process to refresh your favorite tickers. 
+            Last check: {{ today.strftime('%Y-%m-%d') }}
+        </small>
+    </p>
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+</div>
+{% endif %}
+
 <div class="card mb-3">
     <div class="card-body">
         <form method="get" class="row g-3">
@@ -109,7 +147,8 @@
                 </thead>
                 <tbody>
                     {% for ticker in tickers %}
-                    <tr>
+                    {% set is_outdated = ticker.ticker in ticker_data_ranges and (today - ticker_data_ranges[ticker.ticker].end_date).days > 2 %}
+                    <tr {% if is_outdated %}class="table-warning"{% endif %}>
                         <td>
                             <form method="post" action="/ticker/{{ ticker.ticker }}/toggle_favorite" style="display: inline;">
                                 <button type="submit" class="btn btn-link p-0 border-0" style="text-decoration: none;" title="{% if ticker.is_favorite %}Remove from favorites{% else %}Add to favorites{% endif %}">
@@ -125,6 +164,9 @@
                             <a href="/ticker/{{ ticker.ticker }}" class="text-decoration-none fw-bold">
                                 {{ ticker.ticker }}
                             </a>
+                            {% if is_outdated %}
+                            <i class="bi bi-exclamation-triangle-fill text-warning ms-1" title="Data is {{ (today - ticker_data_ranges[ticker.ticker].end_date).days }} days old"></i>
+                            {% endif %}
                         </td>
                         <td>{{ ticker.name or '-' }}</td>
                         <td>
@@ -151,6 +193,14 @@
                         <td>
                             {% if ticker.ticker in ticker_data_ranges %}
                             <small class="text-muted">{{ ticker_data_ranges[ticker.ticker].end_date.strftime('%Y-%m-%d') }}</small>
+                            {% set days_old = (today - ticker_data_ranges[ticker.ticker].end_date).days %}
+                            {% if days_old > 2 %}
+                            <br><span class="badge bg-warning text-dark">{{ days_old }} days ago</span>
+                            {% elif days_old == 1 %}
+                            <br><span class="badge bg-info text-dark">Yesterday</span>
+                            {% elif days_old == 0 %}
+                            <br><span class="badge bg-success text-white">Today</span>
+                            {% endif %}
                             {% else %}
                             <span class="text-danger">-</span>
                             {% endif %}

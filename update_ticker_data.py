@@ -23,26 +23,27 @@ def get_db_session(config):
     Base.metadata.create_all(engine)
     return sessionmaker(bind=engine)()
 
-def get_date_range_for_ticker(session, ticker):
+def get_date_range_for_ticker(session, ticker_obj):
     """Get the date range that needs to be collected for a ticker."""
-    # Get the latest date we have data for
+    # Get the latest date we have data for this ticker (using ticker_id)
     latest = session.query(func.max(TickerData.date)).filter(
-        TickerData.ticker == ticker
+        TickerData.ticker_id == ticker_obj.id
     ).scalar()
     
     # Get earliest available data date (2 years ago as a safe default for crypto)
     earliest_available = datetime.now() - timedelta(days=730)
-    today = datetime.now().date()
+    # Only update up to yesterday (today's data is incomplete during trading)
+    yesterday = (datetime.now() - timedelta(days=1)).date()
     
     if latest:
-        # We have some data, fetch from day after latest to today
+        # We have some data, fetch from day after latest to yesterday
         start_date = latest + timedelta(days=1)
-        if start_date > today:
+        if start_date > yesterday:
             return None, None  # Already up to date
-        return start_date, today
+        return start_date, yesterday
     else:
-        # No data yet, fetch all available history
-        return earliest_available.date(), today
+        # No data yet, fetch all available history up to yesterday
+        return earliest_available.date(), yesterday
 
 def fetch_daily_data(config, ticker, from_date, to_date):
     """Fetch daily aggregates from Polygon API."""
@@ -66,7 +67,7 @@ def fetch_daily_data(config, ticker, from_date, to_date):
         print(f"  Error fetching data for {ticker}: {e}")
         return []
 
-def save_ticker_data(session, ticker, daily_data):
+def save_ticker_data(session, ticker_obj, daily_data):
     """Save daily price data to database."""
     collected_at = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
     saved_count = 0
@@ -76,7 +77,7 @@ def save_ticker_data(session, ticker, daily_data):
         date = datetime.fromtimestamp(bar['t'] / 1000).date()
         
         ticker_data = TickerData(
-            ticker=ticker,
+            ticker_id=ticker_obj.id,
             date=date,
             open=bar.get('o'),
             high=bar.get('h'),
@@ -101,27 +102,27 @@ def save_ticker_data(session, ticker, daily_data):
 
 def process_ticker(session, config, ticker_obj, rate_limit_delay):
     """Process a single ticker to collect its historical data."""
-    ticker = ticker_obj.ticker
+    ticker_symbol = ticker_obj.ticker
     
-    # Check what date range we need
-    from_date, to_date = get_date_range_for_ticker(session, ticker)
+    # Check what date range we need (pass ticker_obj instead of ticker string)
+    from_date, to_date = get_date_range_for_ticker(session, ticker_obj)
     
     if not from_date or not to_date:
-        print(f"✓ {ticker}: Already up to date")
+        print(f"✓ {ticker_symbol}: Already up to date")
         return 0
     
-    print(f"→ {ticker}: Fetching data from {from_date} to {to_date}")
+    print(f"→ {ticker_symbol}: Fetching data from {from_date} to {to_date}")
     
-    # Fetch data from Polygon
-    daily_data = fetch_daily_data(config, ticker, from_date, to_date)
+    # Fetch data from Polygon (still uses ticker symbol for API call)
+    daily_data = fetch_daily_data(config, ticker_symbol, from_date, to_date)
     
     if not daily_data:
-        print(f"  {ticker}: No data available")
+        print(f"  {ticker_symbol}: No data available")
         return 0
     
-    # Save to database
-    saved_count = save_ticker_data(session, ticker, daily_data)
-    print(f"  {ticker}: Saved {saved_count} records")
+    # Save to database (pass ticker_obj instead of ticker string)
+    saved_count = save_ticker_data(session, ticker_obj, daily_data)
+    print(f"  {ticker_symbol}: Saved {saved_count} records")
     
     # Rate limiting for basic tier (5 requests per minute)
     time.sleep(rate_limit_delay)

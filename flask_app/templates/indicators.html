@@ -10,6 +10,15 @@
         </h1>
     </div>
     <div class="col-auto">
+        <a href="/indicators/aggregate" class="btn btn-outline-info me-2">
+            <i class="bi bi-bar-chart-line"></i> View Aggregation
+        </a>
+        <a href="/indicator-types" class="btn btn-outline-secondary me-2">
+            <i class="bi bi-tags"></i> Manage Types
+        </a>
+        <a href="/indicators/bulk-entry" class="btn btn-success me-2">
+            <i class="bi bi-calendar-plus"></i> Bulk Entry
+        </a>
         <a href="/indicators/create" class="btn btn-primary">
             <i class="bi bi-plus-circle"></i> Create New Indicator
         </a>
@@ -27,21 +36,38 @@
     {% endif %}
 {% endwith %}
 
-{% if indicators %}
+{% if indicators_with_types %}
 <div class="row g-4">
-    {% for indicator in indicators %}
+    {% for item in indicators_with_types %}
+    {% set indicator = item.indicator %}
+    {% set type = item.type %}
     <div class="col-md-6 col-lg-4">
         <div class="card h-100 shadow-sm">
             <div class="card-body">
-                <h5 class="card-title">
-                    <i class="bi bi-flag-fill text-primary"></i> {{ indicator.title }}
-                </h5>
+                <div class="d-flex justify-content-between align-items-start mb-2">
+                    <h5 class="card-title mb-0">
+                        <i class="bi bi-flag-fill text-primary"></i> {{ indicator.title }}
+                    </h5>
+                    {% if type %}
+                        <span class="badge ms-2" style="background-color: {{ type.color }};" title="{{ type.name }}">
+                            {{ type.name }}
+                        </span>
+                    {% endif %}
+                </div>
                 {% if indicator.description %}
                 <p class="card-text text-muted">
                     {{ indicator.description[:150] }}{% if indicator.description|length > 150 %}...{% endif %}
                 </p>
                 {% else %}
                 <p class="card-text text-muted"><em>No description provided</em></p>
+                {% endif %}
+                
+                {% if indicator.url %}
+                <div class="mb-2">
+                    <a href="{{ indicator.url }}" target="_blank" rel="noopener noreferrer" class="btn btn-sm btn-outline-info">
+                        <i class="bi bi-link-45deg"></i> Reference Link
+                    </a>
+                </div>
                 {% endif %}
                 
                 <div class="text-muted small mb-3">

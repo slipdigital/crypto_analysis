@@ -72,6 +72,52 @@
                 </div>
             </div>
             
+            <div class="mb-3">
+                <label for="url" class="form-label">
+                    Reference URL
+                </label>
+                <input 
+                    type="url" 
+                    class="form-control" 
+                    id="url" 
+                    name="url" 
+                    value="{{ indicator.url if indicator and indicator.url else '' }}"
+                    maxlength="500"
+                    placeholder="https://example.com/indicator-documentation"
+                >
+                <div class="form-text">
+                    <i class="bi bi-info-circle"></i> Optional URL for documentation, reference material, or related resources
+                </div>
+            </div>
+            
+            <div class="mb-3">
+                <label for="indicator_type_id" class="form-label">
+                    Indicator Type
+                </label>
+                <select 
+                    class="form-select" 
+                    id="indicator_type_id" 
+                    name="indicator_type_id">
+                    <option value="">-- No Type --</option>
+                    {% for type in types %}
+                        <option value="{{ type.id }}" 
+                                {% if indicator and indicator.indicator_type_id == type.id %}selected{% endif %}
+                                data-color="{{ type.color }}">
+                            {{ type.name }}
+                        </option>
+                    {% endfor %}
+                </select>
+                <div class="form-text">
+                    <i class="bi bi-info-circle"></i> Optional category for organizing indicators
+                    {% if types|length == 0 %}
+                        <br><a href="{{ url_for('indicator_types') }}" target="_blank">Create indicator types</a> to organize your indicators
+                    {% endif %}
+                </div>
+                <div id="typePreview" class="mt-2" style="display: none;">
+                    <span class="badge" id="typePreviewBadge">Selected Type</span>
+                </div>
+            </div>
+            
             {% if mode == 'edit' and indicator %}
             <div class="alert alert-info">
                 <div class="row">
@@ -138,4 +184,30 @@
     </div>
 </div>
 
+<script>
+    // Show color preview when type is selected
+    const typeSelect = document.getElementById('indicator_type_id');
+    const typePreview = document.getElementById('typePreview');
+    const typePreviewBadge = document.getElementById('typePreviewBadge');
+    
+    function updateTypePreview() {
+        const selectedOption = typeSelect.options[typeSelect.selectedIndex];
+        if (selectedOption.value) {
+            const color = selectedOption.getAttribute('data-color');
+            const name = selectedOption.text;
+            typePreviewBadge.textContent = name;
+            typePreviewBadge.style.backgroundColor = color;
+            typePreview.style.display = 'block';
+        } else {
+            typePreview.style.display = 'none';
+        }
+    }
+    
+    typeSelect.addEventListener('change', updateTypePreview);
+    
+    // Initialize preview on page load
+    updateTypePreview();
+</script>
+
 {% endblock %}
+
