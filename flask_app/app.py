@@ -1016,7 +1016,6 @@ def indicator_data_range_entry(indicator_id):
         start_date_str = request.form.get('start_date', '').strip()
         end_date_str = request.form.get('end_date', '').strip()
         value_str = request.form.get('value', '').strip()
-        skip_weekends = request.form.get('skip_weekends') == 'on'
         overwrite_existing = request.form.get('overwrite_existing') == 'on'
         
         if not start_date_str or not end_date_str:
@@ -1067,11 +1066,6 @@ def indicator_data_range_entry(indicator_id):
             dates_to_process = []
             
             while current_date <= end_date:
-                # Skip weekends if requested
-                if skip_weekends and current_date.weekday() >= 5:  # 5=Saturday, 6=Sunday
-                    current_date += timedelta(days=1)
-                    continue
-                
                 dates_to_process.append(current_date)
                 current_date += timedelta(days=1)
             

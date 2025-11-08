@@ -71,13 +71,13 @@
                                        class="form-control" 
                                        id="value" 
                                        name="value" 
-                                       step="0.1" 
+                                       step="0.001" 
                                        min="-1.0" 
                                        max="1.0" 
                                        required
-                                       placeholder="e.g., 0.5">
+                                       placeholder="e.g., 0.500">
                                 <span class="input-group-text">
-                                    <span id="valueDisplay">0.0</span>
+                                    <span id="valueDisplay">0.000</span>
                                 </span>
                             </div>
                             <div class="form-text">
@@ -102,19 +102,6 @@
                                     <span>0.0</span>
                                     <span>1.0</span>
                                 </div>
-                            </div>
-                        </div>
-
-                        <div class="mb-3">
-                            <div class="form-check">
-                                <input class="form-check-input" 
-                                       type="checkbox" 
-                                       id="skip_weekends" 
-                                       name="skip_weekends"
-                                       checked>
-                                <label class="form-check-label" for="skip_weekends">
-                                    Skip weekends (Saturday & Sunday)
-                                </label>
                             </div>
                         </div>
 
@@ -167,19 +154,19 @@
                 <div class="card-body">
                     <div class="d-grid gap-2">
                         <button type="button" class="btn btn-outline-danger btn-sm" onclick="setValueQuick(-1.0)">
-                            Set to -1.0 (Minimum)
+                            Set to -1.000 (Minimum)
                         </button>
                         <button type="button" class="btn btn-outline-warning btn-sm" onclick="setValueQuick(-0.5)">
-                            Set to -0.5
+                            Set to -0.500
                         </button>
                         <button type="button" class="btn btn-outline-secondary btn-sm" onclick="setValueQuick(0)">
-                            Set to 0.0 (Neutral)
+                            Set to 0.000 (Neutral)
                         </button>
                         <button type="button" class="btn btn-outline-info btn-sm" onclick="setValueQuick(0.5)">
-                            Set to 0.5
+                            Set to 0.500
                         </button>
                         <button type="button" class="btn btn-outline-success btn-sm" onclick="setValueQuick(1.0)">
-                            Set to 1.0 (Maximum)
+                            Set to 1.000 (Maximum)
                         </button>
                     </div>
                 </div>
@@ -194,7 +181,6 @@
                 <div class="card-body">
                     <ul class="small mb-0">
                         <li>Use this to fill historical data quickly</li>
-                        <li>Weekends are skipped by default (markets closed)</li>
                         <li>Existing data won't be overwritten unless you check the option</li>
                         <li>The same value will be applied to all dates in the range</li>
                         <li>Use single date entry for different values per date</li>
@@ -212,7 +198,6 @@
     const valueBarText = document.getElementById('valueBarText');
     const startDateInput = document.getElementById('start_date');
     const endDateInput = document.getElementById('end_date');
-    const skipWeekendsCheckbox = document.getElementById('skip_weekends');
     const summaryCard = document.getElementById('summaryCard');
     const dateCountSpan = document.getElementById('dateCount');
     const summaryStartDate = document.getElementById('summaryStartDate');
@@ -223,8 +208,8 @@
         const value = parseFloat(valueInput.value) || 0;
         const clamped = Math.max(-1, Math.min(1, value));
         
-        valueDisplay.textContent = clamped.toFixed(1);
-        valueBarText.textContent = clamped.toFixed(1);
+        valueDisplay.textContent = clamped.toFixed(3);
+        valueBarText.textContent = clamped.toFixed(3);
         
         // Calculate percentage (0-100) from value (-1 to 1)
         const percentage = ((clamped + 1) / 2) * 100;
@@ -247,11 +232,11 @@
     }
 
     function setValueQuick(value) {
-        valueInput.value = value.toFixed(1);
+        valueInput.value = value.toFixed(3);
         updateValueDisplay();
     }
 
-    function countDaysInRange(start, end, skipWeekends) {
+    function countDaysInRange(start, end) {
         if (!start || !end) return 0;
         
         const startDate = new Date(start);
@@ -263,9 +248,7 @@
         let current = new Date(startDate);
         
         while (current <= endDate) {
-            if (!skipWeekends || (current.getDay() !== 0 && current.getDay() !== 6)) {
-                count++;
-            }
+            count++;
             current.setDate(current.getDate() + 1);
         }
         
@@ -275,16 +258,15 @@
     function updateSummary() {
         const startDate = startDateInput.value;
         const endDate = endDateInput.value;
-        const skipWeekends = skipWeekendsCheckbox.checked;
         const value = parseFloat(valueInput.value) || 0;
         
         if (startDate && endDate) {
-            const count = countDaysInRange(startDate, endDate, skipWeekends);
+            const count = countDaysInRange(startDate, endDate);
             
             dateCountSpan.textContent = count;
             summaryStartDate.textContent = startDate;
             summaryEndDate.textContent = endDate;
-            summaryValue.textContent = value.toFixed(1);
+            summaryValue.textContent = value.toFixed(3);
             
             summaryCard.style.display = 'block';
         } else {
@@ -295,7 +277,6 @@
     valueInput.addEventListener('input', updateValueDisplay);
     startDateInput.addEventListener('change', updateSummary);
     endDateInput.addEventListener('change', updateSummary);
-    skipWeekendsCheckbox.addEventListener('change', updateSummary);
 
     // Initialize
     updateValueDisplay();
