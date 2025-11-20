@@ -11,7 +11,7 @@ Usage:
 import json
 from sqlalchemy import create_engine, text
 from sqlalchemy.orm import sessionmaker
-from models import Base, IndicatorType
+from flask_app.models import Base, IndicatorType
 
 def load_config():
     with open('config/settings.json', 'r') as f:

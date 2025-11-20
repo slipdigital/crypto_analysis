@@ -12,3 +12,4 @@ flask-cors>=4.0.0
 plotly>=5.15.0
 redis>=4.5.0
 celery>=5.5.0
+SQLAlchemy>=2.0.0

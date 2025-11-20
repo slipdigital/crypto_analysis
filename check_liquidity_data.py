@@ -12,7 +12,7 @@ import json
 from datetime import datetime
 from sqlalchemy import create_engine, func
 from sqlalchemy.orm import sessionmaker
-from models import GlobalLiquidity
+from flask_app.models import GlobalLiquidity
 
 
 def load_config():

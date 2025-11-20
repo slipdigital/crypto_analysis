@@ -16,7 +16,7 @@ from datetime import datetime, timedelta
 
 app = Flask(__name__)
 
-def load_config(path='../config/settings.json'):
+def load_config(path='config/settings.json'):
     config_path = os.path.join(os.path.dirname(__file__), path)
     with open(config_path, 'r') as f:
         return json.load(f)

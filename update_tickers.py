@@ -4,7 +4,7 @@ from datetime import datetime
 import requests
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-from models import Ticker, Base
+from flask_app.models import Ticker, Base
 
 def load_config(path='config/settings.json'):
     with open(path, 'r') as f:

@@ -10,7 +10,7 @@ import requests
 from sqlalchemy import create_engine, func
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.exc import IntegrityError
-from models import Ticker, TickerData, Base
+from flask_app.models import Ticker, TickerData, Base
 
 def load_config(path='config/settings.json'):
     with open(path, 'r') as f:

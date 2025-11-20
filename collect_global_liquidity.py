@@ -24,7 +24,7 @@ from datetime import datetime, timedelta
 from sqlalchemy import create_engine, and_
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.exc import IntegrityError
-from models import Base, GlobalLiquidity
+from flask_app.models import Base, GlobalLiquidity
 
 # FRED API Configuration
 FRED_API_BASE = "https://api.stlouisfed.org/fred/series"

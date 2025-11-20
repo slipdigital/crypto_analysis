@@ -4,7 +4,7 @@ This will detect missing columns, extra columns, and optionally drop unwanted co
 """
 import json
 from sqlalchemy import create_engine, inspect, text
-from models import Ticker, Base
+from flask_app.models import Ticker, Base
 
 def load_config(path='config/settings.json'):
     with open(path, 'r') as f:

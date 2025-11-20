@@ -7,7 +7,7 @@ import json
 import re
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-from models import Ticker
+from flask_app.models import Ticker
 
 def load_config(path='config/settings.json'):
     with open(path, 'r') as f:
