@@ -1,0 +1,466 @@
+{% extends "base.html" %}
+
+{% block title %}Compare Tickers - Relative Strength{% endblock %}
+
+{% block extra_head %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<!-- Select2 CSS -->
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+<link href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.min.css" rel="stylesheet" />
+<style>
+    .select2-container .select2-selection--single {
+        height: 38px;
+        padding: 0.375rem 0.75rem;
+    }
+    .select2-container--bootstrap-5 .select2-selection--single .select2-selection__rendered {
+        padding-left: 0;
+        line-height: 1.5;
+    }
+    .select2-container--bootstrap-5 .select2-selection--single .select2-selection__arrow {
+        height: 36px;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="mb-4">
+        <h1 class="h2">
+            <i class="bi bi-graph-up-arrow me-2"></i>Ticker Comparison - Relative Strength
+        </h1>
+        <p class="text-muted">Compare the relative performance of two tickers over time</p>
+    </div>
+
+    <!-- Ticker Selection Form -->
+    <div class="card mb-4">
+        <div class="card-header bg-primary text-white">
+            <h5 class="mb-0">
+                <i class="bi bi-sliders"></i> Select Tickers to Compare
+            </h5>
+        </div>
+        <div class="card-body">
+            <form method="GET" action="{{ {% url 'charts_compare' %} }}" class="row g-3">
+                <div class="col-md-3">
+                    <label for="ticker1" class="form-label">Ticker 1 (Numerator)</label>
+                    <select class="form-select" id="ticker1" name="ticker1" required>
+                        <option value="">-- Select Ticker 1 --</option>
+                        {% for ticker in tickers %}
+                            <option value="{{ ticker.ticker }}" 
+                                    data-market-cap="{{ ticker.market_cap if ticker.market_cap else 0 }}"
+                                    {% if ticker1 and ticker.ticker == ticker1.ticker %}selected{% endif %}>
+                                {{ ticker.ticker }} - {{ ticker.name }}{% if ticker.market_cap %} ({{ "${:,.0f}M".format(ticker.market_cap / 1000000) }}){% endif %}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                
+                <div class="col-md-3">
+                    <label for="ticker2" class="form-label">Ticker 2 (Denominator)</label>
+                    <select class="form-select" id="ticker2" name="ticker2" required>
+                        <option value="">-- Select Ticker 2 --</option>
+                        {% for ticker in tickers %}
+                            <option value="{{ ticker.ticker }}" 
+                                    data-market-cap="{{ ticker.market_cap if ticker.market_cap else 0 }}"
+                                    {% if ticker2 and ticker.ticker == ticker2.ticker %}selected{% endif %}>
+                                {{ ticker.ticker }} - {{ ticker.name }}{% if ticker.market_cap %} ({{ "${:,.0f}M".format(ticker.market_cap / 1000000) }}){% endif %}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                
+                <div class="col-md-3">
+                    <label for="days" class="form-label">Time Period</label>
+                    <select class="form-select" id="days" name="days">
+                        <option value="30" {% if days == 30 %}selected{% endif %}>30 Days</option>
+                        <option value="60" {% if days == 60 %}selected{% endif %}>60 Days</option>
+                        <option value="90" {% if days == 90 %}selected{% endif %}>90 Days</option>
+                        <option value="180" {% if days == 180 %}selected{% endif %}>180 Days</option>
+                        <option value="365" {% if days == 365 %}selected{% endif %}>1 Year</option>
+                    </select>
+                </div>
+                
+                <div class="col-md-3 d-flex align-items-end">
+                    <button type="submit" class="btn btn-primary w-100">
+                        <i class="bi bi-arrow-repeat"></i> Compare
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    {% if chart_data %}
+    <!-- Statistics Cards -->
+    <div class="row g-3 mb-4">
+        <div class="col-md-3">
+            <div class="card {% if chart_data.stats.ticker1_change > 0 %}border-success{% else %}border-danger{% endif %}">
+                <div class="card-body">
+                    <h6 class="card-subtitle mb-2 text-muted">{{ ticker1.ticker }}</h6>
+                    <h3 class="card-title mb-0 {% if chart_data.stats.ticker1_change > 0 %}text-success{% else %}text-danger{% endif %}">
+                        {{ "%+.2f"|format(chart_data.stats.ticker1_change) }}%
+                    </h3>
+                    <small class="text-muted">Period Change</small>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-3">
+            <div class="card {% if chart_data.stats.ticker2_change > 0 %}border-success{% else %}border-danger{% endif %}">
+                <div class="card-body">
+                    <h6 class="card-subtitle mb-2 text-muted">{{ ticker2.ticker }}</h6>
+                    <h3 class="card-title mb-0 {% if chart_data.stats.ticker2_change > 0 %}text-success{% else %}text-danger{% endif %}">
+                        {{ "%+.2f"|format(chart_data.stats.ticker2_change) }}%
+                    </h3>
+                    <small class="text-muted">Period Change</small>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-3">
+            <div class="card {% if chart_data.stats.ticker1_outperforming %}border-success{% else %}border-danger{% endif %}">
+                <div class="card-body">
+                    <h6 class="card-subtitle mb-2 text-muted">Relative Strength</h6>
+                    <h3 class="card-title mb-0 {% if chart_data.stats.rs_change > 0 %}text-success{% else %}text-danger{% endif %}">
+                        {{ "%+.2f"|format(chart_data.stats.rs_change) }}%
+                    </h3>
+                    <small class="text-muted">RS Change</small>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-3">
+            <div class="card border-info">
+                <div class="card-body">
+                    <h6 class="card-subtitle mb-2 text-muted">Winner</h6>
+                    <h3 class="card-title mb-0 text-info">
+                        {% if chart_data.stats.ticker1_outperforming %}
+                            {{ ticker1.ticker }}
+                        {% else %}
+                            {{ ticker2.ticker }}
+                        {% endif %}
+                    </h3>
+                    <small class="text-muted">Outperforming</small>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Charts -->
+    <div class="row g-3">
+        <!-- Indexed Performance Chart -->
+        <div class="col-lg-6">
+            <div class="card">
+                <div class="card-header bg-light">
+                    <h6 class="mb-0">
+                        <i class="bi bi-graph-up"></i> Indexed Performance (Base 100)
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <canvas id="indexedChart"></canvas>
+                    <div class="mt-3 text-muted small">
+                        <i class="bi bi-info-circle"></i> 
+                        Both tickers normalized to 100 at start of period for easy comparison
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Relative Strength Chart -->
+        <div class="col-lg-6">
+            <div class="card">
+                <div class="card-header bg-light">
+                    <h6 class="mb-0">
+                        <i class="bi bi-arrows-expand"></i> Relative Strength Ratio
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <canvas id="relativeStrengthChart"></canvas>
+                    <div class="mt-3 text-muted small">
+                        <i class="bi bi-info-circle"></i> 
+                        {{ ticker1.ticker }} / {{ ticker2.ticker }} ratio. Rising = {{ ticker1.ticker }} outperforming
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Price Charts -->
+        <div class="col-lg-6">
+            <div class="card">
+                <div class="card-header bg-light">
+                    <h6 class="mb-0">
+                        <i class="bi bi-currency-dollar"></i> {{ ticker1.ticker }} Price
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <canvas id="price1Chart"></canvas>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-lg-6">
+            <div class="card">
+                <div class="card-header bg-light">
+                    <h6 class="mb-0">
+                        <i class="bi bi-currency-dollar"></i> {{ ticker2.ticker }} Price
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <canvas id="price2Chart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Interpretation Guide -->
+    <div class="card mt-3">
+        <div class="card-header bg-light">
+            <h6 class="mb-0">
+                <i class="bi bi-book"></i> How to Read Relative Strength
+            </h6>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6">
+                    <h6 class="text-success">
+                        <i class="bi bi-arrow-up-circle"></i> {{ ticker1.ticker }} Outperforming
+                    </h6>
+                    <ul class="small">
+                        <li>Relative Strength ratio is <strong>rising</strong></li>
+                        <li>{{ ticker1.ticker }} gaining more or losing less than {{ ticker2.ticker }}</li>
+                        <li>Consider {{ ticker1.ticker }} for stronger momentum</li>
+                    </ul>
+                </div>
+                <div class="col-md-6">
+                    <h6 class="text-danger">
+                        <i class="bi bi-arrow-down-circle"></i> {{ ticker2.ticker }} Outperforming
+                    </h6>
+                    <ul class="small">
+                        <li>Relative Strength ratio is <strong>falling</strong></li>
+                        <li>{{ ticker2.ticker }} gaining more or losing less than {{ ticker1.ticker }}</li>
+                        <li>Consider {{ ticker2.ticker }} for stronger momentum</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const dates = {{ chart_data.dates | tojson }};
+        const ticker1Indexed = {{ chart_data.ticker1_indexed | tojson }};
+        const ticker2Indexed = {{ chart_data.ticker2_indexed | tojson }};
+        const ticker1Prices = {{ chart_data.ticker1_prices | tojson }};
+        const ticker2Prices = {{ chart_data.ticker2_prices | tojson }};
+        const relativeStrength = {{ chart_data.relative_strength | tojson }};
+        const rsNormalized = {{ chart_data.rs_normalized | tojson }};
+        
+        const commonOptions = {
+            responsive: true,
+            maintainAspectRatio: true,
+            aspectRatio: 2,
+            plugins: {
+                legend: {
+                    display: true,
+                    position: 'top'
+                }
+            },
+            scales: {
+                x: {
+                    grid: {
+                        display: false
+                    }
+                },
+                y: {
+                    beginAtZero: false
+                }
+            }
+        };
+        
+        // Indexed Performance Chart
+        new Chart(document.getElementById('indexedChart'), {
+            type: 'line',
+            data: {
+                labels: dates,
+                datasets: [
+                    {
+                        label: '{{ ticker1.ticker }}',
+                        data: ticker1Indexed,
+                        borderColor: 'rgb(54, 162, 235)',
+                        backgroundColor: 'rgba(54, 162, 235, 0.1)',
+                        borderWidth: 2,
+                        tension: 0.1,
+                        fill: true
+                    },
+                    {
+                        label: '{{ ticker2.ticker }}',
+                        data: ticker2Indexed,
+                        borderColor: 'rgb(255, 99, 132)',
+                        backgroundColor: 'rgba(255, 99, 132, 0.1)',
+                        borderWidth: 2,
+                        tension: 0.1,
+                        fill: true
+                    }
+                ]
+            },
+            options: {
+                ...commonOptions,
+                plugins: {
+                    ...commonOptions.plugins,
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                return context.dataset.label + ': ' + context.parsed.y.toFixed(2);
+                            }
+                        }
+                    }
+                }
+            }
+        });
+        
+        // Relative Strength Chart
+        new Chart(document.getElementById('relativeStrengthChart'), {
+            type: 'line',
+            data: {
+                labels: dates,
+                datasets: [
+                    {
+                        label: 'RS Ratio (Normalized to 100)',
+                        data: rsNormalized,
+                        borderColor: 'rgb(75, 192, 192)',
+                        backgroundColor: 'rgba(75, 192, 192, 0.1)',
+                        borderWidth: 3,
+                        tension: 0.1,
+                        fill: true
+                    }
+                ]
+            },
+            options: {
+                ...commonOptions,
+                plugins: {
+                    ...commonOptions.plugins,
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                return 'RS: ' + context.parsed.y.toFixed(2);
+                            }
+                        }
+                    }
+                }
+            }
+        });
+        
+        // Ticker 1 Price Chart
+        new Chart(document.getElementById('price1Chart'), {
+            type: 'line',
+            data: {
+                labels: dates,
+                datasets: [
+                    {
+                        label: '{{ ticker1.ticker }} Price',
+                        data: ticker1Prices,
+                        borderColor: 'rgb(54, 162, 235)',
+                        backgroundColor: 'rgba(54, 162, 235, 0.1)',
+                        borderWidth: 2,
+                        tension: 0.1,
+                        fill: true
+                    }
+                ]
+            },
+            options: {
+                ...commonOptions,
+                plugins: {
+                    ...commonOptions.plugins,
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                return '$' + context.parsed.y.toFixed(2);
+                            }
+                        }
+                    }
+                }
+            }
+        });
+        
+        // Ticker 2 Price Chart
+        new Chart(document.getElementById('price2Chart'), {
+            type: 'line',
+            data: {
+                labels: dates,
+                datasets: [
+                    {
+                        label: '{{ ticker2.ticker }} Price',
+                        data: ticker2Prices,
+                        borderColor: 'rgb(255, 99, 132)',
+                        backgroundColor: 'rgba(255, 99, 132, 0.1)',
+                        borderWidth: 2,
+                        tension: 0.1,
+                        fill: true
+                    }
+                ]
+            },
+            options: {
+                ...commonOptions,
+                plugins: {
+                    ...commonOptions.plugins,
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                return '$' + context.parsed.y.toFixed(2);
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    </script>
+    {% else %}
+    <div class="alert alert-info">
+        <i class="bi bi-info-circle me-2"></i>
+        Select two tickers and a time period above to compare their relative strength.
+    </div>
+    {% endif %}
+</div>
+
+<!-- jQuery and Select2 JS -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+<script>
+    $(document).ready(function() {
+        // Initialize Select2 on ticker dropdowns
+        $('#ticker1').select2({
+            theme: 'bootstrap-5',
+            placeholder: '-- Select Ticker 1 --',
+            allowClear: false,
+            width: '100%',
+            templateResult: formatTicker,
+            templateSelection: formatTickerSelection
+        });
+        
+        $('#ticker2').select2({
+            theme: 'bootstrap-5',
+            placeholder: '-- Select Ticker 2 --',
+            allowClear: false,
+            width: '100%',
+            templateResult: formatTicker,
+            templateSelection: formatTickerSelection
+        });
+        
+        // Format ticker options with market cap info
+        function formatTicker(ticker) {
+            if (!ticker.id) {
+                return ticker.text;
+            }
+            
+            var $ticker = $(
+                '<div class="d-flex justify-content-between align-items-center">' +
+                    '<span>' + ticker.text + '</span>' +
+                '</div>'
+            );
+            return $ticker;
+        }
+        
+        // Format selected ticker (shown in the dropdown)
+        function formatTickerSelection(ticker) {
+            return ticker.text;
+        }
+    });
+</script>
+{% endblock %}
