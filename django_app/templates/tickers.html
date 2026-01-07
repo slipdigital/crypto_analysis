@@ -34,7 +34,7 @@
     <div class="row">
         <div class="col-md-12">
             <div class="d-flex flex-wrap gap-2">
-                {% for item in outdated_tickers[:10] %}
+                {% for item in outdated_tickers|slice:":10" %}
                 <span class="badge bg-warning text-dark">
                     <i class="bi bi-star-fill me-1"></i>{{ item.ticker }} 
                     <small>({{ item.days_old }} day{% if item.days_old != 1 %}s{% endif %} old)</small>
@@ -42,7 +42,7 @@
                 {% endfor %}
                 {% if outdated_tickers|length > 10 %}
                 <span class="badge bg-secondary">
-                    +{{ outdated_tickers|length - 10 }} more
+                    +{{ outdated_tickers|length|add:"-10" }} more
                 </span>
                 {% endif %}
             </div>
@@ -148,8 +148,7 @@
                 </thead>
                 <tbody>
                     {% for ticker in tickers %}
-                    {% set is_outdated = ticker.ticker in ticker_data_ranges and (today - ticker_data_ranges[ticker.ticker].end_date).days > 2 %}
-                    <tr {% if is_outdated %}class="table-warning"{% endif %}>
+                    <tr>
                         <td>
                             <form method="post" action="/ticker/{{ ticker.ticker }}/toggle_favorite" style="display: inline;">
                 {% csrf_token %}
@@ -166,11 +165,8 @@
                             <a href="/ticker/{{ ticker.ticker }}" class="text-decoration-none fw-bold">
                                 {{ ticker.ticker }}
                             </a>
-                            {% if is_outdated %}
-                            <i class="bi bi-exclamation-triangle-fill text-warning ms-1" title="Data is {{ (today - ticker_data_ranges[ticker.ticker].end_date).days }} days old"></i>
-                            {% endif %}
                         </td>
-                        <td>{{ ticker.name or '-' }}</td>
+                        <td>{{ ticker.name|default:"-" }}</td>
                         <td>
                             {% if ticker.crypto_symbol %}
                             <span class="badge bg-warning text-dark">{{ ticker.crypto_symbol }}</span>
@@ -186,21 +182,20 @@
                             {% endif %}
                         </td>
                         <td>
-                            {% if ticker.ticker in ticker_data_ranges %}
-                            <small class="text-muted">{{ ticker_data_ranges[ticker.ticker].start_date|date:"%Y-%m-%d" }}</small>
+                            {% if ticker.data_start_date %}
+                            <small class="text-muted">{{ ticker.data_start_date|date:"%Y-%m-%d" }}</small>
                             {% else %}
                             <span class="text-danger">-</span>
                             {% endif %}
                         </td>
                         <td>
-                            {% if ticker.ticker in ticker_data_ranges %}
-                            <small class="text-muted">{{ ticker_data_ranges[ticker.ticker].end_date|date:"%Y-%m-%d" }}</small>
-                            {% set days_old = (today - ticker_data_ranges[ticker.ticker].end_date).days %}
-                            {% if days_old > 2 %}
-                            <br><span class="badge bg-warning text-dark">{{ days_old }} days ago</span>
-                            {% elif days_old == 1 %}
+                            {% if ticker.data_end_date %}
+                            <small class="text-muted">{{ ticker.data_end_date|date:"%Y-%m-%d" }}</small>
+                            {% if ticker.data_days_old > 2 %}
+                            <br><span class="badge bg-warning text-dark">{{ ticker.data_days_old }} days ago</span>
+                            {% elif ticker.data_days_old == 1 %}
                             <br><span class="badge bg-info text-dark">Yesterday</span>
-                            {% elif days_old == 0 %}
+                            {% elif ticker.data_days_old == 0 %}
                             <br><span class="badge bg-success text-white">Today</span>
                             {% endif %}
                             {% else %}
@@ -221,7 +216,7 @@
                             <span class="badge bg-danger">Inactive</span>
                             {% endif %}
                         </td>
-                        <td><small class="text-muted">{{ ticker.last_updated or '-' }}</small></td>
+                        <td><small class="text-muted">{{ ticker.last_updated|default:"-" }}</small></td>
                         <td>
                             <div class="btn-group btn-group-sm" role="group">
                                 <a href="/ticker/{{ ticker.ticker }}/chart" class="btn btn-outline-success" title="View Chart">

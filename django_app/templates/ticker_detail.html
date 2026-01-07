@@ -44,7 +44,7 @@
                 <div class="card h-100">
                     <div class="card-body">
                         <h6 class="card-subtitle mb-2 text-muted">Full Name</h6>
-                        <p class="card-text fw-bold">{{ ticker.name or 'N/A' }}</p>
+                        <p class="card-text fw-bold">{{ ticker.name|default:"N/A" }}</p>
                     </div>
                 </div>
             </div>
@@ -68,7 +68,7 @@
                 <div class="card h-100">
                     <div class="card-body">
                         <h6 class="card-subtitle mb-2 text-muted">Market</h6>
-                        <p class="card-text fw-bold">{{ ticker.market or 'N/A' }}</p>
+                        <p class="card-text fw-bold">{{ ticker.market|default:"N/A" }}</p>
                     </div>
                 </div>
             </div>
@@ -77,7 +77,7 @@
                 <div class="card h-100">
                     <div class="card-body">
                         <h6 class="card-subtitle mb-2 text-muted">Locale</h6>
-                        <p class="card-text fw-bold">{{ ticker.locale or 'N/A' }}</p>
+                        <p class="card-text fw-bold">{{ ticker.locale|default:"N/A" }}</p>
                     </div>
                 </div>
             </div>
@@ -101,7 +101,7 @@
                 <div class="card h-100">
                     <div class="card-body">
                         <h6 class="card-subtitle mb-2 text-muted">Currency Symbol</h6>
-                        <p class="card-text fw-bold">{{ ticker.currency_symbol or 'N/A' }}</p>
+                        <p class="card-text fw-bold">{{ ticker.currency_symbol|default:"N/A" }}</p>
                     </div>
                 </div>
             </div>
@@ -110,7 +110,7 @@
                 <div class="card h-100">
                     <div class="card-body">
                         <h6 class="card-subtitle mb-2 text-muted">Base Currency Symbol</h6>
-                        <p class="card-text fw-bold">{{ ticker.base_currency_symbol or 'N/A' }}</p>
+                        <p class="card-text fw-bold">{{ ticker.base_currency_symbol|default:"N/A" }}</p>
                     </div>
                 </div>
             </div>
@@ -149,7 +149,7 @@
                 <div class="card h-100">
                     <div class="card-body">
                         <h6 class="card-subtitle mb-2 text-muted">Last Updated</h6>
-                        <p class="card-text fw-bold">{{ ticker.last_updated or 'N/A' }}</p>
+                        <p class="card-text fw-bold">{{ ticker.last_updated|default:"N/A" }}</p>
                     </div>
                 </div>
             </div>

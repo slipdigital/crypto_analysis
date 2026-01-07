@@ -2,6 +2,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from django.db.models import Min, Max, Count, Q
 from datetime import datetime, timedelta
+import json
 from .models import Ticker, TickerData, GlobalLiquidity, IndicatorType, Indicator, IndicatorData
 
 
@@ -52,20 +53,35 @@ def index(request):
     
     # Get date ranges for each ticker from ticker_data
     ticker_data_ranges = {}
-    for ticker in tickers:
+    today = datetime.now().date()
+    
+    # Convert to list to allow modification
+    tickers_list = list(tickers)
+    
+    for ticker in tickers_list:
         date_range = TickerData.objects.filter(ticker=ticker).aggregate(
             start_date=Min('date'),
             end_date=Max('date')
         )
         
         if date_range['start_date']:
+            end_date = date_range['end_date']
+            days_old = (today - end_date).days if end_date else None
             ticker_data_ranges[ticker.ticker] = {
                 'start_date': date_range['start_date'],
-                'end_date': date_range['end_date']
+                'end_date': end_date,
+                'days_old': days_old
             }
+            # Attach computed data directly to ticker object for easy template access
+            ticker.data_start_date = date_range['start_date']
+            ticker.data_end_date = end_date
+            ticker.data_days_old = days_old
+        else:
+            ticker.data_start_date = None
+            ticker.data_end_date = None
+            ticker.data_days_old = None
     
     # Check for outdated data (data older than 2 days)
-    today = datetime.now().date()
     threshold_date = today - timedelta(days=2)
     
     # Get favorite ticker symbols for filtering
@@ -92,13 +108,13 @@ def index(request):
     favorites_count = Ticker.objects.filter(is_favorite=True).count()
     
     return render(request, 'tickers.html', {
-        'tickers': tickers,
+        'tickers': tickers_list,
         'active_only': active_only,
         'usd_only': usd_only,
         'has_data_only': has_data_only,
         'favorites_only': favorites_only,
         'search': search,
-        'total_count': tickers.count(),
+        'total_count': len(tickers_list),
         'favorites_count': favorites_count,
         'ticker_data_ranges': ticker_data_ranges,
         'outdated_tickers': outdated_tickers,
@@ -250,18 +266,26 @@ def charts_compare(request):
                     start_price1 = prices1[common_dates[0]]
                     start_price2 = prices2[common_dates[0]]
                     
+                    dates_list = common_dates
+                    ticker1_prices_list = [prices1[d] for d in common_dates]
+                    ticker2_prices_list = [prices2[d] for d in common_dates]
+                    ticker1_indexed_list = [(prices1[d] / start_price1) * 100 for d in common_dates]
+                    ticker2_indexed_list = [(prices2[d] / start_price2) * 100 for d in common_dates]
+                    relative_strength_list = [(prices1[d] / prices2[d]) for d in common_dates]
+                    rs_normalized_list = [((prices1[d] / prices2[d]) / (start_price1 / start_price2)) * 100 for d in common_dates]
+                    
                     chart_data = {
-                        'dates': common_dates,
-                        'ticker1_prices': [prices1[d] for d in common_dates],
-                        'ticker2_prices': [prices2[d] for d in common_dates],
-                        'ticker1_indexed': [(prices1[d] / start_price1) * 100 for d in common_dates],
-                        'ticker2_indexed': [(prices2[d] / start_price2) * 100 for d in common_dates],
-                        'relative_strength': [(prices1[d] / prices2[d]) for d in common_dates],
-                        'rs_normalized': [((prices1[d] / prices2[d]) / (start_price1 / start_price2)) * 100 for d in common_dates]
+                        'dates': json.dumps(dates_list),
+                        'ticker1_prices': json.dumps(ticker1_prices_list),
+                        'ticker2_prices': json.dumps(ticker2_prices_list),
+                        'ticker1_indexed': json.dumps(ticker1_indexed_list),
+                        'ticker2_indexed': json.dumps(ticker2_indexed_list),
+                        'relative_strength': json.dumps(relative_strength_list),
+                        'rs_normalized': json.dumps(rs_normalized_list)
                     }
                     
                     # Calculate statistics
-                    rs_values = chart_data['relative_strength']
+                    rs_values = relative_strength_list
                     chart_data['stats'] = {
                         'ticker1_change': ((prices1[common_dates[-1]] / start_price1) - 1) * 100,
                         'ticker2_change': ((prices2[common_dates[-1]] / start_price2) - 1) * 100,

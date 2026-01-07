@@ -39,16 +39,16 @@
             </h5>
         </div>
         <div class="card-body">
-            <form method="GET" action="{{ {% url 'charts_compare' %} }}" class="row g-3">
+            <form method="GET" action="{% url 'charts_compare' %}" class="row g-3">
                 <div class="col-md-3">
                     <label for="ticker1" class="form-label">Ticker 1 (Numerator)</label>
                     <select class="form-select" id="ticker1" name="ticker1" required>
                         <option value="">-- Select Ticker 1 --</option>
                         {% for ticker in tickers %}
                             <option value="{{ ticker.ticker }}" 
-                                    data-market-cap="{{ ticker.market_cap if ticker.market_cap else 0 }}"
+                                    data-market-cap="{{ ticker.market_cap|default:0 }}"
                                     {% if ticker1 and ticker.ticker == ticker1.ticker %}selected{% endif %}>
-                                {{ ticker.ticker }} - {{ ticker.name }}{% if ticker.market_cap %} ({{ "${:,.0f}M".format(ticker.market_cap / 1000000) }}){% endif %}
+                                {{ ticker.ticker }} - {{ ticker.name }}
                             </option>
                         {% endfor %}
                     </select>
@@ -60,9 +60,9 @@
                         <option value="">-- Select Ticker 2 --</option>
                         {% for ticker in tickers %}
                             <option value="{{ ticker.ticker }}" 
-                                    data-market-cap="{{ ticker.market_cap if ticker.market_cap else 0 }}"
+                                    data-market-cap="{{ ticker.market_cap|default:0 }}"
                                     {% if ticker2 and ticker.ticker == ticker2.ticker %}selected{% endif %}>
-                                {{ ticker.ticker }} - {{ ticker.name }}{% if ticker.market_cap %} ({{ "${:,.0f}M".format(ticker.market_cap / 1000000) }}){% endif %}
+                                {{ ticker.ticker }} - {{ ticker.name }}
                             </option>
                         {% endfor %}
                     </select>
@@ -96,7 +96,7 @@
                 <div class="card-body">
                     <h6 class="card-subtitle mb-2 text-muted">{{ ticker1.ticker }}</h6>
                     <h3 class="card-title mb-0 {% if chart_data.stats.ticker1_change > 0 %}text-success{% else %}text-danger{% endif %}">
-                        {{ "%+.2f"|format(chart_data.stats.ticker1_change) }}%
+                        {% if chart_data.stats.ticker1_change > 0 %}+{% endif %}{{ chart_data.stats.ticker1_change|floatformat:2 }}%
                     </h3>
                     <small class="text-muted">Period Change</small>
                 </div>
@@ -108,7 +108,7 @@
                 <div class="card-body">
                     <h6 class="card-subtitle mb-2 text-muted">{{ ticker2.ticker }}</h6>
                     <h3 class="card-title mb-0 {% if chart_data.stats.ticker2_change > 0 %}text-success{% else %}text-danger{% endif %}">
-                        {{ "%+.2f"|format(chart_data.stats.ticker2_change) }}%
+                        {% if chart_data.stats.ticker2_change > 0 %}+{% endif %}{{ chart_data.stats.ticker2_change|floatformat:2 }}%
                     </h3>
                     <small class="text-muted">Period Change</small>
                 </div>
@@ -120,7 +120,7 @@
                 <div class="card-body">
                     <h6 class="card-subtitle mb-2 text-muted">Relative Strength</h6>
                     <h3 class="card-title mb-0 {% if chart_data.stats.rs_change > 0 %}text-success{% else %}text-danger{% endif %}">
-                        {{ "%+.2f"|format(chart_data.stats.rs_change) }}%
+                        {% if chart_data.stats.rs_change > 0 %}+{% endif %}{{ chart_data.stats.rs_change|floatformat:2 }}%
                     </h3>
                     <small class="text-muted">RS Change</small>
                 </div>
@@ -244,13 +244,13 @@
     </div>
 
     <script>
-        const dates = {{ chart_data.dates | tojson }};
-        const ticker1Indexed = {{ chart_data.ticker1_indexed | tojson }};
-        const ticker2Indexed = {{ chart_data.ticker2_indexed | tojson }};
-        const ticker1Prices = {{ chart_data.ticker1_prices | tojson }};
-        const ticker2Prices = {{ chart_data.ticker2_prices | tojson }};
-        const relativeStrength = {{ chart_data.relative_strength | tojson }};
-        const rsNormalized = {{ chart_data.rs_normalized | tojson }};
+        const dates = {{ chart_data.dates|safe }};
+        const ticker1Indexed = {{ chart_data.ticker1_indexed|safe }};
+        const ticker2Indexed = {{ chart_data.ticker2_indexed|safe }};
+        const ticker1Prices = {{ chart_data.ticker1_prices|safe }};
+        const ticker2Prices = {{ chart_data.ticker2_prices|safe }};
+        const relativeStrength = {{ chart_data.relative_strength|safe }};
+        const rsNormalized = {{ chart_data.rs_normalized|safe }};
         
         const commonOptions = {
             responsive: true,

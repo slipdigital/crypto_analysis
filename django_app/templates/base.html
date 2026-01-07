@@ -1,3 +1,4 @@
+{% load custom_filters %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -34,12 +35,12 @@
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link {% if request.path.startswith('/indicators') %}active{% endif %}" href="/indicators">
+                        <a class="nav-link {% if request.path|startswith:'/indicators' %}active{% endif %}" href="/indicators">
                             <i class="bi bi-flag"></i> Indicators
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link {% if request.path.startswith('/indicator-types') %}active{% endif %}" href="/indicator-types">
+                        <a class="nav-link {% if request.path|startswith:'/indicator-types' %}active{% endif %}" href="/indicator-types">
                             <i class="bi bi-tags"></i> Types
                         </a>
                     </li>

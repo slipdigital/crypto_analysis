@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load custom_filters %}
 
 {% block title %}Indicator Aggregation - Crypto Dashboard{% endblock %}
 
@@ -33,7 +34,7 @@
             <div class="row g-3">
                 {% for type in indicator_types %}
                     {% if type.id in type_stats %}
-                    {% set stats = type_stats[type.id] %}
+                    {% with stats=type_stats|get_item:type.id %}\n                    {% if stats %}
                     <div class="col-md-4 col-lg-3">
                         <div class="card h-100 border-0 shadow-sm">
                             <div class="card-body">
@@ -45,7 +46,7 @@
                                     <div class="col-6">
                                         <small class="text-muted d-block">Average</small>
                                         <span class="badge {% if stats.avg > 0.3 %}bg-success{% elif stats.avg > 0 %}bg-info{% elif stats.avg == 0 %}bg-secondary{% elif stats.avg > -0.3 %}bg-warning{% else %}bg-danger{% endif %}">
-                                            {{ "%.2f"|format(stats.avg) }}
+                                            {{ stats.avg|floatformat:2 }}
                                         </span>
                                     </div>
                                     <div class="col-6">
@@ -54,16 +55,18 @@
                                     </div>
                                     <div class="col-6">
                                         <small class="text-muted d-block">Min</small>
-                                        <span class="text-danger">{{ "%.2f"|format(stats.min) }}</span>
+                                        <span class="text-danger">{{ stats.min|floatformat:2 }}</span>
                                     </div>
                                     <div class="col-6">
                                         <small class="text-muted d-block">Max</small>
-                                        <span class="text-success">{{ "%.2f"|format(stats.max) }}</span>
+                                        <span class="text-success">{{ stats.max|floatformat:2 }}</span>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
+                    {% endif %}
+                    {% endwith %}
                     {% endif %}
                 {% endfor %}
             </div>
@@ -104,7 +107,7 @@
                             <td class="text-center">
                                 {% if day_data.overall_average is not none %}
                                     <span class="badge {% if day_data.overall_average > 0.3 %}bg-success{% elif day_data.overall_average > 0 %}bg-info{% elif day_data.overall_average == 0 %}bg-secondary{% elif day_data.overall_average > -0.3 %}bg-warning{% else %}bg-danger{% endif %} px-3 py-2">
-                                        {{ "%.2f"|format(day_data.overall_average) }}
+                                        {{ day_data.overall_average|floatformat:2 }}
                                     </span>
                                 {% else %}
                                     <span class="text-muted">-</span>
@@ -115,17 +118,18 @@
                             </td>
                             {% for type in indicator_types %}
                             <td class="text-center">
-                                {% if type.id in day_data.type_averages %}
-                                    {% set type_avg = day_data.type_averages[type.id] %}
+                                {% with type_avg=day_data.type_averages|get_item:type.id %}
+                                {% if type_avg %}
                                     <div class="d-flex flex-column align-items-center">
                                         <span class="badge mb-1" style="background-color: {{ type.color }}; padding: 6px 12px;">
-                                            {{ "%.2f"|format(type_avg.average) }}
+                                            {{ type_avg.average|floatformat:2 }}
                                         </span>
                                         <small class="text-muted">{{ type_avg.count }} pts</small>
                                     </div>
                                 {% else %}
                                     <span class="text-muted">-</span>
                                 {% endif %}
+                                {% endwith %}
                             </td>
                             {% endfor %}
                         </tr>
@@ -139,7 +143,7 @@
     <div class="alert alert-info">
         <i class="bi bi-info-circle me-2"></i>
         No indicator data found for the selected time period. 
-        <a href="{{ {% url 'indicators' %} }}" class="alert-link">Add some indicator data</a> to see aggregations.
+        <a href="{% url 'indicators' %}" class="alert-link">Add some indicator data</a> to see aggregations.
     </div>
     {% endif %}
 </div>
