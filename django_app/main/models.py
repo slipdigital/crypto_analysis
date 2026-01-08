@@ -94,6 +94,15 @@ class Indicator(models.Model):
     description = models.TextField(null=True, blank=True)
     url = models.CharField(max_length=500, null=True, blank=True)
     indicator_type = models.ForeignKey(IndicatorType, on_delete=models.SET_NULL, null=True, blank=True)
+    
+    # Dynamic calculation fields
+    calculator_class = models.CharField(max_length=500, null=True, blank=True, 
+                                       help_text='Python module path to calculator class (e.g., indicators.calculators.RSICalculator)')
+    calculator_config = models.JSONField(null=True, blank=True,
+                                        help_text='JSON configuration for the calculator class')
+    auto_update = models.BooleanField(default=False,
+                                     help_text='Automatically update this indicator using the calculator class')
+    
     created_at = models.CharField(max_length=100, null=True, blank=True)
     updated_at = models.CharField(max_length=100, null=True, blank=True)
 
@@ -103,6 +112,47 @@ class Indicator(models.Model):
 
     def __str__(self):
         return self.title
+    
+    @property
+    def calculator_config_json(self):
+        """Return calculator_config as formatted JSON string for display in forms."""
+        if self.calculator_config:
+            import json
+            return json.dumps(self.calculator_config, indent=2)
+        return ''
+    
+    def get_calculator(self):
+        """Dynamically import and instantiate the calculator class."""
+        if not self.calculator_class:
+            return None
+        
+        try:
+            from importlib import import_module
+            module_path, class_name = self.calculator_class.rsplit('.', 1)
+            module = import_module(module_path)
+            calculator_class = getattr(module, class_name)
+            
+            # Instantiate with config if provided
+            if self.calculator_config:
+                return calculator_class(config=self.calculator_config)
+            return calculator_class()
+        except (ImportError, AttributeError, ValueError) as e:
+            raise ImportError(f"Could not import calculator class '{self.calculator_class}': {e}")
+    
+    def calculate_value(self, date=None, **kwargs):
+        """Calculate indicator value for a given date using the calculator class."""
+        calculator = self.get_calculator()
+        if not calculator:
+            raise ValueError(f"No calculator class configured for indicator '{self.title}'")
+        
+        if not hasattr(calculator, 'calculate'):
+            raise AttributeError(f"Calculator class must have a 'calculate' method")
+        
+        from datetime import datetime
+        if date is None:
+            date = datetime.now().date()
+        
+        return calculator.calculate(date=date, **kwargs)
 
 
 class IndicatorData(models.Model):

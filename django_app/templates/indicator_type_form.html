@@ -7,7 +7,7 @@
     <div class="row justify-content-center">
         <div class="col-lg-8">
             <div class="d-flex align-items-center mb-4">
-                <a href="{{ {% url 'indicator_types' %} }}" class="btn btn-outline-secondary me-3">
+                <a href="{% url 'indicator_types' %}" class="btn btn-outline-secondary me-3">
                     <i class="bi bi-arrow-left"></i>
                 </a>
                 <h1 class="h2 mb-0">
@@ -38,7 +38,7 @@
                                    class="form-control" 
                                    id="name" 
                                    name="name" 
-                                   value="{{ type.name if type else '' }}" 
+                                   value="{{ type.name|default:'' }}" 
                                    required
                                    maxlength="100"
                                    placeholder="e.g., Technical, Sentiment, On-Chain">
@@ -51,7 +51,7 @@
                                       id="description" 
                                       name="description" 
                                       rows="3"
-                                      placeholder="Brief description of this indicator type">{{ type.description if type else '' }}</textarea>
+                                      placeholder="Brief description of this indicator type">{{ type.description|default:'' }}</textarea>
                         </div>
 
                         <div class="mb-4">
@@ -61,13 +61,13 @@
                                        class="form-control form-control-color" 
                                        id="color" 
                                        name="color" 
-                                       value="{{ type.color if type else '#6B7280' }}"
+                                       value="{{ type.color|default:'#6B7280' }}"
                                        style="width: 60px; height: 40px;">
                                 <div>
-                                    <span id="colorCode" class="badge bg-secondary">{{ type.color if type else '#6B7280' }}</span>
+                                    <span id="colorCode" class="badge bg-secondary">{{ type.color|default:'#6B7280' }}</span>
                                     <div class="mt-1">
                                         <small class="text-muted">Preview:</small>
-                                        <span id="colorPreview" class="badge" style="background-color: {{ type.color if type else '#6B7280' }};">Sample Text</span>
+                                        <span id="colorPreview" class="badge" style="background-color: {{ type.color|default:'#6B7280' }};">Sample Text</span>
                                     </div>
                                 </div>
                             </div>
@@ -78,7 +78,7 @@
                             <button type="submit" class="btn btn-primary">
                                 <i class="bi bi-check-circle me-1"></i>{{ action }}
                             </button>
-                            <a href="{{ {% url 'indicator_types' %} }}" class="btn btn-secondary">
+                            <a href="{% url 'indicator_types' %}" class="btn btn-secondary">
                                 Cancel
                             </a>
                         </div>

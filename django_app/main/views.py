@@ -1,8 +1,17 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from django.db.models import Min, Max, Count, Q
+from django.core.management import call_command
+from django.core.cache import cache
+from django.http import JsonResponse
 from datetime import datetime, timedelta
 import json
+import subprocess
+import sys
+import os
+import threading
+import uuid
+from io import StringIO
 from .models import Ticker, TickerData, GlobalLiquidity, IndicatorType, Indicator, IndicatorData
 
 
@@ -442,7 +451,7 @@ def indicator_type_edit(request, type_id):
     
     return render(request, 'indicator_type_form.html', {
         'type': ind_type,
-        'action': 'Edit'
+        'action': 'Update'
     })
 
 
@@ -494,6 +503,9 @@ def indicator_create(request):
         description = request.POST.get('description', '').strip()
         url = request.POST.get('url', '').strip()
         type_id = request.POST.get('indicator_type_id')
+        auto_update = request.POST.get('auto_update') == 'on'
+        calculator_class = request.POST.get('calculator_class', '').strip()
+        calculator_config = request.POST.get('calculator_config', '').strip()
         
         if not title:
             messages.error(request, 'Title is required')
@@ -504,12 +516,38 @@ def indicator_create(request):
                 'types': types
             })
         
+        # Parse calculator_config JSON if provided
+        calculator_config_json = None
+        if calculator_config:
+            try:
+                calculator_config_json = json.loads(calculator_config)
+            except json.JSONDecodeError as e:
+                messages.error(request, f'Invalid JSON in calculator config: {str(e)}')
+                types = IndicatorType.objects.all().order_by('name')
+                indicator_obj = type('obj', (object,), {
+                    'title': title,
+                    'description': description,
+                    'url': url,
+                    'indicator_type_id': type_id,
+                    'auto_update': auto_update,
+                    'calculator_class': calculator_class,
+                    'calculator_config_json': calculator_config
+                })
+                return render(request, 'indicator_form.html', {
+                    'mode': 'create',
+                    'indicator': indicator_obj,
+                    'types': types
+                })
+        
         try:
             indicator = Indicator.objects.create(
                 title=title,
                 description=description,
                 url=url if url else None,
                 indicator_type_id=type_id if type_id else None,
+                auto_update=auto_update,
+                calculator_class=calculator_class if calculator_class else None,
+                calculator_config=calculator_config_json,
                 created_at=datetime.now().isoformat(),
                 updated_at=datetime.now().isoformat()
             )
@@ -537,6 +575,9 @@ def indicator_edit(request, indicator_id):
         description = request.POST.get('description', '').strip()
         url = request.POST.get('url', '').strip()
         type_id = request.POST.get('indicator_type_id')
+        auto_update = request.POST.get('auto_update') == 'on'
+        calculator_class = request.POST.get('calculator_class', '').strip()
+        calculator_config = request.POST.get('calculator_config', '').strip()
         
         if not title:
             messages.error(request, 'Title is required')
@@ -547,11 +588,30 @@ def indicator_edit(request, indicator_id):
                 'types': types
             })
         
+        # Parse calculator_config JSON if provided
+        calculator_config_json = None
+        if calculator_config:
+            try:
+                calculator_config_json = json.loads(calculator_config)
+            except json.JSONDecodeError as e:
+                messages.error(request, f'Invalid JSON in calculator config: {str(e)}')
+                types = IndicatorType.objects.all().order_by('name')
+                # Keep the invalid JSON so user can fix it
+                indicator.calculator_config_json = calculator_config
+                return render(request, 'indicator_form.html', {
+                    'mode': 'edit',
+                    'indicator': indicator,
+                    'types': types
+                })
+        
         try:
             indicator.title = title
             indicator.description = description
             indicator.url = url if url else None
             indicator.indicator_type_id = type_id if type_id else None
+            indicator.auto_update = auto_update
+            indicator.calculator_class = calculator_class if calculator_class else None
+            indicator.calculator_config = calculator_config_json
             indicator.updated_at = datetime.now().isoformat()
             indicator.save()
             
@@ -593,6 +653,18 @@ def indicator_data_list(request, indicator_id):
     # Get all data points for this indicator, ordered by date desc
     data_points = IndicatorData.objects.filter(indicator=indicator).order_by('-date')
     
+    # Add position_percent to each data point for visual representation
+    data_points_with_position = []
+    for dp in data_points:
+        data_points_with_position.append({
+            'id': dp.id,
+            'date': dp.date,
+            'value': dp.value,
+            'position_percent': round((dp.value + 1.0) / 2.0 * 100, 2),
+            'created_at': dp.created_at,
+            'updated_at': dp.updated_at
+        })
+    
     # Get statistics
     stats = None
     if data_points.exists():
@@ -602,13 +674,14 @@ def indicator_data_list(request, indicator_id):
             'avg': sum(values) / len(values),
             'min': min(values),
             'max': max(values),
+            'range': max(values) - min(values),
             'latest': data_points[0].value,
             'latest_date': data_points[0].date
         }
     
     return render(request, 'indicator_data.html', {
         'indicator': indicator,
-        'data_points': data_points,
+        'data_points': data_points_with_position,
         'stats': stats
     })
 
@@ -768,12 +841,40 @@ def indicator_data_delete(request, indicator_id, data_id):
 
 def indicator_bulk_entry(request):
     """Add data points for multiple indicators at once."""
-    # Get all indicators ordered by title
-    indicators_list = Indicator.objects.all().order_by('title')
+    # Get all indicators with their types
+    indicators_list = Indicator.objects.select_related('indicator_type').all().order_by(
+        'indicator_type__name', 'title'
+    )
     
     if not indicators_list.exists():
         messages.warning(request, 'No indicators found. Create some indicators first.')
         return redirect('indicators')
+    
+    # Group indicators by type
+    grouped_indicators = {}
+    for indicator in indicators_list:
+        type_name = indicator.indicator_type.name if indicator.indicator_type else 'Uncategorized'
+        if type_name not in grouped_indicators:
+            grouped_indicators[type_name] = []
+        grouped_indicators[type_name].append(indicator)
+    
+    # Check if we should load existing data for a specific date (from GET parameter)
+    selected_date = request.GET.get('date', '').strip()
+    existing_values = {}
+    
+    # Default to today if no date is provided
+    if not selected_date:
+        selected_date = datetime.now().date().isoformat()
+    
+    # Load existing data for the selected date
+    try:
+        date_obj = datetime.strptime(selected_date, '%Y-%m-%d').date()
+        # Fetch existing data for this date
+        existing_data = IndicatorData.objects.filter(date=date_obj).select_related('indicator')
+        for data in existing_data:
+            existing_values[data.indicator.id] = data.value
+    except ValueError:
+        selected_date = datetime.now().date().isoformat()  # Fall back to today on invalid date
     
     if request.method == 'POST':
         date_str = request.POST.get('date', '').strip()
@@ -782,6 +883,7 @@ def indicator_bulk_entry(request):
             messages.error(request, 'Date is required')
             return render(request, 'indicator_bulk_entry.html', {
                 'indicators': indicators_list,
+                'grouped_indicators': grouped_indicators,
                 'today': datetime.now().date().isoformat()
             })
         
@@ -798,8 +900,8 @@ def indicator_bulk_entry(request):
             for indicator in indicators_list:
                 value_str = request.POST.get(f'value_{indicator.id}', '').strip()
                 
-                # Skip if no value provided
-                if not value_str:
+                # Skip if no value provided (empty string only, not zero)
+                if value_str == '':
                     skipped_count += 1
                     continue
                 
@@ -863,7 +965,10 @@ def indicator_bulk_entry(request):
     
     return render(request, 'indicator_bulk_entry.html', {
         'indicators': indicators_list,
-        'today': datetime.now().date().isoformat()
+        'grouped_indicators': grouped_indicators,
+        'today': datetime.now().date().isoformat(),
+        'selected_date': selected_date,
+        'existing_values': existing_values
     })
 
 
@@ -1090,3 +1195,152 @@ def indicator_aggregate(request):
         'start_date': start_date,
         'end_date': end_date
     })
+
+
+# ====================
+# Data Updates Views
+# ====================
+
+class CachedOutput(StringIO):
+    """Custom output stream that writes to cache for real-time progress updates."""
+    def __init__(self, cache_key):
+        super().__init__()
+        self.cache_key = cache_key
+        cache.set(cache_key, {'output': '', 'status': 'running', 'progress': 0}, timeout=3600)
+    
+    def write(self, s):
+        super().write(s)
+        # Update cache with new output
+        data = cache.get(self.cache_key, {})
+        data['output'] = self.getvalue()
+        cache.set(self.cache_key, data, timeout=3600)
+        return len(s)
+
+
+def run_command_in_background(command_name, task_id):
+    """Run a Django management command in the background."""
+    try:
+        output = CachedOutput(f'update_task_{task_id}')
+        call_command(command_name, stdout=output, stderr=output)
+        
+        # Mark as complete
+        data = cache.get(f'update_task_{task_id}', {})
+        data['status'] = 'completed'
+        data['progress'] = 100
+        cache.set(f'update_task_{task_id}', data, timeout=3600)
+    except Exception as e:
+        # Mark as failed
+        data = cache.get(f'update_task_{task_id}', {})
+        data['status'] = 'failed'
+        data['error'] = str(e)
+        cache.set(f'update_task_{task_id}', data, timeout=3600)
+
+
+def data_updates(request):
+    """Display data updates page with options to run update scripts."""
+    return render(request, 'data_updates.html')
+
+
+def run_update(request, update_type):
+    """Run data update scripts or management commands."""
+    if request.method != 'POST':
+        return redirect('data_updates')
+    
+    # Get the project root directory for legacy scripts
+    django_app_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    project_root = os.path.dirname(django_app_dir)
+    
+    # Map update types to either Django management commands or legacy scripts
+    update_config = {
+        'ticker_data': {'type': 'command', 'name': 'update_ticker_data', 'display': 'Ticker Data Update'},
+        'tickers': {'type': 'script', 'name': 'update_tickers.py', 'display': 'Ticker List Update'},
+        'market_caps': {'type': 'script', 'name': 'update_market_caps_from_csv.py', 'display': 'Market Caps Update'},
+        'liquidity': {'type': 'script', 'name': 'collect_global_liquidity.py', 'display': 'Global Liquidity Update'}
+    }
+    
+    if update_type not in update_config:
+        messages.error(request, f'Invalid update type: {update_type}')
+        return redirect('data_updates')
+    
+    config = update_config[update_type]
+    
+    try:
+        if config['type'] == 'command':
+            # Generate unique task ID
+            task_id = str(uuid.uuid4())
+            
+            # Start command in background thread
+            thread = threading.Thread(
+                target=run_command_in_background,
+                args=(config['name'], task_id)
+            )
+            thread.daemon = True
+            thread.start()
+            
+            # Redirect to progress page
+            return redirect('update_progress', task_id=task_id, update_name=config['display'])
+        else:
+            # Run as legacy script (synchronous for now)
+            script_name = config['name']
+            script_path = os.path.join(project_root, script_name)
+            
+            if not os.path.exists(script_path):
+                error_msg = f'Update script not found: {script_name}'
+                messages.error(request, error_msg)
+                raise FileNotFoundError(error_msg)
+            
+            result = subprocess.run(
+                [sys.executable, script_path],
+                cwd=project_root,
+                capture_output=True,
+                text=True,
+                timeout=600,
+                check=True
+            )
+            
+            messages.success(request, f'Successfully ran {script_name}!')
+            if result.stdout:
+                # Show full output, not truncated
+                for line in result.stdout.split('\n')[:50]:  # Show first 50 lines
+                    if line.strip():
+                        messages.info(request, line)
+            return redirect('data_updates')
+    
+    except subprocess.TimeoutExpired as e:
+        error_msg = f'Update script timed out after 10 minutes'
+        messages.error(request, error_msg)
+        raise subprocess.TimeoutExpired(e.cmd, e.timeout, output=e.output, stderr=e.stderr) from e
+    
+    except subprocess.CalledProcessError as e:
+        error_msg = f'Update script failed with exit code {e.returncode}'
+        messages.error(request, error_msg)
+        if e.stderr:
+            messages.error(request, f'Error output: {e.stderr[:500]}')
+        raise subprocess.CalledProcessError(e.returncode, e.cmd, output=e.output, stderr=e.stderr) from e
+    
+    except Exception as e:
+        error_msg = f'Unexpected error running update: {str(e)}'
+        messages.error(request, error_msg)
+        raise RuntimeError(error_msg) from e
+
+
+def update_progress(request, task_id, update_name):
+    """Display progress page for running update task."""
+    return render(request, 'update_progress.html', {
+        'task_id': task_id,
+        'update_name': update_name
+    })
+
+
+def update_status(request, task_id):
+    """API endpoint to check update task status."""
+    data = cache.get(f'update_task_{task_id}')
+    
+    if not data:
+        return JsonResponse({
+            'status': 'not_found',
+            'output': 'Task not found',
+            'progress': 0
+        })
+    
+    return JsonResponse(data)

@@ -40,4 +40,10 @@ urlpatterns = [
     
     # Aggregate route
     path('indicators/aggregate/', views.indicator_aggregate, name='indicator_aggregate'),
+    
+    # Data Updates routes
+    path('data-updates/', views.data_updates, name='data_updates'),
+    path('data-updates/run/<str:update_type>/', views.run_update, name='run_update'),
+    path('data-updates/progress/<str:task_id>/<str:update_name>/', views.update_progress, name='update_progress'),
+    path('data-updates/status/<str:task_id>/', views.update_status, name='update_status'),
 ]

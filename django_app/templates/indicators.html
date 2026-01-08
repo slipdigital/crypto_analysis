@@ -46,16 +46,25 @@
                     <h5 class="card-title mb-0">
                         <i class="bi bi-flag-fill text-primary"></i> {{ item.indicator.title }}
                     </h5>
-                    {% if item.type %}
-                        <span class="badge ms-2" style="background-color: {{ item.type.color }};" title="{{ item.type.name }}">
+                    <div class="d-flex gap-1">
+                        {% if item.indicator.auto_update %}
+                        <span class="badge bg-success" title="Automatically updated by calculator">
+                            <i class="bi bi-robot"></i> Auto
+                        </span>
+                        {% else %}
+                        <span class="badge bg-secondary" title="Manual updates only">
+                            <i class="bi bi-hand-index"></i> Manual
+                        </span>
+                        {% endif %}
+                        {% if item.type %}
+                        <span class="badge" style="background-color: {{ item.type.color }};" title="{{ item.type.name }}">
                             {{ item.type.name }}
                         </span>
-                    {% endif %}
+                        {% endif %}
+                    </div>
                 </div>
                 {% if item.indicator.description %}
-                <p class="card-text text-muted">
-                    {{ item.indicator.description|slice:":150" }}{% if item.indicator.description|length > 150 %}...{% endif %}
-                </p>
+                <p class="card-text text-muted" style="white-space: pre-wrap;">{{ item.indicator.description }}</p>
                 {% else %}
                 <p class="card-text text-muted"><em>No description provided</em></p>
                 {% endif %}
@@ -69,6 +78,11 @@
                 {% endif %}
                 
                 <div class="text-muted small mb-3">
+                    {% if item.indicator.auto_update and item.indicator.calculator_class %}
+                    <div class="mb-1">
+                        <i class="bi bi-gear"></i> <strong>Calculator:</strong> {{ item.indicator.calculator_class|slice:"-30:" }}
+                    </div>
+                    {% endif %}
                     {% if item.indicator.created_at %}
                     <div><i class="bi bi-calendar-plus"></i> Created: {{ item.indicator.created_at|slice:":10" }}</div>
                     {% endif %}

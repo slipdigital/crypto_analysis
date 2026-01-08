@@ -106,10 +106,10 @@
                     <div class="alert alert-info">
                         <div class="row">
                             <div class="col-md-6">
-                                <strong>Created:</strong> {{ data_point.created_at if data_point.created_at else 'N/A' }}
+                                <strong>Created:</strong> {{ data_point.created_at|default:'N/A' }}
                             </div>
                             <div class="col-md-6">
-                                <strong>Last Updated:</strong> {{ data_point.updated_at if data_point.updated_at else 'N/A' }}
+                                <strong>Last Updated:</strong> {{ data_point.updated_at|default:'N/A' }}
                             </div>
                         </div>
                     </div>

@@ -125,3 +125,24 @@ STATIC_ROOT = BASE_DIR / 'staticfiles'
 
 # Default primary key field type
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# API Configuration
+POLYGON_API_KEY = os.environ.get('POLYGON_API_KEY', '5NJm5do7SXXp9aOKcr28ppmVCJ57MdP7')
+POLYGON_BASE_URL = 'https://api.polygon.io'
+POLYGON_RATE_LIMIT_DELAY = 0.5  # seconds between API calls
+POLYGON_MAX_RETRIES = 3
+POLYGON_TIMEOUT = 30  # seconds
+
+# FRED API Configuration
+FRED_API_KEY = os.environ.get('FRED_API_KEY', 'YOUR_FRED_API_KEY_HERE')
+
+# LiveCoinWatch API Configuration
+LIVECOINWATCH_API_KEY = os.environ.get('LIVECOINWATCH_API_KEY', '7c012d6c-5d87-42f1-aa9e-35ba937a5821')
+
+# Cache Configuration (for background task progress tracking)
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+        'LOCATION': 'unique-snowflake',
+    }
+}

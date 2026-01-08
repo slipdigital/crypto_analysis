@@ -9,7 +9,7 @@
         <div>
             <nav aria-label="breadcrumb">
                 <ol class="breadcrumb mb-2">
-                    <li class="breadcrumb-item"><a href="{{ {% url 'indicators' %} }}">Indicators</a></li>
+                    <li class="breadcrumb-item"><a href="{% url 'indicators' %}">Indicators</a></li>
                     <li class="breadcrumb-item active" aria-current="page">{{ indicator.title }}</li>
                 </ol>
             </nav>
@@ -19,10 +19,10 @@
             {% endif %}
         </div>
         <div>
-            <a href="{{ {% url 'indicator_data_range_entry' indicator.id %} }}" class="btn btn-success me-2">
+            <a href="{% url 'indicator_data_range_entry' indicator.id %}" class="btn btn-success me-2">
                 <i class="bi bi-calendar-range"></i> Date Range Entry
             </a>
-            <a href="{{ {% url 'indicator_data_add' indicator.id %} }}" class="btn btn-primary">
+            <a href="{% url 'indicator_data_add' indicator.id %}" class="btn btn-primary">
                 <i class="bi bi-plus-circle"></i> Add Data Point
             </a>
         </div>
@@ -41,25 +41,25 @@
                 <div class="col-md-2">
                     <div class="text-muted small">Latest Value</div>
                     <div class="fs-5 fw-bold" style="color: {% if stats.latest > 0 %}#198754{% elif stats.latest < 0 %}#dc3545{% else %}#6c757d{% endif %}">
-                        {{ "%.3f"|format(stats.latest) }}
+                        {{ stats.latest|floatformat:3 }}
                     </div>
                     <div class="text-muted small">{{ stats.latest_date }}</div>
                 </div>
                 <div class="col-md-2">
                     <div class="text-muted small">Average</div>
-                    <div class="fs-5 fw-bold">{{ "%.3f"|format(stats.avg) }}</div>
+                    <div class="fs-5 fw-bold">{{ stats.avg|floatformat:3 }}</div>
                 </div>
                 <div class="col-md-2">
                     <div class="text-muted small">Minimum</div>
-                    <div class="fs-5 fw-bold text-danger">{{ "%.3f"|format(stats.min) }}</div>
+                    <div class="fs-5 fw-bold text-danger">{{ stats.min|floatformat:3 }}</div>
                 </div>
                 <div class="col-md-2">
                     <div class="text-muted small">Maximum</div>
-                    <div class="fs-5 fw-bold text-success">{{ "%.3f"|format(stats.max) }}</div>
+                    <div class="fs-5 fw-bold text-success">{{ stats.max|floatformat:3 }}</div>
                 </div>
                 <div class="col-md-2">
                     <div class="text-muted small">Range</div>
-                    <div class="fs-5 fw-bold">{{ "%.3f"|format(stats.max - stats.min) }}</div>
+                    <div class="fs-5 fw-bold">{{ stats.range|floatformat:3 }}</div>
                 </div>
             </div>
         </div>
@@ -90,7 +90,7 @@
                             </td>
                             <td>
                                 <span class="badge" style="background-color: {% if data.value > 0 %}#198754{% elif data.value < 0 %}#dc3545{% else %}#6c757d{% endif %}">
-                                    {{ "%.3f"|format(data.value) }}
+                                    {{ data.value|floatformat:3 }}
                                 </span>
                             </td>
                             <td style="width: 200px;">
@@ -98,7 +98,7 @@
                                 <div class="position-relative" style="height: 24px; background: linear-gradient(to right, #dc3545 0%, #6c757d 50%, #198754 100%); border-radius: 4px;">
                                     <!-- Marker showing position -->
                                     <div class="position-absolute top-50 translate-middle-y bg-dark" 
-                                         style="left: {{ ((data.value + 1.0) / 2.0 * 100)|round(2) }}%; width: 3px; height: 100%; border: 1px solid white;">
+                                         style="left: {{ data.position_percent }}%; width: 3px; height: 100%; border: 1px solid white;">
                                     </div>
                                 </div>
                                 <div class="small text-muted text-center mt-1">
@@ -108,14 +108,14 @@
                                 </div>
                             </td>
                             <td class="small text-muted">
-                                {{ data.created_at[:10] if data.created_at else '-' }}
+                                {{ data.created_at|slice:":10"|default:'-' }}
                             </td>
                             <td class="small text-muted">
-                                {{ data.updated_at[:10] if data.updated_at else '-' }}
+                                {{ data.updated_at|slice:":10"|default:'-' }}
                             </td>
                             <td class="text-end">
                                 <div class="btn-group btn-group-sm" role="group">
-                                    <a href="{{ {% url 'indicator_data_edit' indicator.id, data_id=data.id %} }}" 
+                                    <a href="{% url 'indicator_data_edit' indicator.id data.id %}" 
                                        class="btn btn-outline-primary" 
                                        title="Edit">
                                         <i class="bi bi-pencil"></i>
@@ -143,12 +143,12 @@
                                         <p>Are you sure you want to delete this data point?</p>
                                         <div class="alert alert-warning mb-0">
                                             <strong>Date:</strong> {{ data.date }}<br>
-                                            <strong>Value:</strong> {{ "%.3f"|format(data.value) }}
+                                            <strong>Value:</strong> {{ data.value|floatformat:3 }}
                                         </div>
                                     </div>
                                     <div class="modal-footer">
                                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                                        <form method="POST" action="{{ {% url 'indicator_data_delete' indicator.id, data_id=data.id %} }}" style="display: inline;">
+                                        <form method="POST" action="{% url 'indicator_data_delete' indicator.id data.id %}" style="display: inline;">
                 {% csrf_token %}
                                             <button type="submit" class="btn btn-danger">Delete</button>
                                         </form>
@@ -165,7 +165,7 @@
     {% else %}
     <div class="alert alert-info">
         <i class="bi bi-info-circle"></i> No data points yet. 
-        <a href="{{ {% url 'indicator_data_add' indicator.id %} }}" class="alert-link">Add your first data point</a>
+        <a href="{% url 'indicator_data_add' indicator.id %}" class="alert-link">Add your first data point</a>
     </div>
     {% endif %}
 </div>

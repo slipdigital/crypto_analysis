@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load custom_filters %}
 
 {% block title %}Bulk Indicator Entry - Crypto Dashboard{% endblock %}
 
@@ -21,22 +22,6 @@
         font-size: 0.75rem;
         margin: 0 2px;
     }
-    .value-preview {
-        height: 30px;
-        background: linear-gradient(to right, #dc3545 0%, #6c757d 50%, #198754 100%);
-        border-radius: 4px;
-        position: relative;
-        margin-top: 5px;
-    }
-    .value-marker {
-        position: absolute;
-        top: 0;
-        width: 3px;
-        height: 100%;
-        background-color: #000;
-        border: 1px solid white;
-        transition: left 0.1s;
-    }
     .sticky-header {
         position: sticky;
         top: 0;
@@ -53,7 +38,7 @@
     <!-- Breadcrumb -->
     <nav aria-label="breadcrumb">
         <ol class="breadcrumb">
-            <li class="breadcrumb-item"><a href="{{ {% url 'indicators' %} }}">Indicators</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'indicators' %}">Indicators</a></li>
             <li class="breadcrumb-item active" aria-current="page">Bulk Entry</li>
         </ol>
     </nav>
@@ -95,6 +80,8 @@
                                    id="date" 
                                    name="date" 
                                    max="{{ today }}"
+                                   value="{{ selected_date }}"
+                                   onchange="loadExistingData()"
                                    required>
                         </div>
                         <div class="col-md-4">
@@ -126,7 +113,7 @@
                                 <button type="submit" class="btn btn-primary btn-lg">
                                     <i class="bi bi-check-circle"></i> Save All Values
                                 </button>
-                                <a href="{{ {% url 'indicators' %} }}" class="btn btn-secondary btn-lg">
+                                <a href="{% url 'indicators' %}" class="btn btn-secondary btn-lg">
                                     <i class="bi bi-x-circle"></i> Cancel
                                 </a>
                             </div>
@@ -145,58 +132,102 @@
         </div>
 
         <!-- Indicators Grid -->
-        <div class="row g-3 mt-3">
-            {% for indicator in indicators %}
-            <div class="col-md-6 col-lg-4">
-                <div class="card indicator-card h-100" id="card_{{ indicator.id }}">
-                    <div class="card-body">
-                        <h6 class="card-title">
-                            <i class="bi bi-flag-fill text-primary"></i> {{ indicator.title }}
-                        </h6>
-                        {% if indicator.description %}
-                        <p class="card-text text-muted small">
-                            {{ indicator.description[:80] }}{% if indicator.description|length > 80 %}...{% endif %}
-                        </p>
-                        {% endif %}
-                        
-                        <div class="row g-2">
-                            <div class="col-8">
-                                <input type="number" 
-                                       class="form-control value-input" 
-                                       id="value_{{ indicator.id }}" 
-                                       name="value_{{ indicator.id }}" 
-                                       step="0.01"
-                                       min="-1.0"
-                                       max="1.0"
-                                       placeholder="Enter value"
-                                       data-indicator-id="{{ indicator.id }}"
-                                       onchange="updatePreview({{ indicator.id }})">
+        {% for type_name, indicators_in_type in grouped_indicators.items %}
+        <div class="mb-4">
+            <h4 class="mt-4 mb-3">
+                <i class="bi bi-tags-fill"></i> {{ type_name }}
+                <span class="badge bg-secondary">{{ indicators_in_type|length }}</span>
+            </h4>
+            
+            <div class="row g-3">
+                {% for indicator in indicators_in_type %}
+                <div class="col-md-6 col-lg-4">
+                    <div class="card indicator-card h-100" id="card_{{ indicator.id }}">
+                        <div class="card-body">
+                            <h6 class="card-title d-flex justify-content-between align-items-start">
+                                <span>
+                                    <i class="bi bi-flag-fill text-primary"></i> {{ indicator.title }}
+                                    {% if indicator.auto_update %}
+                                    <span class="badge bg-success ms-2" title="Automatically updated by calculator">
+                                        <i class="bi bi-robot"></i> Auto
+                                    </span>
+                                    {% endif %}
+                                </span>
+                                <div>
+                                    {% if indicator.description %}
+                                    <button type="button" class="btn btn-sm btn-outline-info me-1" data-bs-toggle="modal" data-bs-target="#descModal_{{ indicator.id }}" title="View Description">
+                                        <i class="bi bi-info-circle"></i>
+                                    </button>
+                                    {% endif %}
+                                    {% if indicator.url %}
+                                    <a href="{{ indicator.url }}" target="_blank" class="btn btn-sm btn-outline-secondary" title="Reference Link">
+                                        <i class="bi bi-link-45deg"></i>
+                                    </a>
+                                    {% endif %}
+                                </div>
+                            </h6>
+                            
+                            {% if indicator.auto_update %}
+                            <div class="alert alert-info py-2 px-3 mb-3">
+                                <small><i class="bi bi-info-circle"></i> This indicator is automatically updated. Manual entry is disabled.</small>
                             </div>
-                            <div class="col-4">
-                                <input type="range" 
-                                       class="form-range mt-2 slider-input" 
-                                       id="slider_{{ indicator.id }}" 
-                                       min="-1.0" 
-                                       max="1.0" 
-                                       step="0.01"
-                                       value="0"
-                                       data-indicator-id="{{ indicator.id }}"
-                                       oninput="syncSlider({{ indicator.id }})">
+                            {% else %}
+                            <div class="row g-2 mb-3">
+                                <div class="col-8">
+                                    <input type="number" 
+                                           class="form-control value-input" 
+                                           id="value_{{ indicator.id }}" 
+                                           name="value_{{ indicator.id }}" 
+                                           step="0.01"
+                                           min="-1.0"
+                                           max="1.0"
+                                           placeholder="Enter value"
+                                           {% if indicator.id in existing_values %}value="{{ existing_values|get_item:indicator.id }}"{% endif %}
+                                           data-indicator-id="{{ indicator.id }}"
+                                           onchange="updatePreview({{ indicator.id }})">
+                                </div>
+                                <div class="col-4">
+                                    <input type="range" 
+                                           class="form-range mt-2 slider-input" 
+                                           id="slider_{{ indicator.id }}" 
+                                           min="-1.0" 
+                                           max="1.0" 
+                                           step="0.01"
+                                           value="0"
+                                           data-indicator-id="{{ indicator.id }}"
+                                           oninput="syncSlider({{ indicator.id }})">
+                                </div>
                             </div>
-                        </div>
-                        
-                        <div class="value-preview">
-                            <div class="value-marker" id="marker_{{ indicator.id }}" style="left: 50%;"></div>
-                        </div>
-                        
-                        <div class="text-center mt-2">
-                            <span class="badge bg-secondary" id="badge_{{ indicator.id }}">0.000</span>
+                            {% endif %}
                         </div>
                     </div>
+                    
+                    <!-- Description Modal -->
+                    {% if indicator.description %}
+                    <div class="modal fade" id="descModal_{{ indicator.id }}" tabindex="-1" aria-labelledby="descModalLabel_{{ indicator.id }}" aria-hidden="true">
+                        <div class="modal-dialog modal-dialog-centered">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="descModalLabel_{{ indicator.id }}">
+                                        <i class="bi bi-flag-fill text-primary"></i> {{ indicator.title }}
+                                    </h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body" style="white-space: pre-wrap;">
+                                    {{ indicator.description }}
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endif %}
                 </div>
+                {% endfor %}
             </div>
-            {% endfor %}
         </div>
+        {% endfor %}
 
         <!-- Bottom Actions -->
         <div class="card mt-4 mb-4">
@@ -204,7 +235,7 @@
                 <button type="submit" class="btn btn-primary btn-lg me-2">
                     <i class="bi bi-check-circle"></i> Save All Values
                 </button>
-                <a href="{{ {% url 'indicators' %} }}" class="btn btn-secondary btn-lg">
+                <a href="{% url 'indicators' %}" class="btn btn-secondary btn-lg">
                     <i class="bi bi-x-circle"></i> Cancel
                 </a>
             </div>
@@ -228,18 +259,27 @@
 </div>
 
 <script>
+    // Load existing data when date changes
+    function loadExistingData() {
+        const selectedDate = document.getElementById('date').value;
+        if (selectedDate) {
+            // Reload page with date parameter
+            window.location.href = `?date=${selectedDate}`;
+        }
+    }
+
     // Set today's date as default and max
     const dateInput = document.getElementById('date');
     const today = new Date().toISOString().split('T')[0];
     dateInput.max = today;
-    dateInput.value = today;
 
     function updatePreview(indicatorId) {
         const input = document.getElementById(`value_${indicatorId}`);
         const slider = document.getElementById(`slider_${indicatorId}`);
-        const marker = document.getElementById(`marker_${indicatorId}`);
-        const badge = document.getElementById(`badge_${indicatorId}`);
         const card = document.getElementById(`card_${indicatorId}`);
+        
+        // Skip if elements don't exist (e.g., auto-update indicators)
+        if (!input || !slider || !card) return;
         
         const value = parseFloat(input.value) || 0;
         
@@ -252,29 +292,8 @@
         // Update slider
         slider.value = input.value || 0;
         
-        // Update marker position
-        const percentage = ((parseFloat(input.value || 0) + 1.0) / 2.0) * 100;
-        marker.style.left = percentage + '%';
-        
-        // Update badge
-        badge.textContent = parseFloat(input.value || 0).toFixed(3);
-        
-        // Update badge color
-        const val = parseFloat(input.value || 0);
-        if (val > 0.5) {
-            badge.className = 'badge bg-success';
-        } else if (val > 0) {
-            badge.className = 'badge bg-info';
-        } else if (val == 0) {
-            badge.className = 'badge bg-secondary';
-        } else if (val > -0.5) {
-            badge.className = 'badge bg-warning';
-        } else {
-            badge.className = 'badge bg-danger';
-        }
-        
-        // Update card appearance
-        if (input.value !== '') {
+        // Update card styling
+        if (input.value) {
             card.classList.add('has-value');
         } else {
             card.classList.remove('has-value');
@@ -317,10 +336,17 @@
         document.getElementById('emptyCount').textContent = inputs.length - filled;
     }
 
-    // Initialize all previews
+    // Initialize all previews and sync sliders with existing values
     document.addEventListener('DOMContentLoaded', function() {
         document.querySelectorAll('.value-input').forEach(input => {
             const indicatorId = input.dataset.indicatorId;
+            const slider = document.getElementById(`slider_${indicatorId}`);
+            
+            // If input has a value and slider exists, sync the slider
+            if (input.value && slider) {
+                slider.value = input.value;
+            }
+            
             updatePreview(indicatorId);
         });
     });

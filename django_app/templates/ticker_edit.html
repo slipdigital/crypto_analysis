@@ -65,7 +65,7 @@
                        class="form-control form-control-lg" 
                        id="market_cap" 
                        name="market_cap" 
-                       value="{{ ticker.market_cap if ticker.market_cap else '' }}"
+                       value="{{ ticker.market_cap|default:'' }}"
                        placeholder="Enter market cap value (e.g., 1000000000.50)">
                 <div class="form-text">
                     Enter the market capitalization in USD. Leave blank to clear the value.
