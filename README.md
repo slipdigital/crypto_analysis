@@ -12,6 +12,15 @@ A comprehensive Python system for collecting, storing, and analyzing cryptocurre
 - **Database Storage**: PostgreSQL with SQLAlchemy ORM
 - **CSV Storage**: Organized data storage for easy analysis
 
+### Technical Indicators (NEW!)
+- **Dynamic Stock-Indicators Integration**: Use any indicator from the stock-indicators Python package
+- **13+ Pre-built Indicators**: RSI, MACD, SMA, EMA, Bollinger Bands, Stochastic, ATR, ADX, CCI, Williams %R, OBV, Parabolic SAR, Ichimoku
+- **Custom Settings Classes**: Type-safe configuration for each indicator
+- **Automatic Scoring**: Converts indicator values to -1.0 to 1.0 scores for easy comparison
+- **Helper Functions**: Create indicators with simple one-liners
+- **Backward Compatible**: Works alongside existing custom calculators
+- **📖 See [STOCK_INDICATORS_QUICKSTART.md](STOCK_INDICATORS_QUICKSTART.md) for quick start guide**
+
 ### Macro-Economic Indicators
 - **Global Liquidity Tracking**: Monitor central bank balance sheets and money supply
 - **FRED API Integration**: Access to Federal Reserve economic data

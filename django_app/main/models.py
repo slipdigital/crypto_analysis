@@ -95,11 +95,43 @@ class Indicator(models.Model):
     url = models.CharField(max_length=500, null=True, blank=True)
     indicator_type = models.ForeignKey(IndicatorType, on_delete=models.SET_NULL, null=True, blank=True)
     
-    # Dynamic calculation fields
+    # Indicator calculation type
+    CALCULATION_TYPES = [
+        ('custom', 'Custom Calculator'),
+        ('stock_indicator', 'Stock-Indicators Package'),
+    ]
+    calculation_type = models.CharField(
+        max_length=20,
+        choices=CALCULATION_TYPES,
+        default='custom',
+        help_text='Type of calculator to use'
+    )
+    
+    # Dynamic calculation fields (for custom calculators)
     calculator_class = models.CharField(max_length=500, null=True, blank=True, 
                                        help_text='Python module path to calculator class (e.g., indicators.calculators.RSICalculator)')
     calculator_config = models.JSONField(null=True, blank=True,
                                         help_text='JSON configuration for the calculator class')
+    
+    # Stock-indicators specific fields
+    stock_indicator_name = models.CharField(
+        max_length=100, 
+        null=True, 
+        blank=True,
+        help_text='Name of indicator from stock-indicators package (e.g., rsi, macd, sma)'
+    )
+    stock_indicator_settings_class = models.CharField(
+        max_length=500,
+        null=True,
+        blank=True,
+        help_text='Python module path to settings class (e.g., main.indicators.settings.RSISettings)'
+    )
+    stock_indicator_settings = models.JSONField(
+        null=True,
+        blank=True,
+        help_text='Settings for the stock-indicators calculator'
+    )
+    
     auto_update = models.BooleanField(default=False,
                                      help_text='Automatically update this indicator using the calculator class')
     
@@ -123,21 +155,46 @@ class Indicator(models.Model):
     
     def get_calculator(self):
         """Dynamically import and instantiate the calculator class."""
-        if not self.calculator_class:
-            return None
-        
-        try:
-            from importlib import import_module
-            module_path, class_name = self.calculator_class.rsplit('.', 1)
-            module = import_module(module_path)
-            calculator_class = getattr(module, class_name)
+        if self.calculation_type == 'stock_indicator':
+            # Use stock-indicators adapter
+            from main.indicators.stock_indicator_adapter import StockIndicatorCalculator
             
-            # Instantiate with config if provided
+            # Build config for the adapter
+            config = {
+                'indicator_name': self.stock_indicator_name,
+                'indicator_settings': self.stock_indicator_settings or {},
+            }
+            
+            # Add settings class if specified
+            if self.stock_indicator_settings_class:
+                config['settings_class'] = self.stock_indicator_settings_class
+            
+            # Merge with any additional config from calculator_config
             if self.calculator_config:
-                return calculator_class(config=self.calculator_config)
-            return calculator_class()
-        except (ImportError, AttributeError, ValueError) as e:
-            raise ImportError(f"Could not import calculator class '{self.calculator_class}': {e}")
+                config.update(self.calculator_config)
+            
+            return StockIndicatorCalculator(config=config)
+        
+        elif self.calculation_type == 'custom':
+            # Use custom calculator class
+            if not self.calculator_class:
+                return None
+            
+            try:
+                from importlib import import_module
+                module_path, class_name = self.calculator_class.rsplit('.', 1)
+                module = import_module(module_path)
+                calculator_class = getattr(module, class_name)
+                
+                # Instantiate with config if provided
+                if self.calculator_config:
+                    return calculator_class(config=self.calculator_config)
+                return calculator_class()
+            except (ImportError, AttributeError, ValueError) as e:
+                raise ImportError(f"Could not import calculator class '{self.calculator_class}': {e}")
+        
+        else:
+            raise ValueError(f"Unknown calculation_type: {self.calculation_type}")
     
     def calculate_value(self, date=None, **kwargs):
         """Calculate indicator value for a given date using the calculator class."""

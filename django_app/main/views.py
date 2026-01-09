@@ -648,6 +648,9 @@ def indicator_delete(request, indicator_id):
 
 def indicator_data_list(request, indicator_id):
     """View all data points for an indicator."""
+    from datetime import timedelta
+    import json
+    
     indicator = get_object_or_404(Indicator, id=indicator_id)
     
     # Get all data points for this indicator, ordered by date desc
@@ -679,10 +682,25 @@ def indicator_data_list(request, indicator_id):
             'latest_date': data_points[0].date
         }
     
+    # Get chart data for last 4 weeks
+    from django.utils import timezone
+    four_weeks_ago = timezone.now().date() - timedelta(days=28)
+    chart_data_points = IndicatorData.objects.filter(
+        indicator=indicator,
+        date__gte=four_weeks_ago
+    ).order_by('date')
+    
+    chart_data = {
+        'labels': [dp.date.strftime('%Y-%m-%d') for dp in chart_data_points],
+        'values': [float(dp.value) for dp in chart_data_points]
+    }
+    chart_data_json = json.dumps(chart_data)
+    
     return render(request, 'indicator_data.html', {
         'indicator': indicator,
         'data_points': data_points_with_position,
-        'stats': stats
+        'stats': stats,
+        'chart_data': chart_data_json
     })
 
 
