@@ -1,0 +1,218 @@
+{% extends 'base.html' %}
+
+{% block title %}Data Updates - Crypto Tickers{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <h1 class="mb-4">
+            <i class="bi bi-arrow-repeat"></i> Data Updates
+        </h1>
+        <p class="lead">Update cryptocurrency data and market information</p>
+    </div>
+</div>
+
+<div class="row">
+    <!-- Ticker Data Updates -->
+    <div class="col-md-6 mb-4">
+        <div class="card h-100">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0"><i class="bi bi-currency-exchange"></i> Ticker Data</h5>
+            </div>
+            <div class="card-body">
+                <p class="card-text">Update historical price data for all tracked cryptocurrency tickers.</p>
+                <ul class="list-unstyled">
+                    <li><i class="bi bi-check-circle text-success"></i> Updates OHLCV data</li>
+                    <li><i class="bi bi-check-circle text-success"></i> Volume and VWAP</li>
+                    <li><i class="bi bi-check-circle text-success"></i> Transaction counts</li>
+                </ul>
+                <button type="button" class="btn btn-primary w-100" data-bs-toggle="modal" data-bs-target="#updateTickerDataModal">
+                    <i class="bi bi-play-circle"></i> Update Ticker Data
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Ticker List Updates -->
+    <div class="col-md-6 mb-4">
+        <div class="card h-100">
+            <div class="card-header bg-info text-white">
+                <h5 class="mb-0"><i class="bi bi-list-check"></i> Ticker List</h5>
+            </div>
+            <div class="card-body">
+                <p class="card-text">Update the list of available cryptocurrency tickers from Polygon.io.</p>
+                <ul class="list-unstyled">
+                    <li><i class="bi bi-check-circle text-success"></i> Fetch new tickers</li>
+                    <li><i class="bi bi-check-circle text-success"></i> Update metadata</li>
+                    <li><i class="bi bi-check-circle text-success"></i> Active status</li>
+                </ul>
+                <button type="button" class="btn btn-info w-100 text-white" data-bs-toggle="modal" data-bs-target="#updateTickersModal">
+                    <i class="bi bi-play-circle"></i> Update Ticker List
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Market Cap Updates -->
+    <div class="col-md-6 mb-4">
+        <div class="card h-100">
+            <div class="card-header bg-success text-white">
+                <h5 class="mb-0"><i class="bi bi-graph-up-arrow"></i> Market Caps</h5>
+            </div>
+            <div class="card-body">
+                <p class="card-text">Update market capitalization data from CSV file.</p>
+                <ul class="list-unstyled">
+                    <li><i class="bi bi-check-circle text-success"></i> Import from CSV</li>
+                    <li><i class="bi bi-check-circle text-success"></i> Update rankings</li>
+                    <li><i class="bi bi-check-circle text-success"></i> Valuation data</li>
+                </ul>
+                <button type="button" class="btn btn-success w-100" data-bs-toggle="modal" data-bs-target="#updateMarketCapsModal">
+                    <i class="bi bi-play-circle"></i> Update Market Caps
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Global Liquidity Updates -->
+    <div class="col-md-6 mb-4">
+        <div class="card h-100">
+            <div class="card-header bg-warning text-dark">
+                <h5 class="mb-0"><i class="bi bi-globe"></i> Global Liquidity</h5>
+            </div>
+            <div class="card-body">
+                <p class="card-text">Update global liquidity data from FRED (Federal Reserve Economic Data).</p>
+                <ul class="list-unstyled">
+                    <li><i class="bi bi-check-circle text-success"></i> M2 Money Supply</li>
+                    <li><i class="bi bi-check-circle text-success"></i> Fed Balance Sheet</li>
+                    <li><i class="bi bi-check-circle text-success"></i> Economic indicators</li>
+                </ul>
+                <button type="button" class="btn btn-warning w-100" data-bs-toggle="modal" data-bs-target="#updateLiquidityModal">
+                    <i class="bi bi-play-circle"></i> Update Global Liquidity
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Update Ticker Data Modal -->
+<div class="modal fade" id="updateTickerDataModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Update Ticker Data</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <p>This will update historical price data for all active tickers. The process may take several minutes.</p>
+                <div class="alert alert-info">
+                    <i class="bi bi-info-circle"></i> <strong>Note:</strong> This operation requires a Polygon.io API key configured in your environment.
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <form method="post" action="{% url 'run_update' update_type='ticker_data' %}" style="display: inline;">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-play-circle"></i> Run Update
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Update Tickers Modal -->
+<div class="modal fade" id="updateTickersModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Update Ticker List</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <p>This will fetch the latest list of cryptocurrency tickers from Polygon.io and update the database.</p>
+                <div class="alert alert-info">
+                    <i class="bi bi-info-circle"></i> <strong>Note:</strong> This operation requires a Polygon.io API key configured in your environment.
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <form method="post" action="{% url 'run_update' update_type='tickers' %}" style="display: inline;">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-info text-white">
+                        <i class="bi bi-play-circle"></i> Run Update
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Update Market Caps Modal -->
+<div class="modal fade" id="updateMarketCapsModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Update Market Caps</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <p>This will update market capitalization data from the CSV file.</p>
+                <div class="alert alert-info">
+                    <i class="bi bi-info-circle"></i> <strong>Note:</strong> Ensure the CSV file exists at <code>data/market_cap_YYYYMMDD.csv</code>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <form method="post" action="{% url 'run_update' update_type='market_caps' %}" style="display: inline;">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-success">
+                        <i class="bi bi-play-circle"></i> Run Update
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Update Global Liquidity Modal -->
+<div class="modal fade" id="updateLiquidityModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Update Global Liquidity</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <p>This will fetch the latest global liquidity data from FRED.</p>
+                <div class="alert alert-info">
+                    <i class="bi bi-info-circle"></i> <strong>Note:</strong> This operation requires a FRED API key configured in your environment.
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <form method="post" action="{% url 'run_update' update_type='liquidity' %}" style="display: inline;">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-warning">
+                        <i class="bi bi-play-circle"></i> Run Update
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% if messages %}
+<div class="row mt-4">
+    <div class="col-12">
+        {% for message in messages %}
+        <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endif %}
+
+{% endblock %}

@@ -1,0 +1,163 @@
+{% extends "base.html" %}
+{% load custom_filters %}
+
+{% block title %}Indicator Aggregation - Crypto Dashboard{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="h2">
+            <i class="bi bi-bar-chart-line me-2"></i>Indicator Aggregation
+        </h1>
+        <div class="btn-group" role="group">
+            <a href="?days=7" class="btn btn-outline-primary {% if days == 7 %}active{% endif %}">7 Days</a>
+            <a href="?days=30" class="btn btn-outline-primary {% if days == 30 %}active{% endif %}">30 Days</a>
+            <a href="?days=90" class="btn btn-outline-primary {% if days == 90 %}active{% endif %}">90 Days</a>
+            <a href="?days=180" class="btn btn-outline-primary {% if days == 180 %}active{% endif %}">180 Days</a>
+            <a href="?days=365" class="btn btn-outline-primary {% if days == 365 %}active{% endif %}">1 Year</a>
+        </div>
+    </div>
+
+    <p class="text-muted mb-4">
+        Showing indicator data from <strong>{{ start_date }}</strong> to <strong>{{ end_date }}</strong>
+    </p>
+
+    <!-- Overall Statistics by Type -->
+    {% if type_stats %}
+    <div class="card mb-4">
+        <div class="card-header bg-primary text-white">
+            <h5 class="mb-0">
+                <i class="bi bi-graph-up"></i> Overview by Indicator Type
+            </h5>
+        </div>
+        <div class="card-body">
+            <div class="row g-3">
+                {% for type in indicator_types %}
+                    {% if type.id in type_stats %}
+                    {% with stats=type_stats|get_item:type.id %}\n                    {% if stats %}
+                    <div class="col-md-4 col-lg-3">
+                        <div class="card h-100 border-0 shadow-sm">
+                            <div class="card-body">
+                                <div class="d-flex align-items-center mb-2">
+                                    <div class="rounded me-2" style="width: 12px; height: 12px; background-color: {{ type.color }};"></div>
+                                    <h6 class="mb-0">{{ type.name }}</h6>
+                                </div>
+                                <div class="row g-2">
+                                    <div class="col-6">
+                                        <small class="text-muted d-block">Average</small>
+                                        <span class="badge {% if stats.avg > 0.3 %}bg-success{% elif stats.avg > 0 %}bg-info{% elif stats.avg == 0 %}bg-secondary{% elif stats.avg > -0.3 %}bg-warning{% else %}bg-danger{% endif %}">
+                                            {{ stats.avg|floatformat:2 }}
+                                        </span>
+                                    </div>
+                                    <div class="col-6">
+                                        <small class="text-muted d-block">Days</small>
+                                        <strong>{{ stats.count }}</strong>
+                                    </div>
+                                    <div class="col-6">
+                                        <small class="text-muted d-block">Min</small>
+                                        <span class="text-danger">{{ stats.min|floatformat:2 }}</span>
+                                    </div>
+                                    <div class="col-6">
+                                        <small class="text-muted d-block">Max</small>
+                                        <span class="text-success">{{ stats.max|floatformat:2 }}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endif %}
+                    {% endwith %}
+                    {% endif %}
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Daily Aggregated Data -->
+    {% if aggregated_data %}
+    <div class="card">
+        <div class="card-header bg-light">
+            <h5 class="mb-0">
+                <i class="bi bi-calendar3"></i> Daily Aggregation
+            </h5>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover mb-0">
+                    <thead class="table-light sticky-top">
+                        <tr>
+                            <th style="min-width: 120px;">Date</th>
+                            <th class="text-center" style="min-width: 100px;">Overall Avg</th>
+                            <th class="text-center" style="min-width: 80px;">Points</th>
+                            {% for type in indicator_types %}
+                            <th class="text-center" style="min-width: 120px;">
+                                <div class="d-flex align-items-center justify-content-center">
+                                    <div class="rounded me-1" style="width: 10px; height: 10px; background-color: {{ type.color }};"></div>
+                                    <span>{{ type.name }}</span>
+                                </div>
+                            </th>
+                            {% endfor %}
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for day_data in aggregated_data %}
+                        <tr>
+                            <td class="fw-bold">{{ day_data.date }}</td>
+                            <td class="text-center">
+                                {% if day_data.overall_average is not none %}
+                                    <span class="badge {% if day_data.overall_average > 0.3 %}bg-success{% elif day_data.overall_average > 0 %}bg-info{% elif day_data.overall_average == 0 %}bg-secondary{% elif day_data.overall_average > -0.3 %}bg-warning{% else %}bg-danger{% endif %} px-3 py-2">
+                                        {{ day_data.overall_average|floatformat:2 }}
+                                    </span>
+                                {% else %}
+                                    <span class="text-muted">-</span>
+                                {% endif %}
+                            </td>
+                            <td class="text-center text-muted">
+                                {{ day_data.data_points_count }}
+                            </td>
+                            {% for type in indicator_types %}
+                            <td class="text-center">
+                                {% with type_avg=day_data.type_averages|get_item:type.id %}
+                                {% if type_avg %}
+                                    <div class="d-flex flex-column align-items-center">
+                                        <span class="badge mb-1" style="background-color: {{ type.color }}; padding: 6px 12px;">
+                                            {{ type_avg.average|floatformat:2 }}
+                                        </span>
+                                        <small class="text-muted">{{ type_avg.count }} pts</small>
+                                    </div>
+                                {% else %}
+                                    <span class="text-muted">-</span>
+                                {% endif %}
+                                {% endwith %}
+                            </td>
+                            {% endfor %}
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    {% else %}
+    <div class="alert alert-info">
+        <i class="bi bi-info-circle me-2"></i>
+        No indicator data found for the selected time period. 
+        <a href="{% url 'indicators' %}" class="alert-link">Add some indicator data</a> to see aggregations.
+    </div>
+    {% endif %}
+</div>
+
+<style>
+    .sticky-top {
+        position: sticky;
+        top: 0;
+        z-index: 10;
+        background-color: #f8f9fa !important;
+    }
+    
+    .table td {
+        vertical-align: middle;
+    }
+</style>
+{% endblock %}

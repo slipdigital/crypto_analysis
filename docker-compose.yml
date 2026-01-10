@@ -1,0 +1,93 @@
+services:
+  flask-app:
+    image: flask-app:latest
+    container_name: flask_app
+    build:
+      context: .
+      dockerfile: ./flask_app/Dockerfile
+    depends_on:
+      db:
+        condition: service_healthy
+      minio:
+        condition: service_healthy
+    networks:
+      - crypto-analysis-network
+    env_file:
+      - path: tests/.env.integration
+        required: false
+      - path: .env
+        required: false
+    environment:
+      - ENVIRONMENT=${ENVIRONMENT:-production}
+    volumes:
+      - /app/django_app/frontend/node_modules
+      - ./django_app:/app/django_app/
+      - .aws:/root/.aws
+    ports:
+      - "${PORT:-8080}:${PORT:-8080}"
+    healthcheck:
+      test: curl --fail http://localhost:${PORT:-8080}/health/ || exit 1
+      interval: 5s
+      timeout: 30s
+      retries: 24
+      start_period: 60s
+
+  db:
+    image: postgres:14
+    container_name: db
+    env_file:
+      - path: tests/.env.integration
+        required: false
+      - path: .env
+        required: false
+    volumes:
+      - local_postgres_data:/var/lib/postgresql/data:Z
+    networks:
+      - redbox-app-network
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready", "-U", "redbox-core", "-d", "db_prod" ]
+      interval: 5s
+      timeout: 30s
+      retries: 24
+      start_period: 30s
+  requirements:
+    image: python:3.12
+    profiles:
+      - utils
+    volumes:
+      - ./:/app/:z
+  minio:
+    image: minio/minio
+    container_name: minio
+    expose:
+      - "9000"
+      - "9001"
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    environment:
+      - MINIO_ACCESS_KEY=minioadmin
+      - MINIO_SECRET_KEY=minioadmin
+    command: server --console-address ":9001" /data
+    networks:
+      - crypto-analysis-network
+    volumes:
+      - ./data/objectstore:/data
+    restart: unless-stopped
+    healthcheck:
+      test: [ "CMD", "mc", "ready", "local" ]
+      interval: 5s
+      timeout: 30s
+      retries: 24
+      start_period: 30s
+
+networks:
+  crypto-analysis-network:
+    driver: bridge
+
+volumes:
+  opensearch-data:
+  crypto-analysis-data:
+  local_crypto_analysis_postgres_data: {}

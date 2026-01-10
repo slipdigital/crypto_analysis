@@ -1,0 +1,525 @@
+{% extends "base.html" %}
+
+{% block title %}{{ ticker.ticker }} - Price Chart{% endblock %}
+
+{% block extra_head %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns@3.0.0/dist/chartjs-adapter-date-fns.bundle.min.js"></script>
+<style>
+    .chart-container {
+        position: relative;
+        height: 500px;
+        margin-bottom: 30px;
+    }
+    .stats-card {
+        border-left: 4px solid #0d6efd;
+    }
+    .positive {
+        color: #198754;
+    }
+    .negative {
+        color: #dc3545;
+    }
+    .time-range-btn {
+        margin: 2px;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="mb-3">
+    <a href="/" class="btn btn-outline-secondary">
+        <i class="bi bi-arrow-left"></i> Back to All Tickers
+    </a>
+    <a href="/ticker/{{ ticker.ticker }}" class="btn btn-outline-primary">
+        <i class="bi bi-info-circle"></i> Ticker Details
+    </a>
+</div>
+
+<div class="card mb-4">
+    <div class="card-header bg-primary text-white">
+        <div class="row align-items-center">
+            <div class="col">
+                <h2 class="mb-0">
+                    <i class="bi bi-graph-up"></i> {{ ticker.ticker }}
+                    {% if ticker.name %}
+                    <small class="text-white-50">- {{ ticker.name }}</small>
+                    {% endif %}
+                </h2>
+            </div>
+            <div class="col-auto">
+                {% if ticker.active %}
+                <span class="badge bg-success fs-6">Active</span>
+                {% else %}
+                <span class="badge bg-danger fs-6">Inactive</span>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    
+    <div class="card-body">
+        {% if ticker_data|length > 0 %}
+        
+        <!-- Time Range Selection -->
+        <div class="mb-3">
+            <div class="btn-group" role="group" aria-label="Time range">
+                <a href="?days=7" class="btn btn-sm time-range-btn {% if days == 7 %}btn-primary{% else %}btn-outline-primary{% endif %}">7D</a>
+                <a href="?days=30" class="btn btn-sm time-range-btn {% if days == 30 %}btn-primary{% else %}btn-outline-primary{% endif %}">30D</a>
+                <a href="?days=90" class="btn btn-sm time-range-btn {% if days == 90 %}btn-primary{% else %}btn-outline-primary{% endif %}">90D</a>
+                <a href="?days=180" class="btn btn-sm time-range-btn {% if days == 180 %}btn-primary{% else %}btn-outline-primary{% endif %}">180D</a>
+                <a href="?days=365" class="btn btn-sm time-range-btn {% if days == 365 %}btn-primary{% else %}btn-outline-primary{% endif %}">1Y</a>
+                <a href="?days=730" class="btn btn-sm time-range-btn {% if days == 730 %}btn-primary{% else %}btn-outline-primary{% endif %}">2Y</a>
+            </div>
+            <span class="text-muted ms-2">
+                <i class="bi bi-info-circle"></i> Showing {{ ticker_data|length }} data points
+            </span>
+        </div>
+        
+        <!-- Chart Type Toggle -->
+        <div class="mb-3">
+            <div class="btn-group" role="group" aria-label="Chart type">
+                <button type="button" class="btn btn-sm btn-outline-secondary" onclick="showChart('candlestick')" id="btn-candlestick">
+                    <i class="bi bi-bar-chart"></i> OHLC Range
+                </button>
+                <button type="button" class="btn btn-sm btn-outline-secondary" onclick="showChart('line')" id="btn-line">
+                    <i class="bi bi-graph-up"></i> Line
+                </button>
+                <button type="button" class="btn btn-sm btn-outline-secondary" onclick="showChart('volume')" id="btn-volume">
+                    <i class="bi bi-bar-chart-fill"></i> Volume
+                </button>
+            </div>
+        </div>
+        
+        <!-- Price Chart -->
+        <div class="chart-container">
+            <canvas id="priceChart"></canvas>
+        </div>
+        
+        <!-- Volume Chart -->
+        <div class="chart-container" style="height: 200px;">
+            <canvas id="volumeChart"></canvas>
+        </div>
+        
+        <!-- Statistics -->
+        <div class="row g-3 mt-3">
+            <div class="col-md-3">
+                <div class="card stats-card">
+                    <div class="card-body">
+                        <h6 class="card-subtitle mb-2 text-muted">Current Price</h6>
+                        <p class="card-text fs-5 fw-bold" id="currentPrice">-</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card stats-card" style="border-left-color: #198754;">
+                    <div class="card-body">
+                        <h6 class="card-subtitle mb-2 text-muted">Period High</h6>
+                        <p class="card-text fs-5 fw-bold positive" id="periodHigh">-</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card stats-card" style="border-left-color: #dc3545;">
+                    <div class="card-body">
+                        <h6 class="card-subtitle mb-2 text-muted">Period Low</h6>
+                        <p class="card-text fs-5 fw-bold negative" id="periodLow">-</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card stats-card" style="border-left-color: #ffc107;">
+                    <div class="card-body">
+                        <h6 class="card-subtitle mb-2 text-muted">Change</h6>
+                        <p class="card-text fs-5 fw-bold" id="priceChange">-</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Additional Info -->
+        <div class="row g-3 mt-2">
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="card-body">
+                        <h6 class="card-subtitle mb-2 text-muted">Average Volume</h6>
+                        <p class="card-text fw-bold" id="avgVolume">-</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="card-body">
+                        <h6 class="card-subtitle mb-2 text-muted">Date Range</h6>
+                        <p class="card-text fw-bold" id="dateRange">-</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="card-body">
+                        <h6 class="card-subtitle mb-2 text-muted">Market Cap</h6>
+                        <p class="card-text fw-bold">
+                            {% if ticker.market_cap %}
+                            ${{ "{:,.2f}".format(ticker.market_cap / 1000000000) }}B
+                            {% else %}
+                            N/A
+                            {% endif %}
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        {% else %}
+        <div class="alert alert-warning">
+            <i class="bi bi-exclamation-triangle"></i> No historical data available for this ticker.
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+{% if all_data_info and all_data_info.first_date %}
+<div class="card">
+    <div class="card-body">
+        <h5 class="card-title">Data Availability</h5>
+        <p class="mb-1"><strong>First Date:</strong> {{ all_data_info.first_date }}</p>
+        <p class="mb-1"><strong>Last Date:</strong> {{ all_data_info.last_date }}</p>
+        <p class="mb-0"><strong>Total Records:</strong> {{ all_data_info.total_records }}</p>
+    </div>
+</div>
+{% endif %}
+
+<script>
+// Prepare data from Flask
+const tickerData = [
+    {% for data in ticker_data %}
+    {
+        date: '{{ data.date }}',
+        open: {{ data.open or 'null' }},
+        high: {{ data.high or 'null' }},
+        low: {{ data.low or 'null' }},
+        close: {{ data.close or 'null' }},
+        volume: {{ data.volume or 'null' }}
+    }{% if not loop.last %},{% endif %}
+    {% endfor %}
+];
+
+let priceChart = null;
+let volumeChart = null;
+let currentChartType = 'candlestick';
+
+function formatPrice(price) {
+    if (price === null) return 'N/A';
+    return '$' + price.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 6 });
+}
+
+function formatVolume(volume) {
+    if (volume === null) return 'N/A';
+    if (volume >= 1000000000) return (volume / 1000000000).toFixed(2) + 'B';
+    if (volume >= 1000000) return (volume / 1000000).toFixed(2) + 'M';
+    if (volume >= 1000) return (volume / 1000).toFixed(2) + 'K';
+    return volume.toFixed(0);
+}
+
+function calculateStats() {
+    if (tickerData.length === 0) return;
+    
+    const validData = tickerData.filter(d => d.close !== null);
+    if (validData.length === 0) return;
+    
+    const currentPrice = validData[validData.length - 1].close;
+    const firstPrice = validData[0].close;
+    const priceChange = ((currentPrice - firstPrice) / firstPrice) * 100;
+    
+    const high = Math.max(...validData.map(d => d.high).filter(v => v !== null));
+    const low = Math.min(...validData.map(d => d.low).filter(v => v !== null));
+    
+    const volumes = validData.map(d => d.volume).filter(v => v !== null);
+    const avgVolume = volumes.length > 0 ? volumes.reduce((a, b) => a + b, 0) / volumes.length : 0;
+    
+    document.getElementById('currentPrice').textContent = formatPrice(currentPrice);
+    document.getElementById('periodHigh').textContent = formatPrice(high);
+    document.getElementById('periodLow').textContent = formatPrice(low);
+    
+    const changeElement = document.getElementById('priceChange');
+    const changeText = priceChange >= 0 ? '+' : '';
+    changeElement.textContent = changeText + priceChange.toFixed(2) + '%';
+    changeElement.className = 'card-text fs-5 fw-bold ' + (priceChange >= 0 ? 'positive' : 'negative');
+    
+    document.getElementById('avgVolume').textContent = formatVolume(avgVolume);
+    
+    if (tickerData.length > 0) {
+        document.getElementById('dateRange').textContent = 
+            tickerData[0].date + ' to ' + tickerData[tickerData.length - 1].date;
+    }
+}
+
+function createCandlestickChart() {
+    const ctx = document.getElementById('priceChart').getContext('2d');
+    
+    if (priceChart) {
+        priceChart.destroy();
+    }
+    
+    // Create OHLC visualization using line chart with high/low range
+    const dates = tickerData.map(d => d.date);
+    const closes = tickerData.map(d => d.close);
+    const highs = tickerData.map(d => d.high);
+    const lows = tickerData.map(d => d.low);
+    const opens = tickerData.map(d => d.open);
+    
+    priceChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: dates,
+            datasets: [
+                {
+                    label: 'High',
+                    data: highs,
+                    borderColor: 'rgba(25, 135, 84, 0.3)',
+                    backgroundColor: 'rgba(25, 135, 84, 0.05)',
+                    borderWidth: 1,
+                    pointRadius: 0,
+                    fill: '+1',
+                    tension: 0.1
+                },
+                {
+                    label: 'Low',
+                    data: lows,
+                    borderColor: 'rgba(220, 53, 69, 0.3)',
+                    backgroundColor: 'rgba(220, 53, 69, 0.05)',
+                    borderWidth: 1,
+                    pointRadius: 0,
+                    fill: false,
+                    tension: 0.1
+                },
+                {
+                    label: 'Close',
+                    data: closes,
+                    borderColor: '#0d6efd',
+                    backgroundColor: 'rgba(13, 110, 253, 0.1)',
+                    borderWidth: 2,
+                    pointRadius: 1,
+                    pointHoverRadius: 4,
+                    fill: false,
+                    tension: 0.1
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            interaction: {
+                mode: 'index',
+                intersect: false,
+            },
+            plugins: {
+                legend: {
+                    display: true
+                },
+                tooltip: {
+                    callbacks: {
+                        title: function(context) {
+                            return context[0].label;
+                        },
+                        label: function(context) {
+                            const index = context.dataIndex;
+                            const data = tickerData[index];
+                            return [
+                                'Open: ' + formatPrice(data.open),
+                                'High: ' + formatPrice(data.high),
+                                'Low: ' + formatPrice(data.low),
+                                'Close: ' + formatPrice(data.close)
+                            ];
+                        }
+                    }
+                }
+            },
+            scales: {
+                x: {
+                    type: 'category',
+                    title: {
+                        display: true,
+                        text: 'Date'
+                    }
+                },
+                y: {
+                    title: {
+                        display: true,
+                        text: 'Price (USD)'
+                    },
+                    ticks: {
+                        callback: function(value) {
+                            return formatPrice(value);
+                        }
+                    }
+                }
+            }
+        }
+    });
+}
+
+function createLineChart() {
+    const ctx = document.getElementById('priceChart').getContext('2d');
+    
+    if (priceChart) {
+        priceChart.destroy();
+    }
+    
+    priceChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: tickerData.map(d => d.date),
+            datasets: [{
+                label: '{{ ticker.ticker }} Price',
+                data: tickerData.map(d => d.close),
+                borderColor: '#0d6efd',
+                backgroundColor: 'rgba(13, 110, 253, 0.1)',
+                borderWidth: 2,
+                fill: true,
+                tension: 0.1
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    display: true
+                },
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            return 'Close: ' + formatPrice(context.parsed.y);
+                        }
+                    }
+                }
+            },
+            scales: {
+                x: {
+                    type: 'category',
+                    title: {
+                        display: true,
+                        text: 'Date'
+                    }
+                },
+                y: {
+                    title: {
+                        display: true,
+                        text: 'Price (USD)'
+                    },
+                    ticks: {
+                        callback: function(value) {
+                            return formatPrice(value);
+                        }
+                    }
+                }
+            }
+        }
+    });
+}
+
+function createVolumeChart() {
+    const ctx = document.getElementById('volumeChart').getContext('2d');
+    
+    if (volumeChart) {
+        volumeChart.destroy();
+    }
+    
+    volumeChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: tickerData.map(d => d.date),
+            datasets: [{
+                label: 'Volume',
+                data: tickerData.map(d => d.volume),
+                backgroundColor: function(context) {
+                    const index = context.dataIndex;
+                    if (index === 0) return 'rgba(108, 117, 125, 0.5)';
+                    const current = tickerData[index].close;
+                    const previous = tickerData[index - 1].close;
+                    return current >= previous ? 'rgba(25, 135, 84, 0.5)' : 'rgba(220, 53, 69, 0.5)';
+                },
+                borderColor: function(context) {
+                    const index = context.dataIndex;
+                    if (index === 0) return 'rgb(108, 117, 125)';
+                    const current = tickerData[index].close;
+                    const previous = tickerData[index - 1].close;
+                    return current >= previous ? 'rgb(25, 135, 84)' : 'rgb(220, 53, 69)';
+                },
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    display: true
+                },
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            return 'Volume: ' + formatVolume(context.parsed.y);
+                        }
+                    }
+                }
+            },
+            scales: {
+                x: {
+                    type: 'category',
+                    title: {
+                        display: true,
+                        text: 'Date'
+                    }
+                },
+                y: {
+                    title: {
+                        display: true,
+                        text: 'Volume'
+                    },
+                    ticks: {
+                        callback: function(value) {
+                            return formatVolume(value);
+                        }
+                    }
+                }
+            }
+        }
+    });
+}
+
+function showChart(type) {
+    currentChartType = type;
+    
+    // Update button states
+    document.querySelectorAll('.btn-group button').forEach(btn => {
+        btn.classList.remove('active', 'btn-secondary');
+        btn.classList.add('btn-outline-secondary');
+    });
+    
+    const activeBtn = document.getElementById('btn-' + type);
+    if (activeBtn) {
+        activeBtn.classList.remove('btn-outline-secondary');
+        activeBtn.classList.add('btn-secondary', 'active');
+    }
+    
+    // Show appropriate chart
+    if (type === 'candlestick') {
+        createCandlestickChart();
+    } else if (type === 'line') {
+        createLineChart();
+    } else if (type === 'volume') {
+        createLineChart(); // Keep line chart for price
+    }
+}
+
+// Initialize on page load
+document.addEventListener('DOMContentLoaded', function() {
+    calculateStats();
+    createVolumeChart();
+    showChart('candlestick');
+});
+</script>
+
+{% endblock %}

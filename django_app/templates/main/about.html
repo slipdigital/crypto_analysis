@@ -1,0 +1,54 @@
+{% extends 'base.html' %}
+
+{% block title %}About - Django App{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-lg-8 mx-auto">
+        <h1 class="mb-4">About This Application</h1>
+        
+        <div class="card mb-4">
+            <div class="card-body">
+                <h5 class="card-title">Technology Stack</h5>
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item">
+                        <strong>Backend:</strong> Django 5.x
+                    </li>
+                    <li class="list-group-item">
+                        <strong>Frontend:</strong> Bootstrap 5.3.2
+                    </li>
+                    <li class="list-group-item">
+                        <strong>Database:</strong> SQLite (development)
+                    </li>
+                    <li class="list-group-item">
+                        <strong>Template Engine:</strong> Django Templates
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="card mb-4">
+            <div class="card-body">
+                <h5 class="card-title">Features</h5>
+                <ul>
+                    <li>Responsive design with Bootstrap 5</li>
+                    <li>CRUD operations for Example model</li>
+                    <li>Django Admin integration</li>
+                    <li>Clean and modern UI</li>
+                    <li>Easy to extend and customize</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="alert alert-info" role="alert">
+            <h5 class="alert-heading">Getting Started</h5>
+            <p>To start developing with this application:</p>
+            <ol>
+                <li>Run migrations: <code>python manage.py migrate</code></li>
+                <li>Create a superuser: <code>python manage.py createsuperuser</code></li>
+                <li>Start the server: <code>python manage.py runserver</code></li>
+            </ol>
+        </div>
+    </div>
+</div>
+{% endblock %}
