@@ -1,7 +1,4 @@
 date,ticker,ticker_name,open,high,low,close,volume,volume_weighted_price,number_of_transactions
-2024-08-28,X:YFIUSD,yearn.finance - United States dollar,5084.83,5400.0,4962.76,5310.8,91.5045941500012,5143.6649,2902
-2024-08-29,X:YFIUSD,yearn.finance - United States dollar,5300.1,5380.0,5100.0,5149.91,82.88976558999998,5227.8914,2855
-2024-08-30,X:YFIUSD,yearn.finance - United States dollar,5153.86,5252.0,5029.42,5198.0,47.7901868099999,5144.8673,2125
 2024-08-31,X:YFIUSD,yearn.finance - United States dollar,5190.05,5233.3,5123.48,5211.6,21.59469695000007,5177.2395,1073
 2024-09-01,X:YFIUSD,yearn.finance - United States dollar,5197.62,5209.3,4930.9,5005.01,50.6265871700001,5056.338,1436
 2024-09-02,X:YFIUSD,yearn.finance - United States dollar,5000.05,5160.0,4971.48,5126.0,40.98924633000018,5075.6099,1418
@@ -364,4 +361,7 @@ date,ticker,ticker_name,open,high,low,close,volume,volume_weighted_price,number_
 2025-08-25,X:YFIUSD,yearn.finance - United States dollar,5768.01,5828.6,5274.24,5355.44,99.86617914000023,5488.9073,2544
 2025-08-26,X:YFIUSD,yearn.finance - United States dollar,5345.85,5578.3,5308.24,5529.36,35.90135644000013,5469.6599,1259
 2025-08-27,X:YFIUSD,yearn.finance - United States dollar,5524.35,5562.82,5433.01,5454.53,39.84084302000028,5504.7199,1298
-2025-08-28,X:YFIUSD,yearn.finance - United States dollar,5461.21,5560.11,5433.0,5535.35,10.61547788,5495.3626,298
+2025-08-28,X:YFIUSD,yearn.finance - United States dollar,5461.21,5587.35,5311.11,5470.16,53.47253736000017,5465.0514,1736
+2025-08-29,X:YFIUSD,yearn.finance - United States dollar,5477.34,5534.5,5233.73,5323.69,58.63290822000007,5345.1024,1696
+2025-08-30,X:YFIUSD,yearn.finance - United States dollar,5321.73,5397.6,5233.73,5354.62,25.916293330000073,5337.8371,947
+2025-08-31,X:YFIUSD,yearn.finance - United States dollar,5357.26,5438.7,5356.17,5394.68,6.03645164,5397.219,265

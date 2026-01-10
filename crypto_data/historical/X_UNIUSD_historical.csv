@@ -1,7 +1,4 @@
 date,ticker,ticker_name,open,high,low,close,volume,volume_weighted_price,number_of_transactions
-2024-08-28,X:UNIUSD,Uniswap - United States dollar,5.717,5.93,5.592,5.774,619539.4966837303,5.7352,13669
-2024-08-29,X:UNIUSD,Uniswap - United States dollar,5.77,6.0181,5.726,5.838,316651.8869163512,5.8667,7525
-2024-08-30,X:UNIUSD,Uniswap - United States dollar,5.836,5.9204,5.59,5.891,310469.1016210512,5.7892,6771
 2024-08-31,X:UNIUSD,Uniswap - United States dollar,5.891,6.1085,5.851,5.945,444357.21519223106,5.9663,7885
 2024-09-01,X:UNIUSD,Uniswap - United States dollar,5.944,5.9686,5.545,5.62,253843.43373168158,5.7296,6088
 2024-09-02,X:UNIUSD,Uniswap - United States dollar,5.618,6.2251,5.592,6.102,905770.1406052453,5.9814,15061
@@ -364,4 +361,7 @@ date,ticker,ticker_name,open,high,low,close,volume,volume_weighted_price,number_
 2025-08-25,X:UNIUSD,Uniswap - United States dollar,10.945,10.995,9.609,9.72,14176.501408960357,10.1107,9246
 2025-08-26,X:UNIUSD,Uniswap - United States dollar,9.704,10.042,9.574,9.952,874531.6645176848,9.7797,75824
 2025-08-27,X:UNIUSD,Uniswap - United States dollar,9.953,10.142,9.78,9.871,464118.5473261393,9.9602,41994
-2025-08-28,X:UNIUSD,Uniswap - United States dollar,9.853,10.089,9.773,10.017,128282.50040631,9.9855,9530
+2025-08-28,X:UNIUSD,Uniswap - United States dollar,9.853,10.131,9.732,10.024,473412.9249657119,9.9864,36169
+2025-08-29,X:UNIUSD,Uniswap - United States dollar,10.021,10.081,9.428,9.631,649084.1400568689,9.6376,42702
+2025-08-30,X:UNIUSD,Uniswap - United States dollar,9.632,9.8371,9.408,9.728,258087.54432769923,9.6781,19368
+2025-08-31,X:UNIUSD,Uniswap - United States dollar,9.725,9.915,9.716,9.857,81123.11566145,9.828,5061

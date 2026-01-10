@@ -1,7 +1,4 @@
 date,ticker,ticker_name,open,high,low,close,volume,volume_weighted_price,number_of_transactions
-2024-08-28,X:ENJUSD,Enjin Coin - United States dollar,0.142,0.148,0.138,0.142,340422.3861218498,0.1429,282
-2024-08-29,X:ENJUSD,Enjin Coin - United States dollar,0.142,0.149,0.14,0.143,362478.1258854202,0.1448,449
-2024-08-30,X:ENJUSD,Enjin Coin - United States dollar,0.144,0.146,0.135,0.144,282143.1166323701,0.1416,304
 2024-08-31,X:ENJUSD,Enjin Coin - United States dollar,0.145,0.145,0.138,0.138,47151.27233597001,0.1416,114
 2024-09-01,X:ENJUSD,Enjin Coin - United States dollar,0.139,0.139,0.132,0.132,280340.29441462003,0.1358,247
 2024-09-02,X:ENJUSD,Enjin Coin - United States dollar,0.133,0.139,0.132,0.138,162436.98390195004,0.1371,319
@@ -364,4 +361,7 @@ date,ticker,ticker_name,open,high,low,close,volume,volume_weighted_price,number_
 2025-08-25,X:ENJUSD,Enjin Coin - United States dollar,0.0723,0.0729,0.0646,0.0654,694473.6839986356,0.0681,409
 2025-08-26,X:ENJUSD,Enjin Coin - United States dollar,0.0653,0.09969,0.0648,0.0682,344252.6262864006,0.0668,278
 2025-08-27,X:ENJUSD,Enjin Coin - United States dollar,0.0682,0.09235,0.0668,0.0674,373064.4138831205,0.0701,738
-2025-08-28,X:ENJUSD,Enjin Coin - United States dollar,0.0677,0.0691,0.0674,0.069,18605.21461776,0.0681,19
+2025-08-28,X:ENJUSD,Enjin Coin - United States dollar,0.0677,0.1047,0.0674,0.0704,192098.1348227,0.0692,282
+2025-08-29,X:ENJUSD,Enjin Coin - United States dollar,0.0704,0.10616,0.0649,0.0663,617102.3639647524,0.0673,683
+2025-08-30,X:ENJUSD,Enjin Coin - United States dollar,0.0661,0.0683,0.0656,0.0678,556442.99225279,0.0673,196
+2025-08-31,X:ENJUSD,Enjin Coin - United States dollar,0.0679,0.0704,0.0679,0.0692,300434.7381215903,0.0692,90

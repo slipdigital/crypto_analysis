@@ -64,6 +64,8 @@ ai_crypto_analisys/
 ### Quick Start
 
 **Run data collection once**:
+Collects and reports on the top 30 crypto currencies by market cap
+
 ```bash
 python crypto_collector.py
 ```

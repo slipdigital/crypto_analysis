@@ -1,7 +1,4 @@
 date,ticker,ticker_name,open,high,low,close,volume,volume_weighted_price,number_of_transactions
-2024-08-28,X:SNXUSD,Synthetix - United States dollar,1.389,1.7,1.321,1.365,680139.1523756997,1.3755,6503
-2024-08-29,X:SNXUSD,Synthetix - United States dollar,1.365,1.4496,1.348,1.36,734943.49170156,1.3707,3629
-2024-08-30,X:SNXUSD,Synthetix - United States dollar,1.364,1.4404,1.3,1.371,523665.2420988593,1.3363,2779
 2024-08-31,X:SNXUSD,Synthetix - United States dollar,1.37,1.393,1.315,1.338,83992.3010565001,1.3431,740
 2024-09-01,X:SNXUSD,Synthetix - United States dollar,1.334,1.3783,1.252,1.262,173248.80659213965,1.2951,1427
 2024-09-02,X:SNXUSD,Synthetix - United States dollar,1.261,1.3575,1.254,1.3325,98925.10453622029,1.2955,1063
@@ -364,4 +361,7 @@ date,ticker,ticker_name,open,high,low,close,volume,volume_weighted_price,number_
 2025-08-25,X:SNXUSD,Synthetix - United States dollar,0.693,0.705,0.628,0.642,364006.1662881237,0.6563,1121
 2025-08-26,X:SNXUSD,Synthetix - United States dollar,0.64,0.801,0.635,0.776,1559812.3189999908,0.7336,2931
 2025-08-27,X:SNXUSD,Synthetix - United States dollar,0.773,0.82,0.712,0.717,1764188.3680320513,0.7474,4814
-2025-08-28,X:SNXUSD,Synthetix - United States dollar,0.717,0.74,0.68038,0.727,244282.71403948,0.7299,598
+2025-08-28,X:SNXUSD,Synthetix - United States dollar,0.716,0.751,0.707,0.738,594321.1819999994,0.7304,1530
+2025-08-29,X:SNXUSD,Synthetix - United States dollar,0.738,0.738,0.67,0.692,430462.46100000147,0.6959,1330
+2025-08-30,X:SNXUSD,Synthetix - United States dollar,0.69,0.714,0.677,0.702,126489.75374436038,0.7006,541
+2025-08-31,X:SNXUSD,Synthetix - United States dollar,0.705,0.719,0.703,0.704,26545.11381857,0.7116,128

@@ -1,7 +1,4 @@
 date,ticker,ticker_name,open,high,low,close,volume,volume_weighted_price,number_of_transactions
-2024-08-28,X:MANAUSD,Decentraland - United States dollar,0.2785,0.2863,0.26822,0.275,701741.7852929708,0.2776,1319
-2024-08-29,X:MANAUSD,Decentraland - United States dollar,0.2758,0.2827,0.2688,0.2725,519740.5835244298,0.2779,958
-2024-08-30,X:MANAUSD,Decentraland - United States dollar,0.2718,0.28221,0.2638,0.2724,1130753.583897049,0.274,1243
 2024-08-31,X:MANAUSD,Decentraland - United States dollar,0.27214,0.2743,0.2666,0.2694,426941.9232740001,0.2714,558
 2024-09-01,X:MANAUSD,Decentraland - United States dollar,0.2694,0.2696,0.2525,0.2537,555338.4760584403,0.2597,789
 2024-09-02,X:MANAUSD,Decentraland - United States dollar,0.2539,0.2673,0.2532,0.2652,825476.1954261608,0.2618,805
@@ -364,4 +361,7 @@ date,ticker,ticker_name,open,high,low,close,volume,volume_weighted_price,number_
 2025-08-25,X:MANAUSD,Decentraland - United States dollar,0.2982,0.3028,0.2687,0.2747,1941586.8099999966,0.2841,3104
 2025-08-26,X:MANAUSD,Decentraland - United States dollar,0.2745,0.2908,0.27,0.2879,2934624.0680950875,0.2817,8166
 2025-08-27,X:MANAUSD,Decentraland - United States dollar,0.2878,0.2915,0.2838,0.2859,1441348.5799999959,0.2875,2040
-2025-08-28,X:MANAUSD,Decentraland - United States dollar,0.28578,0.2944,0.2843,0.2933,374107.1470217211,0.2902,594
+2025-08-28,X:MANAUSD,Decentraland - United States dollar,0.2859,0.2968,0.2843,0.2962,1249730.3600000003,0.2916,1913
+2025-08-29,X:MANAUSD,Decentraland - United States dollar,0.2964,0.2975,0.2777,0.2832,2072753.0899999912,0.2846,3044
+2025-08-30,X:MANAUSD,Decentraland - United States dollar,0.2826,0.28822,0.2781,0.2851,1313333.9878586417,0.2836,1987
+2025-08-31,X:MANAUSD,Decentraland - United States dollar,0.2852,0.303,0.2847,0.29496,3070596.176327967,0.2955,3546

@@ -7,3 +7,4 @@ backtesting>=0.4.0
 bokeh>=3.0.0
 matplotlib>=3.5.0
 seaborn>=0.11.0
+flask>=2.3.0

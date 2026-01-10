@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Major Cryptocurrencies</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+        .crypto-table {
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+        }
+        .table-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        .crypto-symbol {
+            font-weight: bold;
+            color: #495057;
+        }
+        .rank-badge {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            border-radius: 20px;
+            padding: 5px 12px;
+            font-size: 0.9em;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="container mt-5">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <div class="text-center mb-4">
+                    <h1 class="display-4 text-primary">Major Cryptocurrencies</h1>
+                    <p class="lead text-muted">Top cryptocurrency symbols tracked in our system</p>
+                </div>
+                
+                <div class="crypto-table p-4">
+                    {% if cryptos %}
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead class="table-header">
+                                <tr>
+                                    <th scope="col" class="text-center">Rank</th>
+                                    <th scope="col">Symbol</th>
+                                    <th scope="col">Full Name</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for crypto in cryptos %}
+                                <tr>
+                                    <td class="text-center">
+                                        <span class="rank-badge">{{ loop.index }}</span>
+                                    </td>
+                                    <td class="crypto-symbol">{{ crypto }}</td>
+                                    <td>
+                                        {% if crypto == 'BTC' %}
+                                            Bitcoin
+                                        {% elif crypto == 'ETH' %}
+                                            Ethereum
+                                        {% elif crypto == 'XRP' %}
+                                            Ripple
+                                        {% elif crypto == 'ADA' %}
+                                            Cardano
+                                        {% elif crypto == 'DOT' %}
+                                            Polkadot
+                                        {% elif crypto == 'LTC' %}
+                                            Litecoin
+                                        {% elif crypto == 'BCH' %}
+                                            Bitcoin Cash
+                                        {% elif crypto == 'LINK' %}
+                                            Chainlink
+                                        {% elif crypto == 'XLM' %}
+                                            Stellar
+                                        {% elif crypto == 'DOGE' %}
+                                            Dogecoin
+                                        {% elif crypto == 'UNI' %}
+                                            Uniswap
+                                        {% elif crypto == 'AAVE' %}
+                                            Aave
+                                        {% elif crypto == 'ALGO' %}
+                                            Algorand
+                                        {% elif crypto == 'ATOM' %}
+                                            Cosmos
+                                        {% elif crypto == 'AVAX' %}
+                                            Avalanche
+                                        {% elif crypto == 'SOL' %}
+                                            Solana
+                                        {% elif crypto == 'MATIC' %}
+                                            Polygon
+                                        {% elif crypto == 'FTT' %}
+                                            FTX Token
+                                        {% elif crypto == 'NEAR' %}
+                                            NEAR Protocol
+                                        {% elif crypto == 'MANA' %}
+                                            Decentraland
+                                        {% elif crypto == 'SAND' %}
+                                            The Sandbox
+                                        {% elif crypto == 'CRV' %}
+                                            Curve DAO Token
+                                        {% elif crypto == 'SUSHI' %}
+                                            SushiSwap
+                                        {% elif crypto == 'COMP' %}
+                                            Compound
+                                        {% elif crypto == 'YFI' %}
+                                            yearn.finance
+                                        {% elif crypto == 'SNX' %}
+                                            Synthetix
+                                        {% elif crypto == 'MKR' %}
+                                            Maker
+                                        {% elif crypto == 'BAT' %}
+                                            Basic Attention Token
+                                        {% elif crypto == 'ZRX' %}
+                                            0x
+                                        {% elif crypto == 'ENJ' %}
+                                            Enjin Coin
+                                        {% else %}
+                                            {{ crypto }}
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <div class="mt-4 text-center">
+                        <div class="alert alert-info">
+                            <i class="bi bi-info-circle"></i>
+                            Total cryptocurrencies: <strong>{{ cryptos|length }}</strong>
+                        </div>
+                    </div>
+                    {% else %}
+                    <div class="alert alert-warning text-center">
+                        <h4>No cryptocurrency data found</h4>
+                        <p>Please check if the major_crypto_currencies.json file exists in the crypto_data folder.</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

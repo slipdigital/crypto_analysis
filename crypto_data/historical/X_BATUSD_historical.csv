@@ -1,7 +1,4 @@
 date,ticker,ticker_name,open,high,low,close,volume,volume_weighted_price,number_of_transactions
-2024-08-28,X:BATUSD,Basic Attention Token - United States dollar,0.16916,0.17544,0.1623,0.1642,1466196.7515009816,0.1678,1685
-2024-08-29,X:BATUSD,Basic Attention Token - United States dollar,0.16436,0.16987,0.1618,0.16494,697225.9942035702,0.1658,1235
-2024-08-30,X:BATUSD,Basic Attention Token - United States dollar,0.16515,0.16776,0.15879,0.16552,581590.0016299399,0.1633,934
 2024-08-31,X:BATUSD,Basic Attention Token - United States dollar,0.1655,0.16641,0.16102,0.16299,510331.6163575801,0.1632,510
 2024-09-01,X:BATUSD,Basic Attention Token - United States dollar,0.1629,0.16336,0.15621,0.15773,533195.3498940907,0.1588,885
 2024-09-02,X:BATUSD,Basic Attention Token - United States dollar,0.15764,0.16621,0.15694,0.16559,499593.2121221799,0.1619,850
@@ -364,4 +361,7 @@ date,ticker,ticker_name,open,high,low,close,volume,volume_weighted_price,number_
 2025-08-25,X:BATUSD,Basic Attention Token - United States dollar,0.15529,0.16011,0.14362,0.14439,963057.0400000009,0.1491,1373
 2025-08-26,X:BATUSD,Basic Attention Token - United States dollar,0.14402,0.152,0.14283,0.15066,622048.539683302,0.146,1165
 2025-08-27,X:BATUSD,Basic Attention Token - United States dollar,0.15037,0.15359,0.14829,0.15043,509539.5362262738,0.1513,961
-2025-08-28,X:BATUSD,Basic Attention Token - United States dollar,0.15038,0.15338,0.14957,0.15271,104610.28217229,0.1512,274
+2025-08-28,X:BATUSD,Basic Attention Token - United States dollar,0.15045,0.16157,0.14957,0.15957,947730.4500000005,0.1568,1548
+2025-08-29,X:BATUSD,Basic Attention Token - United States dollar,0.15958,0.16332,0.14567,0.15082,3316455.3943207725,0.1529,2386
+2025-08-30,X:BATUSD,Basic Attention Token - United States dollar,0.15041,0.15417,0.14896,0.15354,358217.29883490986,0.1519,650
+2025-08-31,X:BATUSD,Basic Attention Token - United States dollar,0.15361,0.15808,0.15361,0.1556,480779.0958408602,0.1556,551

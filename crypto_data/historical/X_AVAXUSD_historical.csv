@@ -1,7 +1,4 @@
 date,ticker,ticker_name,open,high,low,close,volume,volume_weighted_price,number_of_transactions
-2024-08-28,X:AVAXUSD,Avalanche - United States dollar,24.1,24.842,23.19,23.44,675053.4327942827,23.8852,32247
-2024-08-29,X:AVAXUSD,Avalanche - United States dollar,23.46,24.69,22.78,22.89,822952.4178102731,23.6054,31212
-2024-08-30,X:AVAXUSD,Avalanche - United States dollar,22.89,23.66,22.2,23.29,365787.82415106054,22.9448,17595
 2024-08-31,X:AVAXUSD,Avalanche - United States dollar,23.29,23.45,22.47,22.81,224177.58567660037,22.9022,9987
 2024-09-01,X:AVAXUSD,Avalanche - United States dollar,22.8,22.876,21.14,21.39,456469.93035525875,22.1019,22724
 2024-09-02,X:AVAXUSD,Avalanche - United States dollar,21.42,22.586,21.37,22.37,278323.6478559799,22.0382,13284
@@ -364,4 +361,7 @@ date,ticker,ticker_name,open,high,low,close,volume,volume_weighted_price,number_
 2025-08-25,X:AVAXUSD,Avalanche - United States dollar,25.82,26.0,23.04,23.36,923802.5427134946,24.6124,47163
 2025-08-26,X:AVAXUSD,Avalanche - United States dollar,23.36,24.381,23.09,24.17,511069.15834961896,23.6575,31247
 2025-08-27,X:AVAXUSD,Avalanche - United States dollar,24.18,25.358,23.86,24.42,664994.6850853268,24.7231,34865
-2025-08-28,X:AVAXUSD,Avalanche - United States dollar,24.42,24.89,24.25,24.7426,140067.8201457,24.5793,9249
+2025-08-28,X:AVAXUSD,Avalanche - United States dollar,24.42,25.08,24.13,24.93,998854.333244144,24.5861,39143
+2025-08-29,X:AVAXUSD,Avalanche - United States dollar,24.92,25.225,23.2,23.55,1333702.1487657411,23.9549,52257
+2025-08-30,X:AVAXUSD,Avalanche - United States dollar,23.55,23.94,23.11,23.78,415990.9626759248,23.6299,19337
+2025-08-31,X:AVAXUSD,Avalanche - United States dollar,23.78,24.09,23.77,24.0,106519.68685778,23.9267,5226

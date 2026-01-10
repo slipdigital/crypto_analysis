@@ -79,6 +79,33 @@ class CryptoDataCollector:
             os.makedirs(directory, exist_ok=True)
             self.logger.debug(f"Created/verified directory: {directory}")
     
+    def _load_major_cryptos(self) -> List[str]:
+        """Load major cryptocurrency symbols from JSON file"""
+        json_file_path = os.path.join("crypto_data", "major_crypto_currencies.json")
+        
+        try:
+            with open(json_file_path, 'r') as f:
+                data = json.load(f)
+                major_cryptos = data.get('major_cryptos', [])
+                self.logger.info(f"Loaded {len(major_cryptos)} major cryptocurrencies from {json_file_path}")
+                return major_cryptos
+        except FileNotFoundError:
+            self.logger.warning(f"Major crypto currencies file not found: {json_file_path}")
+            # Fallback to hardcoded list
+            fallback_cryptos = ['BTC', 'ETH', 'XRP', 'ADA', 'DOT', 'LTC', 'BCH', 'LINK', 'XLM', 'DOGE',
+                              'UNI', 'AAVE', 'ALGO', 'ATOM', 'AVAX', 'SOL', 'MATIC', 'FTT', 'NEAR', 'MANA',
+                              'SAND', 'CRV', 'SUSHI', 'COMP', 'YFI', 'SNX', 'MKR', 'BAT', 'ZRX', 'ENJ']
+            self.logger.info(f"Using fallback list of {len(fallback_cryptos)} major cryptocurrencies")
+            return fallback_cryptos
+        except json.JSONDecodeError as e:
+            self.logger.error(f"Invalid JSON in major crypto currencies file: {e}")
+            # Fallback to hardcoded list
+            fallback_cryptos = ['BTC', 'ETH', 'XRP', 'ADA', 'DOT', 'LTC', 'BCH', 'LINK', 'XLM', 'DOGE',
+                              'UNI', 'AAVE', 'ALGO', 'ATOM', 'AVAX', 'SOL', 'MATIC', 'FTT', 'NEAR', 'MANA',
+                              'SAND', 'CRV', 'SUSHI', 'COMP', 'YFI', 'SNX', 'MKR', 'BAT', 'ZRX', 'ENJ']
+            self.logger.info(f"Using fallback list of {len(fallback_cryptos)} major cryptocurrencies")
+            return fallback_cryptos
+    
     def _make_api_request(self, endpoint: str, params: Dict = None) -> Optional[Dict]:
         """Make API request with retry logic and rate limiting"""
         if params is None:
@@ -114,6 +141,9 @@ class CryptoDataCollector:
         """Get available cryptocurrency tickers from Polygon.io"""
         self.logger.info("Fetching available cryptocurrency tickers")
         
+        # Load major cryptocurrencies from JSON file
+        major_cryptos = self._load_major_cryptos()
+        
         params = {
             'market': 'crypto',
             'active': 'true',
@@ -125,9 +155,6 @@ class CryptoDataCollector:
         if data and 'results' in data:
             # Filter for major USD pairs only
             crypto_tickers = []
-            major_cryptos = ['BTC', 'ETH', 'XRP', 'ADA', 'DOT', 'LTC', 'BCH', 'LINK', 'XLM', 'DOGE', 
-                           'UNI', 'AAVE', 'ALGO', 'ATOM', 'AVAX', 'SOL', 'MATIC', 'FTT', 'NEAR', 'MANA',
-                           'SAND', 'CRV', 'SUSHI', 'COMP', 'YFI', 'SNX', 'MKR', 'BAT', 'ZRX', 'ENJ']
             
             for ticker_info in data['results']:
                 ticker = ticker_info.get('ticker', '')

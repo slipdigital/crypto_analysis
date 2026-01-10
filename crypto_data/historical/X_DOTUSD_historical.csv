@@ -1,7 +1,4 @@
 date,ticker,ticker_name,open,high,low,close,volume,volume_weighted_price,number_of_transactions
-2024-08-28,X:DOTUSD,Polkadot - United States dollar,4.3803,4.4706,4.166,4.255,1557233.1984584252,4.3181,27571
-2024-08-29,X:DOTUSD,Polkadot - United States dollar,4.255,4.4163,4.18,4.253,803746.9775607694,4.293,18314
-2024-08-30,X:DOTUSD,Polkadot - United States dollar,4.251,4.3386,4.102,4.2765,988786.6349360639,4.2334,19778
 2024-08-31,X:DOTUSD,Polkadot - United States dollar,4.277,4.3284,4.218,4.259,321539.4670261917,4.2707,8855
 2024-09-01,X:DOTUSD,Polkadot - United States dollar,4.2567,4.2679,4.0321,4.08,647939.1792957656,4.1589,17415
 2024-09-02,X:DOTUSD,Polkadot - United States dollar,4.068,4.242,4.054,4.209,632995.5935009375,4.1476,16007
@@ -364,4 +361,7 @@ date,ticker,ticker_name,open,high,low,close,volume,volume_weighted_price,number_
 2025-08-25,X:DOTUSD,Polkadot - United States dollar,4.107,4.1448,3.693,3.735,3683009.6571819168,3.8998,40420
 2025-08-26,X:DOTUSD,Polkadot - United States dollar,3.734,3.923,3.708,3.887,2430435.2449579393,3.8215,26048
 2025-08-27,X:DOTUSD,Polkadot - United States dollar,3.887,3.934,3.821,3.836,3521567.723910175,3.8783,35744
-2025-08-28,X:DOTUSD,Polkadot - United States dollar,3.835,4.102,3.806,3.92,1149916.4377649478,3.8984,10529
+2025-08-28,X:DOTUSD,Polkadot - United States dollar,3.835,4.102,3.806,3.98,4445439.717850594,3.9393,40982
+2025-08-29,X:DOTUSD,Polkadot - United States dollar,3.98,4.0048,3.724,3.774,5284600.175257667,3.8349,47289
+2025-08-30,X:DOTUSD,Polkadot - United States dollar,3.775,3.8258,3.712,3.811,1867276.6579176849,3.7803,17470
+2025-08-31,X:DOTUSD,Polkadot - United States dollar,3.8097,3.875,3.799,3.813,724703.7316243548,3.8372,6817

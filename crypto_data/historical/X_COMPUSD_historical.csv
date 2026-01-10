@@ -1,7 +1,4 @@
 date,ticker,ticker_name,open,high,low,close,volume,volume_weighted_price,number_of_transactions
-2024-08-28,X:COMPUSD,Compound - United States dollar,45.46,46.602,44.05,45.16,21295.641836040155,45.2249,3053
-2024-08-29,X:COMPUSD,Compound - United States dollar,45.293,46.75,43.924,44.97,5607.328175840013,45.5629,1519
-2024-08-30,X:COMPUSD,Compound - United States dollar,44.62,47.06,44.06,46.38,15752.069383690081,45.6359,2305
 2024-08-31,X:COMPUSD,Compound - United States dollar,46.4,46.72,44.8,45.18,9311.823613379993,45.7431,1414
 2024-09-01,X:COMPUSD,Compound - United States dollar,45.474,45.615,42.09,42.789,15167.258126310071,44.0491,2223
 2024-09-02,X:COMPUSD,Compound - United States dollar,42.62,45.499,42.47,45.19,14831.98077636007,44.215,1949
@@ -364,4 +361,7 @@ date,ticker,ticker_name,open,high,low,close,volume,volume_weighted_price,number_
 2025-08-25,X:COMPUSD,Compound - United States dollar,46.503,47.268,42.0,42.911,920.6713204700002,43.7119,156
 2025-08-26,X:COMPUSD,Compound - United States dollar,42.9,44.87,42.6,44.57,21616.429657759654,43.687,10497
 2025-08-27,X:COMPUSD,Compound - United States dollar,44.58,45.076,43.76,43.9,34273.55224735903,44.3271,10677
-2025-08-28,X:COMPUSD,Compound - United States dollar,43.91,44.61,43.55,44.41,2765.24862801,44.1803,1680
+2025-08-28,X:COMPUSD,Compound - United States dollar,43.91,45.11,43.55,44.69,10350.339397710162,44.3785,6665
+2025-08-29,X:COMPUSD,Compound - United States dollar,44.7,44.891,42.26,43.06,20093.162745890637,43.2097,10187
+2025-08-30,X:COMPUSD,Compound - United States dollar,43.05,43.63,42.16,43.16,9531.304157340013,42.9902,4664
+2025-08-31,X:COMPUSD,Compound - United States dollar,43.18,43.62,43.1,43.4,3747.32977456,43.4074,1169
