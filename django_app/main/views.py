@@ -1271,7 +1271,7 @@ def run_update(request, update_type):
     # Map update types to either Django management commands or legacy scripts
     update_config = {
         'ticker_data': {'type': 'command', 'name': 'update_ticker_data', 'display': 'Ticker Data Update'},
-        'tickers': {'type': 'script', 'name': 'update_tickers.py', 'display': 'Ticker List Update'},
+        'tickers': {'type': 'command', 'name': 'update_tickers', 'display': 'Ticker List Update'},
         'market_caps': {'type': 'script', 'name': 'update_market_caps_from_csv.py', 'display': 'Market Caps Update'},
         'liquidity': {'type': 'script', 'name': 'collect_global_liquidity.py', 'display': 'Global Liquidity Update'}
     }

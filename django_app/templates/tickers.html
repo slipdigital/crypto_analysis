@@ -150,7 +150,7 @@
                     {% for ticker in tickers %}
                     <tr>
                         <td>
-                            <form method="post" action="/ticker/{{ ticker.ticker }}/toggle_favorite" style="display: inline;">
+                            <form method="post" action="/ticker/{{ ticker.ticker }}/toggle_favorite/" style="display: inline;">
                 {% csrf_token %}
                                 <button type="submit" class="btn btn-link p-0 border-0" style="text-decoration: none;" title="{% if ticker.is_favorite %}Remove from favorites{% else %}Add to favorites{% endif %}">
                                     {% if ticker.is_favorite %}
