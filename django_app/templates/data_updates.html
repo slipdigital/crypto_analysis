@@ -53,41 +53,21 @@
         </div>
     </div>
 
-    <!-- Market Cap Updates -->
+    <!-- CoinGecko Market Cap Updates -->
     <div class="col-md-6 mb-4">
         <div class="card h-100">
-            <div class="card-header bg-success text-white">
-                <h5 class="mb-0"><i class="bi bi-graph-up-arrow"></i> Market Caps</h5>
+            <div class="card-header bg-dark text-white">
+                <h5 class="mb-0"><i class="bi bi-coin"></i> CoinGecko Market Caps</h5>
             </div>
             <div class="card-body">
-                <p class="card-text">Update market capitalization data from CSV file.</p>
+                <p class="card-text">Update market capitalization data from CoinGecko API.</p>
                 <ul class="list-unstyled">
-                    <li><i class="bi bi-check-circle text-success"></i> Import from CSV</li>
-                    <li><i class="bi bi-check-circle text-success"></i> Update rankings</li>
-                    <li><i class="bi bi-check-circle text-success"></i> Valuation data</li>
+                    <li><i class="bi bi-check-circle text-success"></i> Real-time data</li>
+                    <li><i class="bi bi-check-circle text-success"></i> Top cryptocurrencies</li>
+                    <li><i class="bi bi-check-circle text-success"></i> No API key required</li>
                 </ul>
-                <button type="button" class="btn btn-success w-100" data-bs-toggle="modal" data-bs-target="#updateMarketCapsModal">
-                    <i class="bi bi-play-circle"></i> Update Market Caps
-                </button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Global Liquidity Updates -->
-    <div class="col-md-6 mb-4">
-        <div class="card h-100">
-            <div class="card-header bg-warning text-dark">
-                <h5 class="mb-0"><i class="bi bi-globe"></i> Global Liquidity</h5>
-            </div>
-            <div class="card-body">
-                <p class="card-text">Update global liquidity data from FRED (Federal Reserve Economic Data).</p>
-                <ul class="list-unstyled">
-                    <li><i class="bi bi-check-circle text-success"></i> M2 Money Supply</li>
-                    <li><i class="bi bi-check-circle text-success"></i> Fed Balance Sheet</li>
-                    <li><i class="bi bi-check-circle text-success"></i> Economic indicators</li>
-                </ul>
-                <button type="button" class="btn btn-warning w-100" data-bs-toggle="modal" data-bs-target="#updateLiquidityModal">
-                    <i class="bi bi-play-circle"></i> Update Global Liquidity
+                <button type="button" class="btn btn-dark w-100" data-bs-toggle="modal" data-bs-target="#updateCoinGeckoModal">
+                    <i class="bi bi-play-circle"></i> Update from CoinGecko
                 </button>
             </div>
         </div>
@@ -148,52 +128,28 @@
     </div>
 </div>
 
-<!-- Update Market Caps Modal -->
-<div class="modal fade" id="updateMarketCapsModal" tabindex="-1">
+<!-- Update CoinGecko Market Caps Modal -->
+<div class="modal fade" id="updateCoinGeckoModal" tabindex="-1">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">Update Market Caps</h5>
+                <h5 class="modal-title">Update Market Caps from CoinGecko</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body">
-                <p>This will update market capitalization data from the CSV file.</p>
-                <div class="alert alert-info">
-                    <i class="bi bi-info-circle"></i> <strong>Note:</strong> Ensure the CSV file exists at <code>data/market_cap_YYYYMMDD.csv</code>
+                <p>This will fetch current market capitalization data for the top 250 cryptocurrencies from CoinGecko's public API and update matching tickers.</p>
+                <div class="alert alert-success">
+                    <i class="bi bi-info-circle"></i> <strong>Free API:</strong> No API key required! Uses CoinGecko's public API.
+                </div>
+                <div class="alert alert-warning">
+                    <i class="bi bi-exclamation-triangle"></i> <strong>Rate Limits:</strong> This operation respects CoinGecko's rate limits with a 1-second delay between requests.
                 </div>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                <form method="post" action="{% url 'run_update' update_type='market_caps' %}" style="display: inline;">
+                <form method="post" action="{% url 'run_update' update_type='coingecko' %}" style="display: inline;">
                     {% csrf_token %}
-                    <button type="submit" class="btn btn-success">
-                        <i class="bi bi-play-circle"></i> Run Update
-                    </button>
-                </form>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- Update Global Liquidity Modal -->
-<div class="modal fade" id="updateLiquidityModal" tabindex="-1">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">Update Global Liquidity</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-            </div>
-            <div class="modal-body">
-                <p>This will fetch the latest global liquidity data from FRED.</p>
-                <div class="alert alert-info">
-                    <i class="bi bi-info-circle"></i> <strong>Note:</strong> This operation requires a FRED API key configured in your environment.
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                <form method="post" action="{% url 'run_update' update_type='liquidity' %}" style="display: inline;">
-                    {% csrf_token %}
-                    <button type="submit" class="btn btn-warning">
+                    <button type="submit" class="btn btn-dark">
                         <i class="bi bi-play-circle"></i> Run Update
                     </button>
                 </form>

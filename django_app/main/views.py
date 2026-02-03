@@ -1272,8 +1272,7 @@ def run_update(request, update_type):
     update_config = {
         'ticker_data': {'type': 'command', 'name': 'update_ticker_data', 'display': 'Ticker Data Update'},
         'tickers': {'type': 'command', 'name': 'update_tickers', 'display': 'Ticker List Update'},
-        'market_caps': {'type': 'script', 'name': 'update_market_caps_from_csv.py', 'display': 'Market Caps Update'},
-        'liquidity': {'type': 'script', 'name': 'collect_global_liquidity.py', 'display': 'Global Liquidity Update'}
+        'coingecko': {'type': 'command', 'name': 'update_market_cap', 'display': 'CoinGecko Market Caps Update'}
     }
     
     if update_type not in update_config:

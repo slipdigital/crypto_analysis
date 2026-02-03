@@ -122,7 +122,23 @@ class Command(BaseCommand):
         daily_data = self.fetch_daily_data(ticker_symbol, from_date, to_date)
         
         if not daily_data:
-            self.stdout.write(f"  {ticker_symbol}: No data available")
+            # Check if ticker has no data for the last 7 days
+            seven_days_ago = datetime.now().date() - timedelta(days=7)
+            latest_data = TickerData.objects.filter(
+                ticker=ticker_obj,
+                date__gte=seven_days_ago
+            ).exists()
+            
+            if not latest_data:
+                # No data for last 7 days, mark as discontinued (inactive)
+                ticker_obj.active = False
+                ticker_obj.last_updated = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+                ticker_obj.save()
+                self.stdout.write(self.style.WARNING(
+                    f"  {ticker_symbol}: No data for 7+ days, marked as discontinued"
+                ))
+            else:
+                self.stdout.write(f"  {ticker_symbol}: No new data available")
             return 0
         
         # Save to database
